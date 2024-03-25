@@ -33,7 +33,7 @@ module.exports = {
         filename: "remoteEntry.js",
         exposes: {
             './TodoListModule': './projects/mfe-app/src/app/todo-list/todo-list.module.ts',
-        },        
+                    },        
         
         // For hosts (please adjust)
         // remotes: {
