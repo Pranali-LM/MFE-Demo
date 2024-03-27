@@ -6,7 +6,7 @@
   },
   "files": [
     "src/main.ts",
-    "src/app/todo1/todo1.module.ts"
+    "src/app/about/about.module.ts"
   ],
   "include": [
     "src/**/*.d.ts"

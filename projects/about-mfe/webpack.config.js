@@ -10,7 +10,7 @@ sharedMappings.register(
 
 module.exports = {
   output: {
-    uniqueName: "mfeApp",
+    uniqueName: "about-mfe",
     publicPath: "auto",
     scriptType: "text/javascript"
   },
@@ -29,13 +29,11 @@ module.exports = {
     new ModuleFederationPlugin({
 
         // For remotes (please adjust)
-        name: "mfeApp",
+        name: 'about_mfe',
         filename: "remoteEntry.js",
         exposes: {
-            './TodoListModule': './projects/mfe-app/src/app/todo-list/todo-list.module.ts',
-            './Todo1Module' : './projects/mfe-app/src/app/todo1/todo1.module.ts',
-            './AppRoutingModule' : './projects/mfe-app/src/app/app-routing.module.ts'
-               },        
+          './AboutModule': './projects/about-mfe/src/app/about/about.module.ts',
+          },        
         
         // For hosts (please adjust)
         // remotes: {
@@ -56,3 +54,4 @@ module.exports = {
     sharedMappings.getPlugin()
   ],
 };
+
