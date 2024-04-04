@@ -1,0 +1,88 @@
+<app-side-navigation>
+  <div class="page-subheader" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="16px">
+    <div fxLayout="row" fxLayoutGap="16px">
+      <button
+        style="color: #ffffff"
+        matTooltip="{{ 'EditUserComponentPreviouspageToolTip' | translate }}"
+        mat-icon-button
+        (click)="navigateBack()"
+      >
+        <mat-icon>keyboard_backspace</mat-icon>
+      </button>
+      <h3 class="card-title">{{ actionName | translate | titlecase }} {{ 'Tags' | translate }}</h3>
+    </div>
+  </div>
+
+  <form fxLayout="column" autocomplete="off" novalidate [formGroup]="form" *ngIf="form; else loadingUserDetails">
+    <section class="container" fxLayout="column" fxLayoutGap="24px">
+
+      <mat-card fxLayout="row" fxLayout.sm="column" fxLayoutAlign="space-between start" fxLayoutGap="96px" fxLayoutGap.sm="24px">
+        <div fxLayout="column" fxLayoutGap="8px" fxFlex="35">
+          <h3>{{'AddTagsInfo' | translate}}</h3>
+          <span class="text-content">{{ 'AddtagsDialogdescription1' | translate }}</span>
+          <span class="text-content">
+            {{ 'AddtagsDialogdescription2' | translate }} <strong>{{ 'AddtagsDialogdescription3' | translate }}</strong>
+            {{ 'AddtagsDialogdescription4' | translate }}
+          </span>
+        </div>
+
+        <div fxFlex fxLayout="column" style="width: 50%">
+          <div fxLayout="row" fxLayoutGap="24px" *ngIf="!getAttributeListLoader">
+            <mat-form-field appearance="outline" fxFlex>
+              <mat-label>{{'AddAtributes' | translate}}</mat-label>
+              <mat-select formControlName="attribute" disableOptionCentering>
+                <mat-option *ngFor="let attr of attributeList" [value]="attr.attributeId"
+                  >{{ attr.attributeName }}
+                  <span *ngIf="attr.attributeType === allowedTypes[0].value"> ({{ allowedTypes[0].Label }} )</span>
+                  <span *ngIf="attr.attributeType === allowedTypes[1].value">( {{ allowedTypes[1].Label }} )</span>
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="form.get('attribute').hasError('required')">{{'AttributeRequiredError' | translate}}</mat-error>
+            </mat-form-field>
+          </div>
+          <ng-container *ngIf="getAttributeListLoader">
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line"></div>
+          </ng-container>
+
+          <div fxFlex fxLayout="row" style="width: 100%">
+            <mat-form-field appearance="outline" fxFlex *ngIf="actionName === 'edit'">
+              <mat-label> {{'AddTagName' | translate}} </mat-label>
+              <input matInput type="text" formControlName="tagName" name="tagName" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" fxFlex *ngIf="actionName === 'add'">
+              <mat-label> {{'AddtagsDialogAddMultipleTags' | translate}}</mat-label>
+              <mat-chip-list #chipList multiple>
+                <mat-chip *ngFor="let tag of tags" [value]="tag">
+                  {{ tag }}
+                  <button matChipRemove (click)="removeTag(tag)">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+                <input
+                  formControlName="tagName"
+                  placeholder="Add Multiple Tags.."
+                  [matChipInputFor]="chipList"
+                  (matChipInputTokenEnd)="addTagFromInput($event)"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                />
+              </mat-chip-list>
+              <mat-hint>{{ 'AddtagsPageMultiTagHint' | translate }}</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-card>
+
+      <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="end center">
+        <button type="submit" mat-flat-button color="accent" [loading]="addAttributeLoader" (click)="onSubmit()" [disabled]="!form.dirty">
+          {{ 'EditUserComponentSAVEDETAILS' | translate }}
+        </button>
+      </div>
+    </section>
+  </form>
+
+  <ng-template #loadingUserDetails>
+    <section class="container" fxLayout="column" fxLayoutGap="24px">{{ 'AddTagsDetailsLoading' | translate }}</section>
+  </ng-template>
+</app-side-navigation>

@@ -1,0 +1,10 @@
+.btn-fab {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+}
+
+::ng-deep .fab-menu {
+  min-width: 200px !important;
+  margin-bottom: 8px;
+}

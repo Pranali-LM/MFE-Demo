@@ -1,0 +1,11 @@
+.chart-area {
+  overflow: hidden;
+}
+.single-checkbox {
+  font-size: 15px;
+}
+@media (max-width: 767px) {
+  .chart-area {
+    min-width: 640px;
+  }
+}

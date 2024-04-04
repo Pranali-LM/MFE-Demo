@@ -1,0 +1,8 @@
+@import './fonts';
+
+::ng-deep .mat-optgroup-label,
+.utc-offset {
+  font-size: $caption-font-size !important;
+  text-transform: uppercase;
+  font-family: $font-family;
+}

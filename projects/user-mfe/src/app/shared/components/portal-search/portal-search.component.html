@@ -1,0 +1,49 @@
+<div fxLayout="column" fxLayoutGap="24px">
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <h3 class="title">{{ 'portalSearchComponent' | translate }}</h3>
+    <button mat-icon-button mat-dialog-close matTooltip="{{ 'portalSearchComponentClose' | translate }}" matTooltipPosition="left">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div fxLayout="column">
+    <mat-form-field appearance="outline" cdkFocusInitial>
+      <mat-label>{{ 'portalSearchComponentSearchFeature' | translate }}</mat-label>
+      <input matInput [formControl]="searchString" placeholder="{{ 'portalSearchComponentSearchQuery' | translate }}" />
+      <button mat-button *ngIf="searchString.value" matSuffix mat-icon-button aria-label="Clear" (click)="clearInput()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <mat-selection-list *ngIf="!isSearchActive" [multiple]="false">
+      <div mat-subheader class="sub-header">{{ 'portalSearchComponentQuickLinks' | translate }}</div>
+      <ng-container *ngFor="let link of quickLinkList">
+        <a class="search-result" [routerLink]="link?.route" [fragment]="link?.fragment" [queryParams]="link?.queryParams">
+          <mat-list-option mat-dialog-close>
+            <mat-icon mat-list-icon>east</mat-icon>
+            <div mat-line class="feature-item">{{ link?.featureName | translate }}</div>
+            <div mat-line class="breadcrumb">{{ link?.breadcrumb | translate }}</div>
+          </mat-list-option>
+        </a>
+      </ng-container>
+    </mat-selection-list>
+
+    <mat-selection-list *ngIf="isSearchActive" [multiple]="false">
+      <div mat-subheader>{{ searchAutocompleteList?.length }} {{ 'portalSearchComponentSearchResult' | translate }}</div>
+      <app-alert [removeMargin]="true" *ngIf="!searchAutocompleteList?.length" [alertType]="'tip'"
+        >{{ 'portalSearchComponentRefineSearch' | translate }}
+      </app-alert>
+      <div class="search-list">
+        <ng-container *ngFor="let link of searchAutocompleteList">
+          <a class="search-result" [routerLink]="link?.route" [fragment]="link?.fragment" [queryParams]="link?.queryParams">
+            <mat-list-option mat-dialog-close>
+              <mat-icon mat-list-icon>east</mat-icon>
+              <div mat-line class="feature-item">{{ link?.featureName | translate }}</div>
+              <div mat-line class="breadcrumb">{{ link?.breadcrumb | translate }}</div>
+            </mat-list-option>
+          </a>
+        </ng-container>
+      </div>
+    </mat-selection-list>
+  </div>
+</div>

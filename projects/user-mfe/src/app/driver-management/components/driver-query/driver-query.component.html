@@ -1,0 +1,64 @@
+<div
+  class="page-header"
+  fxLayout="row"
+  fxLayout.xs="column"
+  fxLayout.sm="column"
+  fxLayoutAlign="end center"
+  fxLayoutAlign.sm="start start"
+  fxLayoutAlign.xs="start stretch"
+  fxLayoutGap="24px"
+>
+  <form [formGroup]="form" novalidate>
+    <div
+      fxLayout="row"
+      fxLayout.xs="column"
+      fxLayoutAlign.xs="start stretch"
+      fxLayout.sm="row wrap"
+      fxLayout.md="row"
+      fxLayoutGap="24px"
+      fxLayoutAlign="start center"
+      fxLayoutAlign.sm="start center"
+    >
+      <app-driver-auto-complete
+        placeholder="{{ 'durationComponentDriverIdName' | translate }}"
+        [inputValue]="form?.value?.driverId | translate"
+        (driverSelection)="driverChanged($event)"
+        [hideAllDrivers]="true"
+      >
+      </app-driver-auto-complete>
+
+      <mat-form-field>
+        <mat-label>{{ 'driverManagementSelectDateRange' | translate }}</mat-label>
+        <mat-date-range-input [rangePicker]="picker" [min]="minStartDate" [max]="maxEndDate">
+          <input
+            matStartDate
+            placeholder="{{ 'driverManagementDatePlaceHolder' | translate }}"
+            readonly
+            formControlName="formStartDate"
+            [appRefreshDatepicker]="form.get('formStartDate')"
+            (dateChange)="onStartDateChange()"
+          />
+          <input
+            matEndDate
+            placeholder="{{ 'driverManagementDatePlaceHolder' | translate }}"
+            readonly
+            formControlName="formEndDate"
+            [appRefreshDatepicker]="form.get('formEndDate')"
+          />
+        </mat-date-range-input>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker [touchUi]="isTouchDevice" #picker></mat-date-range-picker>
+      </mat-form-field>
+
+      <button type="button" mat-flat-button color="accent" [disabled]="form.invalid" (click)="onSearch()">
+        {{ 'driverManagementSearch' | translate }}
+      </button>
+
+      <div>
+        <button type="button" mat-flat-button color="accent" [disabled]="!isCoachingRequired" (click)="navigateToCoachingSession()">
+          {{ 'COACH DRIVER' | translate }}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

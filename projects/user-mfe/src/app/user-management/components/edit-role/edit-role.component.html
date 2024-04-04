@@ -1,0 +1,254 @@
+<app-side-navigation>
+  <div class="page-subheader" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="16px">
+    <div fxLayout="row" fxLayoutGap="16px">
+      <button
+        style="color: #ffffff"
+        matTooltip="{{ 'EditRoleComponentPreviouspageToolTip' | translate }}"
+        mat-icon-button
+        (click)="navigateBack()"
+      >
+        <mat-icon>keyboard_backspace</mat-icon>
+      </button>
+      <h3 class="card-title">{{ actionName | translate | titlecase }} {{ 'Role' | translate }}</h3>
+    </div>
+  </div>
+  <form novalidate [formGroup]="form" fxLayout="column" fxLayoutGap="24px" *ngIf="form; else loadingTemplate">
+    <section class="container" fxLayout="column" fxLayoutGap="24px">
+      <app-alert *ngIf="actionName === ActionEnum.Edit" [alertType]="'info'" [removeMargin]="true" [outsideCard]="true">{{
+        'EditRoleComponentAlert' | translate
+      }}</app-alert>
+
+      <div fxLayout="row" fxLayoutAlign="end center" *ngIf="actionName === ActionEnum.Add">
+        <mat-form-field>
+          <mat-label>{{ 'EditRoleComponentSelectTemplate' | translate }}</mat-label>
+          <mat-select formControlName="template" disableOptionCentering>
+            <mat-option *ngFor="let template of templateList" [value]="template?.id">{{ template?.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <mat-card fxLayout="row" fxLayout.sm="column" fxLayoutAlign="space-between start" fxLayoutGap="96px" fxLayoutGap.sm="24px">
+        <div fxLayout="column" fxLayoutGap="8px" fxFlex="35">
+          <h3>{{ 'EditRoleComponentBasicInformation' | translate }}</h3>
+          <span class="sub-text">{{ 'EditRoleComponentBasicInformationDescription' | translate }}</span>
+        </div>
+
+        <div fxFlex fxLayout="column" style="width: 100%">
+          <div fxLayout="row" fxLayoutGap="24px">
+            <mat-form-field appearance="outline" fxFlex>
+              <mat-label>{{ 'Role' | translate }}</mat-label>
+              <input matInput formControlName="roleName" />
+              <mat-error *ngIf="form.get('roleName').hasError('required')">{{ 'EditRoleComponentRoleError1' | translate }}</mat-error>
+              <mat-error *ngIf="form.get('roleName').hasError('invalidRoleName')">{{
+                'EditRoleComponentRoleError2' | translate
+              }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" fxFlex>
+              <mat-label>{{ 'EditRoleComponentSelectHierarchyLevel' | translate }}</mat-label>
+              <mat-select formControlName="level" disableOptionCentering>
+                <mat-option *ngFor="let level of levelList" [value]="level">{{ 'Level' | translate }} {{ level }}</mat-option>
+              </mat-select>
+              <mat-error *ngIf="form.get('level').hasError('required')">{{ EditRoleComponentLevelError | translate }}</mat-error>
+            </mat-form-field>
+
+            <button
+              mat-icon-button
+              class="btn-icon btn-hierarchy"
+              matTooltip="{{ 'EditRoleComponentViewHierarchy' | translate }}"
+              (click)="viewHierarchy()"
+            >
+              <mat-icon>account_tree</mat-icon>
+            </button>
+          </div>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'EditRoleComponentDescription' | translate }}</mat-label>
+            <textarea matInput rows="8" style="resize: none" formControlName="description"></textarea>
+          </mat-form-field>
+        </div>
+      </mat-card>
+
+      <!-- assign attributes -->
+      <mat-card fxLayout="row" fxLayout.sm="column" fxLayoutAlign="space-between start" fxLayoutGap="96px" fxLayoutGap.sm="24px">
+        <div fxLayout="column" fxLayoutGap="8px" fxFlex="35">
+          <h3>{{ 'EditRoleComponentTags' | translate }}</h3>
+          <span class="sub-text">{{ 'EditRoleComponentTagsDescription' | translate }}</span>
+        </div>
+
+        <div fxFlex fxLayout="column" style="width: 100%">
+          <app-attribute-assign
+            (selectedAttrIds)="selectedAttributes($event)"
+            [dropDownType]="'assign'"
+            [numOfAttributesToDisplay]="3"
+            [attributeType]="'ACCESS'"
+            [rolesAttrList]="roleDetails?.attributeIds"
+          ></app-attribute-assign>
+        </div>
+      </mat-card>
+      <!-- assign attributes -->
+
+      <mat-card fxLayout="row" fxLayout.sm="column" fxLayoutAlign="space-between start" fxLayoutGap="96px" fxLayoutGap.sm="24px">
+        <div fxLayout="column" fxLayoutGap="8px" fxFlex="35">
+          <h3>{{ 'EditRoleComponentUIConfiguationsTitle' | translate }}</h3>
+          <span class="sub-text">{{ 'EditRoleComponentUIConfiguationsDescription' | translate }}</span>
+        </div>
+
+        <div class="skeleton-loader" *ngIf="permissionLoader || getRoleDetailsLoader" fxFlex>
+          <div class="skeleton-card lg"></div>
+        </div>
+
+        <div
+          fxFlex
+          fxLayout="column"
+          fxLayoutGap="16px"
+          style="width: 100%"
+          [ngClass]="!permissionLoader && !getRoleDetailsLoader ? 'd-flex' : 'd-none'"
+        >
+          <mat-accordion formArrayName="uiConfig" fxLayout="column">
+            <ng-container *ngFor="let per of configurations()?.controls; let perIndex = index">
+              <mat-expansion-panel [formGroupName]="perIndex" [hideToggle]="subUiConfigs(perIndex)?.controls?.length === 0">
+                <mat-expansion-panel-header>
+                  <mat-panel-title (click)="$event.stopPropagation()">
+                    <mat-checkbox
+                      class="custom-checkbox"
+                      (change)="onUiConfigChange($event, perIndex)"
+                      [formControlName]="configurationsList[perIndex]?.permission"
+                    >
+                      {{ configurationsList[perIndex]?.description }}
+                    </mat-checkbox>
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <ng-container formArrayName="subUiConfigs" (click)="$event.stopPropagation()">
+                  <ng-container *ngFor="let subPer of subUiConfigs(perIndex)?.controls; let subUiconfigIndex = index">
+                    <mat-expansion-panel
+                      [formGroupName]="subUiconfigIndex"
+                      [hideToggle]="childConfig(perIndex, subUiconfigIndex)?.controls?.length === 0"
+                    >
+                      <mat-expansion-panel-header>
+                        <mat-panel-title (click)="$event.stopPropagation()">
+                          <mat-checkbox
+                            class="custom-checkbox"
+                            [formControlName]="configurationsList[perIndex]?.subPermissions[subUiconfigIndex]?.permission"
+                            (change)="onUiConfigChange($event, perIndex, subUiconfigIndex)"
+                            >{{ configurationsList[perIndex]?.subPermissions[subUiconfigIndex]?.description }}</mat-checkbox
+                          >
+                        </mat-panel-title>
+                      </mat-expansion-panel-header>
+                      <div
+                        fxLayout="row"
+                        fxLayoutGap="16px"
+                        class="child-checkbox"
+                        formArrayName="childUiConfigs"
+                        (click)="$event.stopPropagation()"
+                      >
+                        <ng-container
+                          *ngFor="let childPer of childConfig(perIndex, subUiconfigIndex)?.controls; let childConfIndex = index"
+                        >
+                          <div [formGroupName]="childConfIndex" class="grandchild">
+                            <mat-checkbox
+                              class="custom-checkbox"
+                              [formControlName]="
+                                configurationsList[perIndex]?.subPermissions[subUiconfigIndex]?.childPermissions[childConfIndex]?.permission
+                              "
+                              (change)="onUiConfigChange($event, perIndex, subUiconfigIndex, childConfIndex)"
+                              >{{
+                                configurationsList[perIndex]?.subPermissions[subUiconfigIndex]?.childPermissions[childConfIndex]
+                                  ?.description
+                              }}
+                            </mat-checkbox>
+                          </div>
+                        </ng-container>
+                      </div>
+                    </mat-expansion-panel>
+                  </ng-container>
+                </ng-container>
+              </mat-expansion-panel>
+            </ng-container>
+          </mat-accordion>
+        </div>
+      </mat-card>
+
+      <mat-card fxLayout="row" fxLayout.sm="column" fxLayoutAlign="space-between start" fxLayoutGap="96px" fxLayoutGap.sm="24px">
+        <div fxLayout="column" fxLayoutGap="8px" fxFlex="35">
+          <h3>{{ 'EditRoleComponentGeneralPermissionsTitle' | translate }}</h3>
+          <div fxLayout="column" fxLayoutGap="2px">
+            <span class="sub-text">{{ 'EditRoleComponentGeneralPermissionsDescription1' | translate }}</span>
+            <span class="sub-text"
+              ><strong>{{ 'EditRoleComponentGeneralPermissionsDescription2' | translate }}</strong>
+              {{ 'EditRoleComponentGeneralPermissionsDescription3' | translate }}</span
+            >
+          </div>
+        </div>
+
+        <div class="skeleton-loader" *ngIf="permissionLoader || getRoleDetailsLoader" fxFlex>
+          <div class="skeleton-card lg"></div>
+        </div>
+
+        <div
+          fxFlex
+          fxLayout="column"
+          fxLayoutGap="16px"
+          style="width: 100%"
+          [ngClass]="!permissionLoader && !getRoleDetailsLoader ? 'd-flex' : 'd-none'"
+        >
+          <mat-accordion formArrayName="permissions" fxLayout="column">
+            <ng-container *ngFor="let per of permissions()?.controls; let perIndex = index">
+              <mat-expansion-panel [formGroupName]="perIndex" [hideToggle]="subPermissions(perIndex)?.controls?.length === 0">
+                <mat-expansion-panel-header>
+                  <mat-panel-title (click)="$event.stopPropagation()">
+                    <mat-checkbox
+                      class="custom-checkbox"
+                      (change)="onPermissionChange($event, perIndex)"
+                      [formControlName]="permissionList[perIndex]?.permission"
+                    >
+                      {{ permissionList[perIndex]?.description }}</mat-checkbox
+                    >
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <div
+                  fxLayout="row"
+                  fxLayoutGap="16px"
+                  class="child-checkbox"
+                  formArrayName="subPermissions"
+                  (click)="$event.stopPropagation()"
+                >
+                  <ng-container *ngFor="let subPer of subPermissions(perIndex)?.controls; let subPerIndex = index">
+                    <div [formGroupName]="subPerIndex">
+                      <mat-checkbox
+                        class="custom-checkbox"
+                        [formControlName]="permissionList[perIndex]?.subPermissions[subPerIndex]?.permission"
+                        (change)="onPermissionChange($event, perIndex, subPerIndex)"
+                        >{{ permissionList[perIndex]?.subPermissions[subPerIndex]?.description }}</mat-checkbox
+                      >
+                    </div>
+                  </ng-container>
+                </div>
+              </mat-expansion-panel>
+            </ng-container>
+          </mat-accordion>
+        </div>
+      </mat-card>
+
+      <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="end center" *ngIf="!roleDetails?.isAdmin">
+        <button
+          type="submit"
+          mat-flat-button
+          color="accent"
+          [loading]="loader"
+          [disabled]="form?.invalid"
+          *ngIf="currentFleetInfo.role.isAdmin && actionName !== manageRoleActionEnum.View"
+          (click)="onSubmit()"
+        >
+          {{ 'EditRoleComponentSAVEDETAILS' | translate }}
+        </button>
+      </div>
+    </section>
+  </form>
+
+  <ng-template #loadingTemplate>
+    <div>Loading...</div>
+  </ng-template>
+</app-side-navigation>

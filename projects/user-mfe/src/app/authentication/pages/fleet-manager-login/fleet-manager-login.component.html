@@ -1,0 +1,4 @@
+<div class="loading-shade" fxLayout="column" fxLayoutAlign="center center" *ngIf="authService.loader">
+  <mat-spinner ></mat-spinner>
+  <h3 *ngIf="errorMessage">{{ errorMessage }}</h3>
+</div>

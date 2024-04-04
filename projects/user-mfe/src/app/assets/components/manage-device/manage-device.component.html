@@ -1,0 +1,116 @@
+<div fxLayout="column" fxLayoutGap="24px" fxLayoutAlign="start stretch">
+  <div class="title" fxLayout="row" fxLayoutAlign="space-between center" mat-dialog-title>
+    <span>{{ 'manageDeviceComponentManageDevice' | translate }}</span>
+    <button
+      mat-icon-button
+      mat-dialog-close
+      class="btn-close"
+      matTooltip="{{ 'manageDeviceComponentClose' | translate }}"
+      [matTooltipPosition]="'left'"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form [formGroup]="manageDeviceForm">
+    <div fxLayout="column" fxLayoutGap="16px">
+      <div fxLayout="row" fxLayoutAlign="start center">
+        <span class="sub-title"
+          ><strong>{{ 'manageDeviceComponentAssetID' | translate }}:</strong></span
+        >
+        <span>
+          {{ data?.assetName || data?.assetId }}
+        </span>
+      </div>
+
+      <ng-container *ngIf="isDeviceIdPrimaryKey(); else serialNumberValue">
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <span class="sub-title"
+            ><strong>{{ 'manageDeviceComponentDeviceID' | translate }}:</strong></span
+          >
+          <span>
+            {{ data?.deviceId }}
+          </span>
+        </div>
+      </ng-container>
+
+      <ng-template #serialNumberValue>
+        <div fxLayout="row" fxLayoutAlign="start center" *ngIf="data?.serialNumber">
+          <span class="sub-title"
+            ><strong>{{ 'manageDeviceComponentSerialNumber' | translate }}:</strong></span
+          >
+          <span>
+            {{ data?.serialNumber }}
+          </span>
+        </div>
+      </ng-template>
+
+      <div class="skeleton-loader" *ngIf="getDevicTaskeStatusLoader">
+        <div class="skeleton-card xs"></div>
+      </div>
+
+      <ng-container *ngIf="!getDevicTaskeStatusLoader">
+        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="4px" *ngIf="recordingStatus">
+          <span class="sub-title"
+            ><strong>{{ 'manageDeviceCompRecordingStatus' | translate }}:</strong></span
+          >
+          <span>
+            <mat-chip-list>
+              <mat-chip *ngIf="tripRecordingStatus" class="chip-success" matTooltip="" matTooltipPosition="left">{{
+                'manageDeviceCompRecording' | translate
+              }}</mat-chip>
+              <mat-chip *ngIf="!tripRecordingStatus" class="chip-error" matTooltip="" matTooltipPosition="right">{{
+                'manageDeviceCompPaused' | translate
+              }}</mat-chip>
+            </mat-chip-list>
+          </span>
+        </div>
+
+        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="4px" *ngIf="!tripRecordingStatus">
+          <span class="sub-title"
+            ><strong>{{ 'manageDeviceCompRecordingPausedTill' | translate }}</strong></span
+          >
+          <span>
+            {{
+              recordingStatus?.temporaryTripBlockingEndTimestamp
+                | dateConversion
+                  : (dataService._currentTimeZone | async)
+                  : (dataService._currentDateFormat | async)
+                  : recordingStatus?.temporaryTripBlockingEndTimestamp
+            }}
+          </span>
+        </div>
+
+        <mat-form-field>
+          <mat-label>{{ 'manageDeviceComponentSelectActionType' | translate }}</mat-label>
+          <mat-select disableOptionCentering formControlName="action">
+            <mat-option *ngFor="let action of actionList" [value]="action?.value">
+              <span>{{ action?.label | translate }}</span>
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="manageDeviceForm.get('action').hasError('required')"
+            >{{ 'manageDeviceComponentActionTypeRequired' | translate }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field *ngIf="manageDeviceForm?.get('action')?.value === 'disableCameraRecording'">
+          <mat-label>{{ 'manageDeviceComponentStopRecordingTill' | translate }}</mat-label>
+          <mat-select disableOptionCentering formControlName="expiryTime">
+            <mat-option *ngFor="let options of stopRecordingExpiryOptions" [value]="options?.value">
+              <span>{{ options?.label }}</span>
+            </mat-option>
+          </mat-select>
+          <mat-hint>{{ 'manageDeviceComponentRecordingHint' | translate }}</mat-hint>
+        </mat-form-field>
+      </ng-container>
+    </div>
+  </form>
+
+  <div fxLayout="row" fxLayoutAlign="end center">
+    <button mat-flat-button [loading]="loader" color="accent" (click)="onSubmit()" [disabled]="manageDeviceForm.invalid">
+      {{ 'manageDeviceComponentSubmit' | translate }}
+    </button>
+  </div>
+
+  <app-alert *ngIf="isError" [alertType]="'error'" [removeMargin]="true">{{ 'manageDeviceComponentFailedToSubmit' | translate }}</app-alert>
+</div>

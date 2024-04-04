@@ -1,0 +1,61 @@
+@import './variables';
+@import './colors';
+@import './fonts';
+
+.search-box {
+  width: 240px;
+  background-color: $white-color;
+  font-size: $body-font-size;
+  line-height: 18px;
+  border-radius: 50px;
+  position: relative;
+  transition: width 250ms ease-in-out;
+
+  &:hover {
+    width: 480px;
+  }
+}
+
+.search-input {
+  width: 70%;
+  padding: 14px 16px;
+  background-color: transparent;
+  font-size: $body-font-size;
+  line-height: 18px;
+  border: none;
+  outline: none;
+}
+
+.btn-search {
+  box-shadow: none;
+  position: absolute;
+  right: 8px;
+  top: 2px;
+  color: $light-accent;
+  background-color: $white-color;
+}
+
+@media (max-width: 1440px) {
+  .search-box {
+    &:hover {
+      width: 360px;
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .search-box {
+    &:hover {
+      width: 240px;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .search-box {
+    width: inherit;
+    &:hover {
+      width: inherit;
+    }
+  }
+}

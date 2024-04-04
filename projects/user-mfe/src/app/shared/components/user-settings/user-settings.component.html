@@ -1,0 +1,66 @@
+<div fxLayout="column" fxLayoutGap="24px">
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <h3 class="title">{{ 'userSettingsComponentSettings' | translate }}</h3>
+    <button mat-icon-button mat-dialog-close matTooltip="{{ 'userSettingsComponentClose' | translate }}" matTooltipPosition="left">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <span class="sub-text">{{ 'userSettingsComponentSettingsHeader' | translate }}</span>
+  <div fxLayout="column" fxLayoutGap="64px">
+    <form fxLayout="column" fxLayoutGap="24px" [formGroup]="userSettingsForm">
+      <mat-form-field>
+        <mat-select disableOptionCentering placeholder="{{ 'userSettingsComponentSelectLanguage' | translate }}" formControlName="language">
+          <mat-option *ngFor="let language of supportedLanguages" [value]="language?.key">
+            {{ language?.value | translate }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput placeholder="Select Time Zone" [matAutocomplete]="auto" formControlName="timezone">
+        <button mat-button matSuffix mat-icon-button aria-label="Clear" *ngIf="userSettingsForm.get('timezone').value" (click)="clearTimezone()">
+          <mat-icon>clear</mat-icon>
+        </button>
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="timezoneDisplayFn">
+          <mat-option *ngFor="let timezone of filteredTimezones | async" [value]="timezone.value">
+            {{ timezone.customLabel }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    
+      <mat-form-field>
+        <mat-select
+          disableOptionCentering
+          placeholder="{{ 'userSettingsComponentSelectMeasurementUnit' | translate }}"
+          formControlName="metricUnit"
+        >
+          <mat-option *ngFor="let metricUnit of supportedMetricUnits" [value]="metricUnit">
+            {{ metricUnit | translate }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-select
+          disableOptionCentering
+          placeholder="{{ 'userSettingsComponentSelectDateFormat' | translate }}"
+          formControlName="dateFormat"
+        >
+          <mat-option *ngFor="let dateFormat of supportedDateFormats" [value]="dateFormat.key">
+            {{ dateFormat.value }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <span class="sub-text"
+        ><strong>{{ 'userSettingsComponentNote' | translate }}: </strong>{{ 'userSettingsComponentDST' | translate }}</span
+      >
+    </form>
+
+    <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="end center">
+      <button mat-flat-button color="accent" (click)="onSubmit()" [disabled]="userSettingsForm.invalid || (isDirty$ | async) === false">
+        {{ 'userSettingsComponentSave' | translate }}
+      </button>
+    </div>
+  </div>
+</div>

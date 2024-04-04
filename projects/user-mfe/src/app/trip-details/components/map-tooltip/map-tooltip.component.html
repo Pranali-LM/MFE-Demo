@@ -1,0 +1,12 @@
+<div fxLayout="column" fxLayoutGap="2px">
+  <span class="event-type">{{ data.eventTypeLabel | translate }}</span>
+  <span *ngIf="data.eventTypeLabel === 'Video Request'" class="event-time">{{
+    data?.startTimeUTC | dateConversion : currentTimeZone : currentDateFormat : data?.startTime
+  }}</span>
+  <span *ngIf="data.eventTypeLabel !== 'Video Request'" class="event-time">{{
+    data?.timestampUTC | dateConversion : currentTimeZone : currentDateFormat : data?.timestamp
+  }}</span>
+  <mat-divider *ngIf="data?.eventVideoFilename || data?.fullAddress"></mat-divider>
+  <span class="address" *ngIf="!data?.eventVideoFilename && data?.fullAddress">{{ data.fullAddress }}</span>
+  <span class="eventsTableClickVideoOrImage" *ngIf="data?.eventVideoFilename">{{ 'eventsTableClickVideoOrImage' | translate }}</span>
+</div>

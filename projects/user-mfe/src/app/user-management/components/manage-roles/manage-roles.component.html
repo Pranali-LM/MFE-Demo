@@ -1,0 +1,230 @@
+<div class="container">
+  <mat-card fxLayout="column" fxLayoutGap="24px">
+    <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="24px">
+      <h3 class="title">{{ 'ManageRolesComponentTitle' | translate }}
+        <button
+          mat-icon-button
+          class="btn-faq"
+          (click)="dataService?.openFaq('ManageRoles')"
+          matTooltip="{{ 'viewInformation' | translate }}"
+          matTooltipPosition="right"
+        >
+          <mat-icon>info_outline</mat-icon>
+        </button>
+      </h3>
+
+      <div fxLayout="row" fxLayoutGap="16px">
+        <button
+          *appCheckPermissions="['read:fleet_managers']"
+          mat-icon-button
+          color="accent"
+          class="btn-icon"
+          matTooltip="{{'ManageRolesComponentRefreshTooltip' | translate}}"
+          [matTooltipPosition]="'left'"
+          type="button"
+          (click)="doRefresh()"
+        >
+          <mat-icon>refresh</mat-icon>
+        </button>
+        <button mat-stroked-button (click)="viewHierarchy()">{{ 'ManageRolesComponentViewHierarchy' | translate }}</button>
+        <button mat-flat-button color="accent" *ngIf="currentFleetInfo.role.isAdmin" (click)="navigateToEditRole(ManageRoleAction.Add)">
+          {{ 'ManageRolesComponentAddRole' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="space-between center">
+      <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
+        <mat-form-field style="width: 300px">
+          <mat-label>{{ 'ManageRolesComponentSearchRole' | translate }}</mat-label>
+          <input
+            matInput
+            placeholder="{{ 'ManageRolesComponentSearchRolePlaceHolder' | translate }}"
+            [formControl]="searchInput"
+            maxlength="256"
+          />
+          <button mat-button *ngIf="searchInput?.value" matSuffix mat-icon-button (click)="clearInput()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <div>
+          <button mat-stroked-button (click)="onSearch()">{{ 'ManageRolesComponentSearch' | translate }}</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table mat-table [dataSource]="dataSource" class="role-list-table">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>{{ 'ManageRolesComponentRole' | translate }}</th>
+          <td mat-cell *matCellDef="let role">
+            <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+            <span *ngIf="!loader">{{ role?.roleName || '-' }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="level">
+          <th mat-header-cell *matHeaderCellDef>{{ 'ManageRolesComponentHierarchy' | translate }}</th>
+          <td mat-cell *matCellDef="let role">
+            <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+            <span *ngIf="!loader">{{ 'Level' | translate }} {{ role?.level || '-' }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="attributes">
+          <th mat-header-cell *matHeaderCellDef>{{ 'ManageRolesComponentAttributes' | translate }}</th>
+          <td mat-cell *matCellDef="let element">
+            <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+            <ng-container *ngIf="!loader">
+              <div fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="start center" *ngIf="!!element?.attributeIds?.length; else noTags">
+                <span *ngIf="element?.attributeIds[0]">{{ element?.attributeIds[0].attributeName }}</span>
+                <span *ngIf="element?.attributeIds?.length > 1" class="additional-tags">
+                  (+{{ element?.attributeIds?.length - 1 }} {{ element?.attributeIds?.length === 2 ? 'other' : 'others' }})
+                  <button mat-icon-button matTooltip="{{ 'OverviewTableComponentShowDetailsToolTip' | translate }}" [matMenuTriggerFor]="menu">
+                    <mat-icon>arrow_drop_down</mat-icon>
+                  </button>
+                  <mat-menu #menu="matMenu" class="custom-menu" xPosition="before">
+                    <ng-container *ngFor="let attr of element?.attributeIds; let i = index">
+                      <button *ngIf="i > 0" mat-menu-item>
+                        {{ attr?.attributeName }}
+                      </button>
+                    </ng-container>
+                  </mat-menu>
+                </span>
+              </div>
+              <ng-template #noTags>
+                <span>-</span>
+              </ng-template>
+            </ng-container>
+          </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="createdOn">
+          <th mat-header-cell *matHeaderCellDef>{{ 'ManageRolesComponentCreatedOn' | translate }}</th>
+          <td mat-cell *matCellDef="let role">
+            <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+            <span *ngIf="!loader">{{
+              role?.createdAt | dateConversion: (dataService._currentTimeZone | async):(dataService._currentDateFormat | async) || '-'
+            }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdBy">
+          <th mat-header-cell *matHeaderCellDef>{{ 'ManageRolesComponentCreatedBy' | translate }}</th>
+          <td mat-cell *matCellDef="let role">
+            <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+            <span *ngIf="!loader">{{ role?.createdBy?.name || role?.createdBy?.email || '-' }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="lastUpdatedOn">
+          <th mat-header-cell *matHeaderCellDef>{{ 'ManageRolesComponentUpdatedOn' | translate }}</th>
+          <td mat-cell *matCellDef="let role">
+            <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+            <span *ngIf="!loader">{{
+              (role?.updatedAt | dateConversion: (dataService._currentTimeZone | async):(dataService._currentDateFormat | async)) || '-'
+            }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="lastUpdatedBy">
+          <th mat-header-cell *matHeaderCellDef>{{ 'ManageRolesComponentUpdatedBy' | translate }}</th>
+          <td mat-cell *matCellDef="let role">
+            <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+            <span *ngIf="!loader">{{ role?.updatedBy?.name || role?.updatedBy?.email || '-' }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>{{ 'ManageRolesComponentStatus' | translate }}</th>
+          <td mat-cell *matCellDef="let role">
+            <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+            <ng-container *ngIf="!loader">
+              <mat-chip-list>
+                <mat-chip class="chip-success" *ngIf="role?.status === userRoleStatusEnum.Active">{{
+                  'ManageRolesComponentACTIVE' | translate
+                }}</mat-chip>
+                <mat-chip class="chip-error" *ngIf="role?.status === userRoleStatusEnum.Inactive">{{
+                  'ManageRolesComponentINACTIVE' | translate
+                }}</mat-chip>
+              </mat-chip-list>
+            </ng-container>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>{{ 'ManageRolesComponentActions' | translate }}</th>
+          <td mat-cell *matCellDef="let role">
+            <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+            <div *ngIf="!loader" fxLayout="row" fxLayoutGap="8px">
+              <ng-container *ngIf="currentFleetInfo.role.isAdmin; else viewRoleDetails">
+                <button
+                  mat-icon-button
+                  color="accent"
+                  *ngIf="!role.isAdmin; else viewRoleDetails"
+                  (click)="navigateToEditRole(ManageRoleAction.Edit, role)"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button [matMenuTriggerFor]="menu" color="accent">
+                  <mat-icon>more_horiz</mat-icon>
+                </button>
+              </ng-container>
+
+              <ng-template #viewRoleDetails>
+                <button
+                  mat-icon-button
+                  color="accent"
+                  matTooltip= "{{'ManageUserComponentViewRoleTooltip'| translate}}"
+                  matTooltipPosition="left"
+                  (click)="navigateToEditRole(ManageRoleAction.View, role)"
+                >
+                  <mat-icon>info_outline</mat-icon>
+                </button>
+              </ng-template>
+              <mat-menu #menu="matMenu" xPosition="before">
+                <button mat-menu-item (click)="navigateToEditRole(ManageRoleAction.Duplicate, role)">
+                  <mat-icon>difference</mat-icon>
+                  <span>{{ 'ManageRolesComponentDuplicateRole' | translate }}</span>
+                </button>
+
+                <button
+                  mat-menu-item
+                  *ngIf="role?.status === userRoleStatusEnum.Active; else activateRole"
+                  [disabled]="role.isAdmin"
+                  (click)="openConfirmationDialog(role, 'DEACTIVATE')"
+                >
+                  <mat-icon>person_off</mat-icon>
+                  <span>{{ 'ManageRolesComponentDeactivateRole' | translate }}</span>
+                </button>
+
+                <ng-template #activateRole>
+                  <button mat-menu-item [disabled]="role.isAdmin" (click)="openConfirmationDialog(role, 'ACTIVATE')">
+                    <mat-icon>person_on</mat-icon>
+                    <span>{{ 'ManageRolesComponentActivateRole' | translate }}</span>
+                  </button>
+                </ng-template>
+
+                <button mat-menu-item [disabled]="role.isAdmin" (click)="openConfirmationDialog(role, 'DELETE')">
+                  <mat-icon>delete</mat-icon>
+                  <span>{{ 'ManageRolesComponentDeleteRole' | translate }}</span>
+                </button>
+              </mat-menu>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: tableColumns"></tr>
+      </table>
+
+      <app-alert *ngIf="!dataSource?.data?.length && !loader" [alertType]="'info'" [insideTable]="true">
+        {{ 'ManageRolesComponentNoRolesFound' | translate }}
+      </app-alert>
+
+      <mat-paginator #paginator="matPaginator" [pageSize]="pageSize" [length]="totalRoles" showFirstLastButtons></mat-paginator>
+    </div>
+  </mat-card>
+</div>

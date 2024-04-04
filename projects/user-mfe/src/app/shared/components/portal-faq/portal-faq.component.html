@@ -1,0 +1,22 @@
+<div class="faq-content skeleton-loader" fxLayout="column" fxLayoutGap="24px" *ngIf="loader">
+  <div fxLayout="column" fxLayoutGap="24px">
+    <div class="skeleton-line"></div>
+    <div class="skeleton-card xs"></div>
+  </div>
+
+  <div fxLayout="column" fxLayoutGap="24px">
+    <div class="skeleton-line"></div>
+    <div class="skeleton-card sm"></div>
+  </div>
+</div>
+
+<div class="faq-content" *ngIf="!loader">
+  <h3 class="title" style="padding-top: 0">{{ faqDetails?.heading }}</h3>
+
+  <p class="sub-text" *ngFor="let paragraph of faqDetails?.description">{{ paragraph }}</p>
+
+  <app-alert *ngIf="!loader && !faqDetails" [alertType]="'info'" [removeMargin]="true">
+    {{ 'noFaqDetails' | translate }}
+  </app-alert>
+</div>
+

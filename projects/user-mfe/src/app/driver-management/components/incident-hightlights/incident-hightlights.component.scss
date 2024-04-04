@@ -1,0 +1,9 @@
+@import './colors';
+
+.incident-highlight {
+  padding: 8px;
+  &.selected-event {
+    border: 4px solid $light-primary;
+    border-radius: 4px;
+  }
+}

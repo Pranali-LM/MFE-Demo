@@ -1,0 +1,81 @@
+@import './variables';
+@import './fonts';
+
+.details {
+  margin-bottom: 8px;
+  align-items: center;
+  max-height: 10%;
+  max-width: 1280px !important;
+
+  .card-title {
+    font-size: $heading-font-size;
+    font-weight: $medium-font-weight;
+    padding: 0 !important;
+  }
+
+  .subtitle {
+    font-size: $heading-font-size;
+    .seperator {
+      margin: 0 8px;
+    }
+  }
+}
+
+.live-video-section {
+  width: 640px;
+  height: 360px;
+  .loading-shade {
+    position: relative;
+    height: 100%;
+  }
+
+  .live-video {
+    width: 100%;
+    height: 100%;
+    background-color: black;
+  }
+}
+
+.livestream-form {
+  margin-bottom: 0 !important;
+}
+
+.session-expired-alert {
+  width: 200px;
+  height: 100px;
+  .message {
+    font-size: $heading-font-size;
+    font-weight: $medium-font-weight;
+  }
+}
+
+.user-confirmation-shade {
+  position: relative;
+  background: transparent;
+  .loading-shade {
+    position: absolute;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+  }
+  .user-confirmation-card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 250px;
+    .mat-card-content {
+      font-size: $heading-font-size;
+      font-weight: $medium-font-weight;
+    }
+  }
+}
+
+.drag-handle {
+  cursor: move;
+}
+
+::ng-deep app-alert {
+  .alert-message {
+    width: 100%;
+  }
+}

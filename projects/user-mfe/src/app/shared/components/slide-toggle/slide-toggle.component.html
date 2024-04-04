@@ -1,0 +1,10 @@
+<div fxLayout="column" fxLayoutGap="8px" [formGroup]="form">
+  <mat-label class="placeholder" *ngIf="config?.placeholder" fxLayout="row" fxLayoutAlign="start center">
+    <span>{{ config?.placeholder | translate }}</span>
+    <span *ngIf="config?.tooltipText">&nbsp;</span>
+    <mat-icon *ngIf="config?.tooltipText" [matTooltip]="config?.tooltipText | translate" matTooltipPosition="below" class="icon-sm"
+      >info_outline</mat-icon
+    >
+  </mat-label>
+  <mat-slide-toggle disableRipple [formControlName]="config?.key" class="toggle" aria-label="ON/OFF"></mat-slide-toggle>
+</div>

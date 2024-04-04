@@ -1,0 +1,286 @@
+<div class="container">
+  <mat-card fxLayout="column" fxLayoutGap="24px">
+    <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="24px">
+      <h3 class="title">{{ 'UserListComponentTitle' | translate }}
+        <button
+        mat-icon-button
+        class="btn-faq"
+        (click)="dataService?.openFaq('ManageUsers')"
+        matTooltip="{{ 'viewInformation' | translate }}"
+        matTooltipPosition="right"
+      >
+        <mat-icon>info_outline</mat-icon>
+      </button>
+      </h3>
+
+      <div fxLayout="row" fxLayoutGap="16px">
+        <button
+          *appCheckPermissions="['read:fleet_managers']"
+          mat-icon-button
+          color="accent"
+          class="btn-icon"
+          matTooltip="{{ 'UserListv2ComponentRefreshTooltip' | translate }}"
+          [matTooltipPosition]="'left'"
+          type="button"
+          (click)="doRefresh()"
+        >
+          <mat-icon>refresh</mat-icon>
+        </button>
+
+        <button
+          mat-flat-button
+          color="accent"
+          (click)="navigateToEditUser(ManageUserAction.Add)"
+          *appCheckPermissions="['create:fleet_managers']"
+        >
+          {{ 'UserListComponentAddUser' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="space-between center" *appCheckPermissions="['read:fleet_managers']">
+      <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
+        <mat-form-field style="width: 300px">
+          <mat-label>{{ 'UserListComponentSearchUser' | translate }}</mat-label>
+          <input
+            matInput
+            placeholder="{{ 'UserListComponentSearchUserPlaceholder' | translate }}"
+            [formControl]="searchInput"
+            maxlength="256"
+          />
+          <button mat-button *ngIf="searchInput?.value" matSuffix mat-icon-button (click)="clearInput()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+        <div>
+          <button mat-stroked-button (click)="onSearch()">{{ 'UserListComponentSearch' | translate }}</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap" *appCheckPermissions="['read:fleet_managers']">
+      <table mat-table [dataSource]="userDataSource" class="user-list-table">
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>{{ 'driverManagementEmail' | translate }}</th>
+          <td mat-cell *matCellDef="let user">
+            <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+            <span *ngIf="!loader">{{ user?.email || '-' }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>{{ 'userMangementName' | translate }}</th>
+          <td mat-cell *matCellDef="let user">
+            <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+            <span *ngIf="!loader">{{ user?.name || '-' }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef>{{ 'Role' | translate }}</th>
+          <td mat-cell *matCellDef="let user">
+            <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+            <span *ngIf="!loader">
+              <div fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="start center" *ngIf="user?.fleets && user?.fleets[0]; else noRole">
+                {{ user?.fleets[0]?.role?.roleName || '-' }}
+              </div>
+              <ng-template #noTags>
+                <span>-</span>
+              </ng-template></span
+            >
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="accountStatus">
+          <th mat-header-cell *matHeaderCellDef>
+            <span matTooltip="{{ 'userMangementStatusToolTip' | translate }}" matTooltipPosition="right"
+              >{{ 'tripListComponentStatus' | translate }} <mat-icon class="info-icon">info_outline</mat-icon>
+            </span>
+          </th>
+          <td mat-cell *matCellDef="let user">
+            <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+            <ng-container *ngIf="!loader">
+              <mat-chip-list [ngSwitch]="user?.status">
+                <mat-chip class="chip-success" *ngSwitchCase="UserStatus.Active">{{ 'userMangementActive' | translate }}</mat-chip>
+                <mat-chip class="chip-error" *ngSwitchCase="UserStatus.Inactive">{{ 'userMangementInactive' | translate }}</mat-chip>
+                <mat-chip class="chip-warn" *ngSwitchDefault>{{ 'userMangementPending' | translate }}</mat-chip>
+              </mat-chip-list>
+            </ng-container>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="tags" style="width: 50px">
+          <th mat-header-cell *matHeaderCellDef>{{ 'assetListComponentTags' | translate }}</th>
+          <td mat-cell *matCellDef="let user">
+            <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+            <ng-container *ngIf="!loader">
+              <div
+                fxLayout="row"
+                fxLayoutGap="8px"
+                fxLayoutAlign="start center"
+                *ngIf="user?.fleets && user?.fleets[0] && !!user?.fleets[0]?.userTags?.length; else noTags"
+              >
+                <mat-chip-list
+                  class="custom-chip"
+                  disableRipple
+                  [ngClass]="{
+                    'dark-theme': (dataService._currentTheme | async) === 'dark'
+                  }"
+                >
+                  <mat-chip *ngIf="user?.fleets[0]?.userTags[0]">{{ user?.fleets[0]?.userTags[0]?.tagName }}</mat-chip>
+                </mat-chip-list>
+                <span *ngIf="user?.fleets[0]?.userTags?.length > 1" class="additional-tags">
+                  (+{{ user?.fleets[0]?.userTags?.length - 1 }})
+                  <button
+                    mat-icon-button
+                    matTooltip="{{ 'OverviewTableComponentShowDetailsToolTip' | translate }}"
+                    [matMenuTriggerFor]="menu"
+                  >
+                    <mat-icon>arrow_drop_down</mat-icon>
+                  </button>
+                  <mat-menu #menu="matMenu" class="custom-menu" xPosition="before">
+                    <ng-container *ngFor="let tag of user?.fleets[0]?.userTags; let i = index">
+                      <button *ngIf="i > 0" mat-menu-item>
+                        {{ tag.tagName }}
+                      </button>
+                    </ng-container>
+                  </mat-menu>
+                </span>
+              </div>
+              <ng-template #noTags>
+                <span>-</span>
+              </ng-template>
+            </ng-container>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="creationDate">
+          <th mat-header-cell *matHeaderCellDef>{{ 'userMangementCreationDate' | translate }}</th>
+          <td mat-cell *matCellDef="let user">
+            <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+            <span *ngIf="!loader">{{
+              user?.createdAt | dateConversion : (dataService._currentTimeZone | async) : (dataService._currentDateFormat | async) || '-'
+            }}</span>
+          </td>
+        </ng-container>
+
+        <!-- <ng-container matColumnDef="lastUpdatedOn">
+          <th mat-header-cell *matHeaderCellDef>{{ 'UserListComponentUpdatedOn' | translate }}</th>
+          <td mat-cell *matCellDef="let user">
+            <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+            <span *ngIf="!loader">{{
+              (user?.updatedAt | dateConversion : (dataService._currentTimeZone | async) : (dataService._currentDateFormat | async)) || '-'
+            }}</span>
+          </td>
+        </ng-container> -->
+
+        <ng-container matColumnDef="lastUpdatedBy">
+          <th mat-header-cell *matHeaderCellDef>{{ 'UserListComponentUpdatedBy' | translate }}</th>
+          <td mat-cell *matCellDef="let user">
+            <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+            <span *ngIf="!loader">{{ user?.updatedBy?.name || user?.updatedBy?.email || '-' }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>{{ 'userMangementActions' | translate }}</th>
+          <td mat-cell *matCellDef="let user">
+            <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+            <div *ngIf="!loader">
+              <button
+                *appCheckPermissions="['update:fleet_managers']"
+                [disabled]="userInfo?.userId === user?.userId || user?.fleets[0]?.role?.level < currentFleetInfo?.role?.level"
+                class="btn-action"
+                color="accent"
+                mat-icon-button
+                matTooltip="{{ 'userMangementEditUserTooltip' | translate }}"
+                (click)="navigateToEditUser(ManageUserAction.Edit, user)"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+
+              <button
+                mat-icon-button
+                [matMenuTriggerFor]="menu"
+                color="accent"
+                [disabled]="userInfo?.userId === user?.userId || user?.fleets[0]?.role?.level < currentFleetInfo?.role?.level"
+              >
+                <mat-icon>more_horiz</mat-icon>
+              </button>
+
+              <mat-menu #menu="matMenu" xPosition="before">
+                <ng-container *ngIf="user?.status === UserStatus.Pending">
+                  <button
+                    mat-menu-item
+                    matTooltip="{{ 'userMangementResendTemporaryPassword' | translate }}"
+                    (click)="resendTempPassword(user)"
+                  >
+                    <mat-icon>forward_to_inbox</mat-icon>
+                    <span>{{ 'usersResendTempPassword' | translate }}</span>
+                  </button>
+                </ng-container>
+
+                <ng-container *appCheckPermissions="['admin:fleet_managers']">
+                  <button
+                    color="accent"
+                    mat-menu-item
+                    matTooltip="{{ 'usersManageSecurity' | translate }}"
+                    (click)="openManageSecurity(user)"
+                    *ngIf="user?.mfaEnabled === 'true'"
+                  >
+                    <mat-icon>security</mat-icon>
+                    <span>{{ 'usersManageSecurity' | translate }}</span>
+                  </button>
+                </ng-container>
+
+                <ng-container *appCheckPermissions="['delete:fleet_managers']">
+                  <button
+                    *ngIf="user?.status === UserStatus.Active; else activateUser"
+                    mat-menu-item
+                    mat-menu-item
+                    matTooltip="{{ 'UserListComponentDeactivateUserToolTip' | translate }}"
+                    (click)="openConfirmationDialog(user, 'DEACTIVATE')"
+                  >
+                    <mat-icon>person_off</mat-icon>
+                    <span>{{ 'ManageUserComponentDeactivateUser' | translate }}</span>
+                  </button>
+                </ng-container>
+
+                <ng-template #activateUser>
+                  <button mat-menu-item [disabled]="user?.status === UserStatus.Pending" (click)="openConfirmationDialog(user, 'ACTIVATE')">
+                    <mat-icon>person_on</mat-icon>
+                    <span>{{ 'ManageUserComponentActivateUser' | translate }}</span>
+                  </button>
+                </ng-template>
+
+                <button
+                  *appCheckPermissions="['delete:fleet_managers']"
+                  mat-menu-item
+                  matTooltip="{{ 'userMangementDeleteUserTooltip' | translate }}"
+                  (click)="openConfirmationDialog(user, 'DELETE')"
+                  [disabled]="user?.status === 'DELETED'"
+                >
+                  <mat-icon>delete</mat-icon>
+                  <span>{{ 'userMangementDeleteUserTooltip' | translate }}</span>
+                </button>
+              </mat-menu>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="userTableColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: userTableColumns"></tr>
+      </table>
+
+      <app-alert *ngIf="!userDataSource?.data?.length && !loader" [alertType]="'info'" [insideTable]="true">
+        {{ 'userMangementNoFleetManagaersFound' | translate }}
+      </app-alert>
+
+      <mat-paginator #paginator="matPaginator" [pageSize]="pageSize" [length]="totalUsers" showFirstLastButtons></mat-paginator>
+    </div>
+
+    <app-alert *appCheckPermissions="['read:fleet_managers']; showError: true" [alertType]="'info'" [removeMargin]="true">
+      <span>{{ 'userMangementNoPermission' | translate }}</span>
+    </app-alert>
+  </mat-card>
+</div>

@@ -1,0 +1,101 @@
+<div
+  class="page-header"
+  fxLayout="row"
+  fxLayout.xs="column"
+  fxLayout.sm="column"
+  fxLayout.sm="column"
+  fxLayoutAlign="start start"
+  fxLayoutAlign.sm="start start"
+  fxLayoutAlign.md="start start"
+  fxLayoutAlign.xs="stretch stretch"
+  fxLayoutGap="24px"
+>
+  <form class="trip-query-form" [formGroup]="form" novalidate>
+    <div
+      fxLayout="column"
+      fxLayout.xl="row"
+      fxLayout.lg="row"
+      fxLayoutGap="8px"
+      fxLayoutGap.xl="24px"
+      fxLayoutAlign.xl="start center"
+      fxLayoutGap.lg="24px"
+      fxLayoutAlign.lg="start center"
+    >
+      <div fxLayout="row" fxLayout.sm="row wrap" fxLayout.xs="column" fxLayoutGap="16px">
+        <mat-form-field>
+          <mat-label>{{ 'durationComponentSelectDateRange' | translate }}</mat-label>
+          <mat-date-range-input [rangePicker]="picker" [min]="minStartDate" [max]="maxEndDate">
+            <input
+              matStartDate
+              placeholder="{{ 'durationComponentStartDate' | translate }}"
+              readonly
+              formControlName="startDate"
+              [appRefreshDatepicker]="form.get('startDate')"
+              (dateChange)="onStartDateChange()"
+            />
+            <input
+              matEndDate
+              placeholder="{{ 'durationComponentEndDate' | translate }}"
+              readonly
+              formControlName="endDate"
+              [appRefreshDatepicker]="form.get('endDate')"
+            />
+          </mat-date-range-input>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker [touchUi]="isTouchDevice" #picker> </mat-date-range-picker>
+        </mat-form-field>
+
+        <mat-form-field style="width: 120px">
+          <mat-label>{{ 'durationComponentFilterType' | translate }}</mat-label>
+          <mat-select disableOptionCentering formControlName="filterType">
+            <ng-container *ngFor="let filter of filterTypeList">
+              <mat-option [value]="filter?.value">{{ filter?.label | translate }}</mat-option>
+            </ng-container>
+          </mat-select>
+        </mat-form-field>
+
+        <app-driver-auto-complete
+          *ngIf="form.get('filterType').value === 'driverFilter'"
+          placeholder="{{ 'durationComponentDriverIdName' | translate }}"
+          [inputValue]="form?.value?.driverId | translate"
+          (driverSelection)="driverChanged($event)"
+        >
+        </app-driver-auto-complete>
+
+        <app-asset-autocomplete
+          *ngIf="form.get('filterType').value === 'assetFilter'"
+          placeholder="{{ 'durationComponentAssetId' | translate }}"
+          (assetSelection)="assetChanged($event)"
+          [inputValue]="form?.value?.assetId"
+        >
+        </app-asset-autocomplete>
+
+        <!-- tagging filter block -->
+        <app-tagging-filter-v2
+          (selectedTags)="selectedTags($event)"
+          [entityType]="entityType"
+          [dropDownType]="'filter'"
+          [assignedTagList]="tripTags"
+        ></app-tagging-filter-v2>
+        <!-- tagging filter block -->
+
+        <div
+          fxLayout="row"
+          fxLayoutGap="8px"
+          fxLayoutAlign="start center"
+          matTooltip="{{ 'durationComponentInsignificantTripTooltip' | translate }}"
+          *ngIf="currentTabIndex === 0"
+        >
+          <mat-checkbox formControlName="includeInsignificantTrips">{{ 'durationComponentInsignificantTrip' | translate }}</mat-checkbox>
+          <mat-icon class="info-icon">info_outline</mat-icon>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" mat-flat-button color="accent" [disabled]="form.invalid" (click)="onSearch()">
+          {{ 'durationComponentSearch' | translate }}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,85 @@
+<section fxLayout="column" fxLayoutGap="24px">
+  <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="16px">
+    <h3 class="card-title">{{ 'annBannerDetails' | translate }}</h3>
+    <span tabindex="0"></span>
+    <button mat-icon-button mat-dialog-close="" class="btn-close" matTooltip="{{'TaggingComponentCloseTooltip'| translate}}" [matTooltipPosition]="'left'">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <span>{{ 'annBannerSubText1' | translate }}</span>
+
+  <mat-dialog-content>
+    <div class="skeleton-loader" *ngIf="loader">
+      <div class="skeleton-card md" style="margin-top: 24px"></div>
+    </div>
+
+    <mat-accordion class="example-headers-align" *ngIf="!loader">
+      <mat-expansion-panel expanded="">
+        <mat-expansion-panel-header>
+          <mat-panel-description class="ann-question">{{ 'annBannerQ1' | translate }}</mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div fxLayout="column" fxLayoutGap="16px">
+          <span class="ann-answer">{{ 'annBannerA1a' | translate }} </span>
+          <span class="ann-answer">{{ 'annBannerA1b' | translate }}</span>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-description class="ann-question">{{ 'annBannerQ2' | translate }}</mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div fxLayout="column" fxLayoutGap="16px">
+          <span class="ann-answer">{{ 'annBannerA2a' | translate }} </span>
+          <span class="ann-answer">{{ 'annBannerA2b' | translate }} </span>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-description class="ann-question">{{ 'annBannerQ3' | translate }}</mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div fxLayout="column" fxLayoutGap="16px">
+          <span class="ann-answer">{{ 'annBannerA3a' | translate }} </span>
+
+          <span class="ann-answer">
+            <strong>{{ 'annBannerA3b' | translate }}</strong> {{ 'annBannerA3c' | translate }}
+          </span>
+
+          <span class="ann-answer">
+            <strong>{{ 'annBannerA3d' | translate }}</strong> {{ 'annBannerA3e' | translate }}
+          </span>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-description class="ann-question">{{ 'annBannerQ4' | translate }}</mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div fxLayout="column" fxLayoutGap="16px">
+          <span class="ann-answer">{{ 'annBannerA4a' | translate }} </span>
+
+          <span class="ann-answer">
+            <strong>{{ 'annBannerA4b' | translate }}</strong> {{ 'annBannerA4c' | translate }}
+          </span>
+
+          <span class="ann-answer">
+            <strong>{{ 'annBannerA4d' | translate }}</strong> {{ 'annBannerA4e' | translate }}
+          </span>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-description class="ann-question">{{ 'annBannerQ5' | translate }}</mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <span class="ann-answer">{{ 'annBannerA5a' | translate }}</span>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </mat-dialog-content>
+</section>

@@ -1,0 +1,50 @@
+<mat-card fxLayout="column" fxLayoutGap="16px">
+  <div fxLayout="row" fxLayoutAlign="start center" class="popup-header">
+    <h3 class="popup-header-title">
+      {{ 'liveassetPopupTripDetails' | translate }}
+    </h3>
+  </div>
+
+  <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
+    <ng-container *appCheckPermissions="['request:live_stream']">
+      <button
+        mat-icon-button
+        class="btn-icon"
+        *ngIf="device?.deviceId && device?.ongoing"
+        [disabled]="(device?.state | async) !== deviceState.Active"
+        (click)="requestLiveStreamAction(device)"
+        color="accent"
+        [title]="'liveViewComponentLiveStream' | translate"
+      >
+        <mat-icon>play_circle_outline</mat-icon>
+      </button>
+    </ng-container>
+    <button
+      mat-icon-button
+      class="btn-icon"
+      [disabled]="!device?.deviceId"
+      (click)="navigateToTripDetailsPage(device)"
+      color="accent"
+      [title]="'liveViewComponentTripDetails' | translate"
+    >
+      <mat-icon>pin_drop</mat-icon>
+    </button>
+  </div>
+
+  <div fxLayout="column" fxLayoutGap="4px">
+    <span class="popup-title">{{ 'liveassetPopupAssetId' | translate }}</span>
+    <span class="popup-text">{{ device?.asset?.assetName || device?.assetName || device?.assetId }}</span>
+  </div>
+
+  <div fxLayout="column" fxLayoutGap="4px">
+    <span class="popup-title">{{ 'liveassetPopupDriverId' | translate }}</span>
+    <span class="popup-text">{{ device?.driverId }}</span>
+  </div>
+
+  <div fxLayout="column" fxLayoutGap="4px">
+    <span class="popup-title">{{ 'liveassetPopupLastUpdated' | translate }}</span>
+    <span class="popup-text">
+      {{ device.timestampUTC | dateConversion: timezone:dateFormat:device.timestamp }}
+    </span>
+  </div>
+</mat-card>

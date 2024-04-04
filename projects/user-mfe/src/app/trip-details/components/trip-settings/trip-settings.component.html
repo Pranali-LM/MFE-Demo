@@ -1,0 +1,29 @@
+<div class="trip-settings">
+  <button
+    matTooltip="{{ 'tripSettingTripFilter' | translate }}"
+    mat-icon-button
+    [matMenuTriggerFor]="events"
+    [matBadge]="selectedEventList?.length"
+    matBadgePosition="after"
+    matBadgeColor="primary"
+    [matBadgeHidden]="!selectedEventList?.length"
+  >
+    <mat-icon style="color: #ffffff">filter_alt</mat-icon>
+  </button>
+
+  <mat-menu #events="matMenu" class="custom-event-menu">
+    <button mat-menu-item role="menuitemcheckbox" *ngFor="let event of eventsConfig" (click)="selectEvent($event)">
+      <mat-checkbox (change)="checkEvent($event, event?.key)">
+        {{ event?.label | translate }}
+      </mat-checkbox>
+    </button>
+
+    <mat-divider></mat-divider>
+
+    <button mat-menu-item role="menuitemcheckbox" *ngFor="let event of otherEvents" (click)="selectEvent($event)">
+      <mat-checkbox (change)="checkEvent($event, event.key)">
+        {{ event.label | translate }}
+      </mat-checkbox>
+    </button>
+  </mat-menu>
+</div>

@@ -1,0 +1,44 @@
+<div fxLayout="column" class="landing-page">
+  <mat-toolbar class="header" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="24px">
+    <a routerLink="/" class="logo" fxLayout="row" fxLayoutAlign="center center">
+      <img
+        class="logo-image"
+        [src]="clientConfig?.landingPageDetails?.headerImage?.src"
+        [alt]="clientConfig?.logo?.alt"
+        [ngStyle]="{ width: clientConfig?.logo?.width, height: clientConfig?.logo?.height }"
+      />
+    </a>
+
+    <button class="btn-mobile" color="accent" mat-raised-button (click)="onSignIn()">SIGN IN</button>
+  </mat-toolbar>
+
+  <div class="content" [ngStyle]="{ 'background-image': 'url(' + clientConfig?.landingPageDetails?.backgroundImage?.src + ')' }">
+    <div class="content-text" fxLayout="column">
+      <img
+        class="brand-image"
+        *ngIf="clientConfig?.landingPageDetails?.brandImage?.src"
+        [src]="clientConfig?.landingPageDetails?.brandImage?.src"
+        [alt]="clientConfig?.logo?.alt"
+      />
+
+      <div class="tag-line" *ngIf="clientConfig?.landingPageDetails?.tagline">{{ clientConfig?.landingPageDetails?.tagline }}</div>
+
+      <div fxLayout="column" fxLayoutAlign="start center">
+        <mat-form-field appearance="fill" *ngIf="showRegionSelection">
+          <mat-label>Select Region</mat-label>
+          <mat-select [formControl]="regionControl" required>
+            <mat-option *ngFor="let region of regions" [value]="region?.value">
+              <mat-divider *ngIf="region?.value === 'OTHER'"></mat-divider>
+              {{ region?.label }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="regionControl.hasError('required')">Please choose a region</mat-error>
+        </mat-form-field>
+
+        <button class="btn-action" color="accent" mat-raised-button (click)="onSignIn()">SIGN IN</button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template appFooterHost></ng-template>
+</div>

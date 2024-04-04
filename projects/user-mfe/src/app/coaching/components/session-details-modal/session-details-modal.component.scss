@@ -1,0 +1,25 @@
+@import './fonts';
+
+.session-details {
+  .stats-card {
+    padding: 4px;
+    min-height: 64px;
+  }
+
+  .stats-card .card-title {
+    font-size: $body-font-size;
+    font-weight: $normal-font-weight;
+    display: block;
+    position: relative;
+    margin-bottom: 8px;
+  }
+
+  .stats-card .card-text {
+    font-size: $body-font-size;
+    font-weight: $medium-font-weight;
+    display: block;
+    position: relative;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

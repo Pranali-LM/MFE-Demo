@@ -1,0 +1,43 @@
+<div fxLayout="column" fxLayoutGap="24px">
+  <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="24px" fxLayoutAlign="space-between center" fxLayoutAlign.xs="start stretch">
+    <h3 class="title card-title">
+      {{ 'eventGraphIncidentTrend' | translate }}
+      <button
+        mat-icon-button
+        class="btn-faq"
+        (click)="dataService?.openFaq('incidentTrend')"
+        matTooltip="{{ 'viewInformation' | translate }}"
+        matTooltipPosition="right"
+      >
+        <mat-icon>info_outline</mat-icon>
+      </button>
+    </h3>
+
+    <mat-form-field class="select-box">
+      <mat-label>{{ 'eventGraphSelectIncidents' | translate }}</mat-label>
+      <mat-select disableOptionCentering [formControl]="selectedEventType" multiple>
+        <mat-option *ngFor="let event of eventsConfig" [value]="event?.label">
+          {{ event?.label | translate }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="skeleton-loader" *ngIf="loader">
+    <div class="skeleton-card md"></div>
+  </div>
+
+  <div class="chart-area" fxLayout="column" fxLayoutGap="16px">
+    <div [ngClass]="!loader && data?.length ? 'chart-container lg' : ''">
+      <canvas id="incidentTrendChart" [ngClass]="!loader && data?.length ? 'd-block' : 'd-none'"></canvas>
+    </div>
+
+    <mat-checkbox *ngIf="hasInsignificantDistance" [formControl]="isSuppressed" class="single-checkbox">
+      {{ 'eventGraphShowAllPoints' | translate }}
+    </mat-checkbox>
+  </div>
+
+  <app-alert *ngIf="data?.length === 0 && !loader" [alertType]="'info'">
+    {{ 'eventGraphNoIncidentGraph' | translate }}
+  </app-alert>
+</div>

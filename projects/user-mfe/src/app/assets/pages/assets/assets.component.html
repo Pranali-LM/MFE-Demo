@@ -1,0 +1,56 @@
+<app-side-navigation>
+  <mat-tab-group
+    class="page-tabs"
+    #tabGroup
+    (selectedTabChange)="onPageTabChange($event)"
+    [@.disabled]="true"
+    [selectedIndex]="currentTabIndex"
+  >
+    <mat-tab *appCheckUiConfigs="['assets_page:overview_tab']">
+      <ng-template mat-tab-label>
+        <label
+          matTooltip="{{ 'assetsComponentOverviewTab' | translate | titlecase }} &#013;&#010;[{{
+            currentOS === 'mac' ? 'Command' : 'Ctrl'
+          }} + Shift + <]"
+          matTooltipClass="multiline-tooltip"
+          >{{ 'assetsComponentOverviewTab' | translate | uppercase }}</label
+        >
+      </ng-template>
+      <div class="container">
+        <app-asset-list [fleetId]="fleetId"></app-asset-list>
+      </div>
+    </mat-tab>
+
+    <mat-tab *appCheckUiConfigs="['assets_page:manage_assets_tab']">
+      <ng-template mat-tab-label>
+        <label
+          matTooltip="{{ 'assetsComponentManagerAssetsTab' | translate | titlecase }} &#013;&#010;[{{
+            currentOS === 'mac' ? 'Command' : 'Ctrl'
+          }} + Shift + >]"
+          matTooltipClass="multiline-tooltip"
+          >{{ 'assetsComponentManagerAssetsTab' | translate | uppercase }}</label
+        >
+      </ng-template>
+
+      <div class="container" fxLayout="row" fxLayout.sm="column" fxLayoutGap="24px">
+        <mat-card fxFlex.xl="33" fxFlex.lg="33"><app-asset-upload></app-asset-upload></mat-card>
+        <mat-card fxFlex.xl="33" fxFlex.lg="33"><app-batch-provision></app-batch-provision></mat-card>
+      </div>
+    </mat-tab>
+
+    <mat-tab *appCheckUiConfigs="['assets_page:devices_tab']">
+      <ng-template mat-tab-label>
+        <label
+          matTooltip="{{ 'assetsComponentDevicesTab' | translate | titlecase }} &#013;&#010;[{{
+            currentOS === 'mac' ? 'Command' : 'Ctrl'
+          }} + Shift + ?]"
+          matTooltipClass="multiline-tooltip"
+          >{{ 'assetsComponentDevicesTab' | translate | uppercase }}</label
+        >
+      </ng-template>
+      <div class="container">
+        <app-device-list [fleetId]="fleetId"></app-device-list>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</app-side-navigation>

@@ -1,0 +1,48 @@
+<div
+  fxLayout="column"
+  fxLayoutGap="16px"
+  class="feature-announcement-container"
+  [ngClass]="(dataService?._currentTheme | async) === 'dark' ? 'dark-theme' : ''"
+>
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
+      <h3 class="title">{{ 'featueAnnouncementTitle' | translate }}</h3>
+      <!-- <mat-chip-list
+        ><mat-chip disableRipple>{{ portalReleaseVersion }}</mat-chip></mat-chip-list
+      > -->
+    </div>
+    <span tabindex="0"></span>
+    <button
+      mat-icon-button
+      mat-dialog-close
+      class="btn-close"
+      matTooltip="{{ 'featueAnnouncementCloseModal' | translate }}"
+      [matTooltipPosition]="'left'"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <ng-container *ngFor="let feature of featureListObservable | async">
+    <div class="feature-img-container">
+      <img class="feature-img" [src]="feature?.featureImage" />
+    </div>
+    <div class="feature-description">
+      <h4 class="feature-title">{{ feature?.featureName | translate }}</h4>
+      <ul class="description-list">
+        <ng-container *ngFor="let item of feature.featureDescriptionList">
+          <li class="feature-desc sub-text">{{ item?.description | translate }}</li>
+        </ng-container>
+      </ul>
+    </div>
+  </ng-container>
+
+  <mat-paginator
+    fxShow="featureListObservable?.length > 1"
+    class="custom-paginator"
+    hidePageSize
+    [showFirstLastButtons]="false"
+    #paginator
+    pageSize="1"
+  ></mat-paginator>
+</div>

@@ -1,0 +1,103 @@
+<div fxLayout="column" fxLayoutGap="24px">
+   <div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center" fxLayoutAlign.xs="start start">
+      <h3 class="title card-title"></h3>
+      <mat-form-field appearance="standard">
+         <mat-label>{{'TaggingComponentTaggingOverviewFilter' | translate}}</mat-label>
+         <mat-select disableOptionCentering [formControl]="selectedEventType">
+            <ng-container *ngFor="let option of optionList">
+               <mat-option [value]="option">{{ option |translate }}</mat-option>
+            </ng-container>
+         </mat-select>
+      </mat-form-field>
+   </div>
+
+   <mat-card fxLayout="column" fxLayoutGap="24px" *ngIf="selectedOption === 'Overview'">
+      <div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center" fxLayoutAlign.xs="start start">
+         <h3 class="title card-title">
+            {{ "TaggingComponentOverview" | translate}}
+            <button
+               mat-icon-button
+               class="btn-faq"
+               (click)="dataService?.openFaq('TaggingOverview')"
+               matTooltip="{{ 'viewInformation' | translate }}"
+               matTooltipPosition="right"
+            >
+               <mat-icon>info_outline</mat-icon>
+            </button>
+         </h3>
+         <div fxLayout="row" fxLayoutAlign="end center" fxLayout.xs="column" fxLayoutAlign.xs="start start"
+            fxLayoutGap="24px">
+            <button mat-icon-button color="accent" class="btn-icon" [loading]="getAttributesLoader"
+               (click)="onRefreshOverview()" matTooltip="{{'TaggingComponentRefreshTooltip' | translate}}" [matTooltipPosition]="'left'">
+               <mat-icon>refresh</mat-icon>
+            </button>
+         </div>
+      </div>
+      <app-overview-table [attributeList]="attributeList" [loader]="getAttributesLoader"
+         [totalCount]="totalAttributesCount" [noOverviewDetailsFound]="noOverviewDetailsFound"
+         (pageChange)="onOverviewPageChange($event)">
+      </app-overview-table>
+   </mat-card>
+
+   <mat-card fxLayout="column" fxLayoutGap="24px" *ngIf="selectedOption === 'Attributes'">
+      <div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center" fxLayoutAlign.xs="start start">
+         <h3 class="title card-title">
+            {{ "TaggingComponentAttributes" | translate }}
+            <button
+               mat-icon-button
+               class="btn-faq"
+               (click)="dataService?.openFaq('AttributeList')"
+               matTooltip="{{ 'viewInformation' | translate }}"
+               matTooltipPosition="right"
+            >
+               <mat-icon>info_outline</mat-icon>
+            </button>
+         </h3>
+         <div class="event-selector" fxLayoutGap="24px">
+            <button mat-icon-button color="accent" class="btn-icon" [loading]="getAttributesLoader"
+               (click)="onRefreshOverview()" matTooltip="Refresh" [matTooltipPosition]="'left'">
+               <mat-icon>refresh</mat-icon>
+            </button>
+            <button mat-flat-button color="accent" (click)="addAttribute('add')" *appCheckPermissions="['update:fleet_config']">{{"AttributeTableAddAttributes" |
+               translate}}</button>
+         </div>
+      </div>
+      <app-attribute-table [attributeList]="attributeList" [loader]="getAttributesLoader"
+         [totalCount]="totalAttributesCount" (pageChange)="onOverviewPageChange($event)"
+         (editAttributeName)="addAttribute('edit', $event)" 
+         (getAttributes)="getAttributes()">
+      </app-attribute-table>
+   </mat-card>
+
+   <mat-card fxLayout="column" fxLayoutGap="24px" *ngIf="selectedOption === 'Tags'">
+      <app-tags-table [attributeList]="tagList">
+      </app-tags-table>
+   </mat-card>
+
+   <mat-card fxLayout="column" fxLayoutGap="24px" *ngIf="selectedOption === 'Entities'">
+      <!-- <div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center" fxLayoutAlign.xs="start start">
+         <h3 class="title card-title">
+            {{ "TaggingComponentEntities" |translate}}
+         </h3>
+      </div> -->
+      <app-entity-table [fleetId]="fleetId" [attributeList]="attributeList"
+         (pageChange)="onEntityListPageChange($event)" (editEntityAssignment)="editEntityAssignment($event)"
+         (removeEntity)="removeEntity($event)">
+      </app-entity-table>
+   </mat-card>
+</div>
+
+<button mat-fab color="accent" class="btn-fab" [matMenuTriggerFor]="menu" #trigger="matMenuTrigger"
+   matTooltip="{{'TaggingHelpToolTip'|translate}}" matTooltipPosition="left">
+   <mat-icon *ngIf="!trigger?.menuOpen">help_outline</mat-icon>
+   <mat-icon *ngIf="trigger?.menuOpen">close</mat-icon>
+</button>
+
+<mat-menu #menu="matMenu" class="fab-menu" xPosition="before" yPosition="above">
+   <button mat-menu-item
+      (click)="openTaggingFaqs()"><mat-icon>help</mat-icon><span>{{"TaggingHelpFAQs"|translate}}</span></button>
+   <button mat-menu-item
+      (click)="openTaggingExamples()"><mat-icon>description</mat-icon><span>{{"TaggingHelpTaggingExamples"|translate}}</span></button>
+   <button mat-menu-item
+      (click)="openTagsOnboarding()"><mat-icon>bolt</mat-icon><span>{{"TaggingHelpGetStarted"|translate}}</span></button>
+</mat-menu>

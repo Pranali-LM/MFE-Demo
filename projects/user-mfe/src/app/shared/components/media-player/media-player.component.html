@@ -1,0 +1,23 @@
+<div mat-dialog-content class="media-player-wrap" [ngClass]="{ 'not-playable': !isPlayable, 'image-bg': isDriverImage }">
+  <ng-container *ngIf="image; else videoTemplate">
+    <img class="incident-image" [ngClass]="{ 'driver-image': isDriverImage }" [src]="image" />
+  </ng-container>
+
+  <ng-template #videoTemplate>
+    <ng-container *ngIf="video && isPlayable; else noVideo">
+      <video class="incident-video" controls autoplay [muted]="'muted'">
+        <source [src]="video" type="video/mp4" (error)="onVideoPlaybackError()" />
+        {{ 'mediaPlayerBrowserNotSupported' | translate }}
+      </video>
+    </ng-container>
+  </ng-template>
+
+  <ng-template #noVideo>
+    <ng-container *ngIf="video || image; else noMedia">
+      <img class="incident-image" alt="{{ 'mediaPlayerPending' | translate }}" src="/assets/common/media-upload-pending.png" />
+    </ng-container>
+    <ng-template #noMedia>
+      <img class="incident-image" alt="{{ 'mediaPlayerNotAvailable' | translate }}" src="/assets/common/no-media-white.png" />
+    </ng-template>
+  </ng-template>
+</div>

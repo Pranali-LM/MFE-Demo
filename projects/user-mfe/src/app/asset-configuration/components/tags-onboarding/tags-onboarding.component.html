@@ -1,0 +1,223 @@
+<div
+  fxLayout="column"
+  fxLayoutGap="24px"
+  [ngClass]="{
+    'dark-theme': (dataService._currentTheme | async) === 'dark'
+  }"
+>
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <h3 class="card-title">{{ 'TaggingOnBoardingComponentTitle' | translate }}</h3>
+
+    <button mat-icon-button class="btn-close" matTooltip="{{'TaggingComponentCloseTooltip'| translate}}" matTooltipPosition="left" mat-dialog-close>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <ng-container *ngIf="!startTaggingOnboarding">
+    <div fxLayout="column" fxLayoutGap="64px">
+      <div fxLayout="column" fxLayoutGap="24px">
+        <span class="text-content">{{ 'TaggingOnBoardingComponentDescription1' | translate }} </span>
+
+        <span class="text-content">{{ 'TaggingOnBoardingComponentDescription2' | translate }} </span>
+
+        <span class="text-content">{{ 'TaggingOnBoardingComponentDescription3' | translate }} </span>
+      </div>
+
+      <div fxFlexAlign="end" fxLayout="row" fxLayoutGap="16px">
+        <button mat-stroked-button mat-dialog-close>{{ 'TaggingOnBoardingComponentSKIP' | translate }}</button>
+        <button mat-flat-button color="accent" (click)="onStartOnboarding()">
+          {{ 'TaggingOnBoardingComponentGETSTARTED' | translate }}
+        </button>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="startTaggingOnboarding">
+    <form>
+      <mat-stepper class="custom-stepper" linear #stepper [@.disabled]="true">
+        <mat-step>
+          <ng-template matStepLabel>{{ 'TaggingOnBoardingComponentAddAttributes' | translate }}</ng-template>
+          <div fxLayout="column" fxLayoutGap="24px" [formGroup]="form">
+            <span class="text-content"
+              >{{ 'TaggingOnBoardingComponentAddAttributesDescription1' | translate }}
+              <strong>{{ 'TaggingOnBoardingComponentAddAttributesDescription2' | translate }}</strong>
+              {{ 'TaggingOnBoardingComponentAddAttributesDescription3' | translate }}
+              <strong>{{ 'TaggingOnBoardingComponentAddAttributesDescription4' | translate }}</strong
+              >{{ 'TaggingOnBoardingComponentAddAttributesDescription5' | translate }}
+              <strong>{{ 'TaggingOnBoardingComponentAddAttributesDescription6' | translate }}</strong>
+              {{ 'TaggingOnBoardingComponentAddAttributesDescription7' | translate }}
+            </span>
+
+            <span class="text-content"
+              >{{ 'TaggingOnBoardingComponentAddAttributesDescription8' | translate }}
+              <strong>{{ 'TaggingOnBoardingComponentAddAttributesDescription9' | translate }}</strong>
+              {{ 'TaggingOnBoardingComponentAddAttributesDescription10' | translate }}
+              <strong>{{ 'TaggingOnBoardingComponentAddAttributesDescription11' | translate }}</strong
+              >{{ 'TaggingOnBoardingComponentAddAttributesDescription12' | translate }}
+            </span>
+
+            <div fxLayout="row" fxLayoutGap="24px">
+              <mat-form-field>
+                <mat-label>{{ 'AddAttributeSelectType' | translate }}</mat-label>
+                <mat-select disableOptionCentering formControlName="attributeType">
+                  <mat-option *ngFor="let types of allowedTypes" [value]="types.value">{{ types.Label }}</mat-option>
+                </mat-select>
+                <mat-error *ngIf="form.get('attributeType').hasError('required')">{{
+                  'AddAttributeSelectTypeRequired' | translate
+                }}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field>
+                <mat-label>{{ 'AddAttributeDialogAddAttributeName' | translate }}</mat-label>
+                <input
+                  type="text"
+                  matInput
+                  formControlName="attributeName"
+                  minlength="3"
+                  placeholder="Eg. Location, Region etc."
+                  required
+                />
+                <mat-hint>{{ 'AddAttributeDialogMinimum3charectors' | translate }}</mat-hint>
+                <mat-error *ngIf="form.get('attributeName').hasError('required')"
+                  >{{ 'AddAttributeDialogAttributeNameError1' | translate }}
+                  <strong>{{ 'AddAttributeDialogAttributeNameError2' | translate }}</strong>
+                </mat-error>
+                <mat-error *ngIf="form.get('attributeName').hasError('pattern')">{{
+                  'AddAttributeAttributeNamePattern' | translate
+                }}</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div fxFlexAlign="end" fxLayout="row" fxLayoutGap="16px">
+              <button mat-stroked-button mat-dialog-close>{{ 'TaggingOnBoardingComponentSKIP' | translate }}</button>
+              <button mat-flat-button color="accent" (click)="attributeNext(stepper)">
+                {{ 'TaggingOnBoardingComponentNEXTSTEP' | translate }}
+              </button>
+            </div>
+          </div>
+        </mat-step>
+
+        <mat-step>
+          <ng-template matStepLabel>{{ 'TaggingOnBoardingComponentAddTags' | translate }}</ng-template>
+          <div fxLayout="column" fxLayoutGap="24px">
+            <span class="text-content">
+              {{ 'TaggingOnBoardingComponentAddTagsDescription1' | translate
+              }}<strong>{{ 'TaggingOnBoardingComponentAddTagsDescription2' | translate }}</strong>
+              {{ 'TaggingOnBoardingComponentAddTagsDescription3' | translate }}
+            </span>
+
+            <div>
+              <mat-form-field>
+                <mat-label>{{ 'TaggingOnBoardingComponentEnterTagName' | translate }}</mat-label>
+                <input type="text" matInput [formControl]="tagNameFormControl" minlength="3" placeholder="Eg. East, Texas etc." required />
+                <mat-hint>{{ 'AddAttributeDialogMinimum3charectors' | translate }}</mat-hint>
+                <mat-error *ngIf="tagNameFormControl.hasError('required')">
+                  {{ 'TaggingOnBoardingComponentAddtagsError1' | translate }}
+                  <strong>{{ 'TaggingOnBoardingComponentAddtagsError2' | translate }}</strong>
+                </mat-error>
+                <mat-error *ngIf="tagNameFormControl.hasError('pattern')">{{
+                  'TaggingOnBoardingComponentAddtagsPattern' | translate
+                }}</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div fxFlexAlign="end" fxLayout="row" fxLayoutGap="16px">
+              <button mat-flat-button color="accent" matStepperPrevious>{{ 'TaggingOnBoardingComponentPREVIOSSTEP' | translate }}</button>
+              <button mat-flat-button color="accent" (click)="tagNext(stepper)">
+                {{ 'TaggingOnBoardingComponentNEXTSTEP' | translate }}
+              </button>
+            </div>
+          </div>
+        </mat-step>
+        <mat-step fxLayout="column" fxLayoutGap="24px">
+          <ng-template matStepLabel>{{ 'TaggingOnBoardingComponentAttachEntities' | translate }}</ng-template>
+          <div fxLayout="column" fxLayoutGap="24px">
+            <span class="text-content"
+              >{{ 'TaggingOnBoardingComponentEntitiesDescription1' | translate }}
+              <strong>{{ 'TaggingOnBoardingComponentEntitiesDescription2' | translate }}</strong>
+              {{ 'TaggingOnBoardingComponentEntitiesDescription3' | translate }}
+              <strong>{{ 'TaggingOnBoardingComponentEntitiesDescription4' | translate }}</strong>
+              {{ 'TaggingOnBoardingComponentEntitiesDescription5' | translate }}
+              <strong>{{ 'TaggingOnBoardingComponentEntitiesDescription6' | translate }}</strong
+              >.
+            </span>
+
+            <div>
+              <mat-form-field>
+                <mat-label>{{ 'AddAttributeAttributeSelectEntity' | translate }}</mat-label>
+                <mat-select [formControl]="entityControl">
+                  <mat-option *ngFor="let types of enityList" [value]="types.entityName">{{ types.entityName | titlecase }}</mat-option>
+                </mat-select>
+                <mat-error *ngIf="entityControl.hasError('required')"> {{ 'AssignEntityDialogSelectEntitryError' | translate }} </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div fxFlexAlign="end" fxLayout="row" fxLayoutGap="16px">
+              <button mat-flat-button color="accent" matStepperPrevious>{{ 'TaggingOnBoardingComponentPREVIOSSTEP' | translate }}</button>
+              <button mat-flat-button color="accent" (click)="entityNext(stepper)">
+                {{ 'TaggingOnBoardingComponentNEXTSTEP' | translate }}
+              </button>
+            </div>
+          </div>
+        </mat-step>
+
+        <mat-step fxLayout="column" fxLayoutGap="24px">
+          <ng-template matStepLabel>{{ 'TaggingOnBoardingComponentComplete' | translate }}</ng-template>
+          <div fxLayout="column" fxLayoutGap="24px">
+            <span class="text-content">{{ 'TaggingOnBoardingComponentCompleteDescription' | translate }} </span>
+
+            <div class="table-wrap">
+              <table mat-table [dataSource]="dataSource">
+                <ng-container matColumnDef="attribute">
+                  <th mat-header-cell *matHeaderCellDef>{{ 'Attributes' | translate }}</th>
+                  <td mat-cell *matCellDef="let element">{{ element?.attributeName }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="type">
+                  <th mat-header-cell *matHeaderCellDef>{{ 'Type' | translate }}</th>
+                  <td mat-cell *matCellDef="let element">{{ element?.attributeType }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="tag">
+                  <th mat-header-cell *matHeaderCellDef>{{ 'Tags' | translate }}</th>
+                  <td mat-cell *matCellDef="let element">{{ element?.userTag }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="entity">
+                  <th mat-header-cell *matHeaderCellDef>{{ 'Entity' | translate }}</th>
+                  <td mat-cell *matCellDef="let element">{{ element?.entityName }}</td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+              </table>
+            </div>
+
+            <div fxFlexAlign="end" fxLayout="row" fxLayoutGap="16px">
+              <button mat-flat-button color="accent" matStepperPrevious [disabled]="backDisabled">
+                {{ 'TaggingOnBoardingComponentPREVIOSSTEP' | translate }}
+              </button>
+              <button mat-flat-button (click)="onClickDone()" color="accent" [loading]="addAttributeLoader" [disabled]="backDisabled">
+                {{ 'TaggingOnBoardingComponentSAVE' | translate }}
+              </button>
+            </div>
+            <app-alert [alertType]="'error'" [removeMargin]="true" *ngIf="isError"> {{ errorMessage | translate }} </app-alert>
+
+            <app-alert [alertType]="'success'" [removeMargin]="true" *ngIf="isSuccess">
+              <div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center" fxLayoutAlign.xs="start start">
+                <h5>
+                  {{ 'TaggingOnBoardingComponentSuccess' | translate }}
+                </h5>
+                <div fxLayout="row" fxLayoutAlign="end center" fxLayout.xs="column" fxLayoutAlign.xs="start start" fxLayoutGap="24px">
+                  <button mat-flat-button color="accent" mat-dialog-close>
+                    {{ 'TaggingOnBoardingComponentProceed' | translate }}
+                  </button>
+                </div>
+              </div>
+            </app-alert>
+          </div>
+        </mat-step>
+      </mat-stepper>
+    </form>
+  </ng-container>
+</div>

@@ -1,0 +1,84 @@
+<mat-card fxLayout="column" fxLayoutGap="24px">
+  <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="24px">
+    <h3 class="card title"> 
+      {{ 'deviceList' | translate }} 
+      <button
+        mat-icon-button
+        class="btn-faq"
+        (click)="dataService?.openFaq('SemiProvisionedDevices')"
+        matTooltip="{{ 'viewInformation' | translate }}"
+        matTooltipPosition="right"
+      >
+        <mat-icon>info_outline</mat-icon>
+      </button>
+    </h3>
+    <div fxLayout="row" fxLayoutGap="16px">
+      <button
+        mat-icon-button
+        color="accent"
+        class="btn-icon"
+        (click)="getFleetDevices(true)"
+        [loading]="loader"
+        matTooltip="{{ 'driverQueryResultRefresh' | translate }}"
+        [matTooltipPosition]="'left'"
+      >
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table mat-table [dataSource]="tableSource">
+      <ng-container matColumnDef="deviceId">
+        <th mat-header-cell *matHeaderCellDef>{{ 'deviceListDeviceId' | translate }}</th>
+        <td mat-cell *matCellDef="let device">
+          <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+          <span *ngIf="!loader"> {{ device?.deviceId || '-' }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="assetId">
+        <th mat-header-cell *matHeaderCellDef>{{ 'deviceListComponentAssetID' | translate }}</th>
+        <td mat-cell *matCellDef="let device">
+          <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+          <span *ngIf="!loader">{{ device?.assetName || device?.assetId || '-' }} </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="dutyType">
+        <th mat-header-cell *matHeaderCellDef>{{ 'deviceListDutyType' | translate }}</th>
+        <td mat-cell *matCellDef="let device">
+          <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+          <span *ngIf="!loader">{{ device?.asset?.dutyType || '-' | titlecase }} </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>{{ 'assetListComponentActions' | translate }}</th>
+        <td mat-cell *matCellDef="let device">
+          <div *ngIf="loader" class="skeleton-line" style="max-width: 80px"></div>
+          <div *ngIf="!loader" fxLayout="row" fxLayoutGap="4px">
+            <button
+              mat-icon-button
+              matTooltip="{{ 'deviceListEditDevice' | translate }}"
+              [matTooltipPosition]="'left'"
+              (click)="onProvisionDevice(device)"
+              color="accent"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: tableColumns"></tr>
+    </table>
+
+    <app-alert *ngIf="!loader && !tableSource?.data?.length" [alertType]="'info'" [insideTable]="true">{{
+      'deviceListNotFound' | translate
+    }}</app-alert>
+
+    <mat-paginator #paginator="matPaginator" [length]="totalDevices" [pageSize]="tablePageSize" showFirstLastButtons> </mat-paginator>
+  </div>
+</mat-card>

@@ -1,0 +1,123 @@
+@import './fonts';
+@import './variables';
+
+.status-timeline {
+  position: relative;
+  margin-bottom: 24px;
+
+  .status {
+    position: relative;
+    width: 100%;
+  }
+}
+
+.dvr-title {
+  font-size: $caption-font-size;
+}
+
+.dvr-subtitle {
+  font-weight: $medium-font-weight;
+}
+
+.dvr-data {
+  padding: 24px;
+  border-radius: 4px;
+  background-color: $light-background;
+}
+
+.status-line {
+  .status-icon.error {
+    color: $light-error;
+  }
+
+  .status-icon.success {
+    color: $light-success;
+  }
+
+  .status-icon.warn {
+    color: $amber-color;
+  }
+}
+
+.display-text {
+  font-size: $body-font-size;
+}
+
+.line {
+  float: left;
+  position: absolute;
+  width: 56px;
+  height: 4px;
+  background: $light-border;
+  transform: rotate(90deg);
+  left: -16px;
+  border-radius: 4px;
+  top: 48px;
+}
+
+.inner-line {
+  width: 0%;
+  height: 100%;
+  background: $light-success;
+  animation: flow 0.5s ease forwards;
+}
+
+.status-line {
+  .inner-line.error {
+    background: $light-error;
+  }
+
+  .inner-line.success {
+    background: $light-success;
+  }
+
+  .inner-line.warn {
+    background: $amber-color;
+  }
+}
+
+.status-icon,
+.status-desc {
+  opacity: 0.5;
+  animation: opa 0.8s ease forwards;
+}
+
+@keyframes opa {
+  from {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes flow {
+  from {
+    width: 10%;
+  }
+  to {
+    width: 100%;
+  }
+}
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.status.disabled .status-icon {
+  color: #999;
+}
+
+.inner-line.disabled {
+  background: #999;
+}
+
+.dark-theme .active {
+  color: $white-color !important;
+  background-color: $dark-border !important;
+}
+
+.dark-theme .dvr-data {
+  color: $white-color !important;
+  background-color: $dark-border !important;
+}

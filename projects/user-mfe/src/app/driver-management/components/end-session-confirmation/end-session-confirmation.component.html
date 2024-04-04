@@ -1,0 +1,27 @@
+<div fxLayout="column" fxLayoutGap="64px">
+  <div fxLayout="column" fxLayoutGap="24px">
+    <div fxLayout="row" fxLayoutAlign="space-between center">
+      <h3 class="card-title">Confirmation Required</h3>
+
+      <button
+        mat-icon-button
+        class="btn-close"
+        matTooltip="{{ 'driverImagesCloseModal' | translate }}"
+        [matTooltipPosition]="'left'"
+        mat-dialog-close
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <span
+      >Are you sure you want to end the ongoing coaching session? If yes, all the data related to current coaching session will not be saved
+      and cannot be retrieved later.
+    </span>
+  </div>
+
+  <div fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="16px">
+    <button type="button" mat-stroked-button (click)="onSubmit(false)">CONTINUE SESSION</button>
+    <button type="button" mat-flat-button color="accent" (click)="onSubmit(true)">END SESSION</button>
+  </div>
+</div>

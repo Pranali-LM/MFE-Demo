@@ -1,0 +1,10 @@
+<div class="user-profile-wrap" *ngIf="config?.showUserProfile">
+  <div fxHide.xs class="user-profile">
+    <p class="text-label">{{ 'userProfileLogeedInAs' | translate }}:</p>
+    <p class="user-name" [title]="fleetId">{{ fleetId }}</p>
+  </div>
+
+  <button class="btn-logout" (click)="logout()">
+    {{ 'userProfileLogout' | translate }} <mat-icon class="logout-icon">exit_to_app</mat-icon>
+  </button>
+</div>

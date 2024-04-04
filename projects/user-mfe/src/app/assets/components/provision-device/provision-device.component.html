@@ -1,0 +1,81 @@
+<div fxLayout="column" fxLayoutGap="16px" fxLayoutAlign="start stretch">
+  <div class="title" fxLayout="row" fxLayoutAlign="space-between center">
+    <span>{{ 'provisionDevice' | translate }}</span>
+    <button
+      mat-icon-button
+      mat-dialog-close
+      class="btn-close"
+      matTooltip="{{ 'provisionDevice' | translate }}"
+      [matTooltipPosition]="'left'"
+      (click)="onClose()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <span
+    ><strong>{{ 'deviceListDeviceId' | translate }}:</strong> {{ data?.device?.deviceId }}</span
+  >
+
+  <div fxLayout="column" fxLayoutGap="48px">
+    <form [formGroup]="deviceForm">
+      <div fxLayout="column" fxLayoutGap="16px">
+        <!-- Asset ID -->
+        <mat-form-field>
+          <mat-label>{{ 'provisionDeviceComponentAssetID' | translate }}</mat-label>
+          <input matInput formControlName="assetId" type="text" name="assetId" type="text" [errorStateMatcher]="matcher" maxlength="48" />
+          <mat-error *ngIf="deviceForm?.get('assetId').invalid">
+            {{ 'editAssetComponentErrorMessage' | translate }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Asset Name -->
+        <mat-form-field>
+          <mat-label>{{ 'provisionDeviceComponentAssetName' | translate }}</mat-label>
+          <input matInput formControlName="assetName" type="text" name="assetName" type="text" />
+          <mat-error *ngIf="deviceForm?.get('assetName').hasError('pattern')">
+            {{ 'editAssetNamePatternError' | translate }}
+          </mat-error>
+          <mat-error *ngIf="deviceForm?.get('assetName').hasError('maxlength')">
+            {{ 'editAssetNameMaxLengthError' | translate }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Duty type -->
+        <mat-form-field>
+          <mat-select disableOptionCentering placeholder="{{ 'editAssetComponentDutyType' | translate }}" formControlName="dutyType">
+            <mat-option *ngFor="let option of availableDutyTypes" [value]="option.value">
+              {{ option.label | translate }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Default Driver -->
+        <app-autocomplete
+          placeholder="{{ 'editAssetComponentDriverID' | translate }}"
+          [inputValue]="deviceForm?.value?.defaultDriverId"
+          [list]="data?.driverList"
+          displayProp="driverId"
+          (valueChange)="driverChanged($event)"
+          [customOptions]="customOptions"
+        ></app-autocomplete>
+      </div>
+    </form>
+
+    <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="end center">
+      <button
+        mat-flat-button
+        [loading]="showLoader"
+        color="accent"
+        (click)="onSubmit()"
+        [disabled]="deviceForm?.invalid || (isDirty$ | async) === false"
+      >
+        {{ 'provisionDevice' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <app-alert *ngIf="errorMessage" [alertType]="'error'" [removeMargin]="true">{{ errorMessage | translate }}</app-alert>
+
+  <app-alert *ngIf="isSuccess" [alertType]="'success'" [removeMargin]="true">{{ 'editAssetComponentSuccess' | translate }}</app-alert>
+</div>

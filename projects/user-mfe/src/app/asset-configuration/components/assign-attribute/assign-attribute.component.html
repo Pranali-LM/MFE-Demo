@@ -1,0 +1,49 @@
+<app-side-navigation>
+  <div class="page-subheader" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="16px">
+    <div fxLayout="row" fxLayoutGap="16px">
+      <button
+        style="color: #ffffff"
+        matTooltip="{{ 'EditUserComponentPreviouspageToolTip' | translate }}"
+        mat-icon-button
+        (click)="navigateBack()"
+      >
+        <mat-icon>keyboard_backspace</mat-icon>
+      </button>
+      <h3 class="card-title">{{ 'EditEntityAssignAttribute' | translate }}</h3>
+    </div>
+  </div>
+
+  <section class="container" fxLayout="column" fxLayoutGap="24px" *ngIf="!entityDetailsLoader">
+    <mat-card fxLayout="row" fxLayout.sm="column" fxLayoutAlign="space-between start" fxLayoutGap="96px" fxLayoutGap.sm="24px">
+      <div fxLayout="column" fxLayoutGap="8px" fxFlex="35">
+        <h3>{{ 'EditRoleComponentTags' | translate }}</h3>
+        <span class="sub-text">{{ 'EditEntityAssignAttributeDesc' | translate }}</span>
+      </div>
+
+      <div fxFlex fxLayout="column" style="width: 100%">
+        <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center" class="entity-name">
+          <label>Entity Name:</label> <span> {{ entityName | titlecase }}</span>
+        </div>
+        <app-attribute-assign
+          (selectedAttrIds)="selectedAttributes($event)"
+          [dropDownType]="'assign'"
+          [numOfAttributesToDisplay]="3"
+          [attributeType]="attributeType"
+          [isEntityEdit]="true"
+          [entityName]="entityName"
+          (assignedAttribute) = "assignedAttribute($event)"
+        ></app-attribute-assign>
+      </div>
+    </mat-card>
+
+    <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="end center">
+      <button type="submit" mat-flat-button color="accent" [loading]="linkUnlinkLoader" (click)="onSubmit()" [disabled]="!selectedTagsControl.dirty">
+        {{ 'EditUserComponentSAVEDETAILS' | translate }}
+      </button>
+    </div>
+  </section>
+
+  <section class="container" fxLayout="column" fxLayoutGap="24px" *ngIf="entityDetailsLoader">
+    {{ 'EditEntityLoading' | translate }}
+  </section>
+</app-side-navigation>

@@ -1,0 +1,32 @@
+<div
+  class="alert-container"
+  [ngClass]="[
+    alertType,
+    insideTable ? 'inside-table' : '',
+    removeMargin ? 'margin-zero' : '',
+    currentTheme === 'dark' ? 'dark-theme' : '',
+    alertActionText ? 'has-action' : '',
+    requireBorder ? 'alert-border' : ''
+  ]"
+  fxLayout="row"
+  fxLayoutGap="16px"
+  fxLayoutAlign="space-between center"
+  fxLayout.xs="column"
+  fxLayoutAlign.xs="start start"
+>
+  <div fxFlex fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center">
+    <div [ngSwitch]="alertType">
+      <mat-icon class="alert-icon" *ngSwitchCase="'info'">info_outline</mat-icon>
+      <mat-icon class="alert-icon" *ngSwitchCase="'announcement'">info_outline</mat-icon>
+      <mat-icon class="alert-icon" *ngSwitchCase="'error'">error_outline</mat-icon>
+      <mat-icon class="alert-icon" *ngSwitchCase="'success'">check_circle_outline</mat-icon>
+      <mat-icon class="alert-icon" *ngSwitchCase="'warn'">warning_amber</mat-icon>
+      <mat-icon class="alert-icon" *ngSwitchCase="'tip'">bolt</mat-icon>
+      <mat-icon class="alert-icon" *ngSwitchDefault>info_outline</mat-icon>
+    </div>
+    <div class="alert-message">
+      <ng-content></ng-content>
+    </div>
+  </div>
+  <button *ngIf="alertActionText" class="alert-action" mat-stroked-button (click)="alertActionEvent()">{{ alertActionText }}</button>
+</div>

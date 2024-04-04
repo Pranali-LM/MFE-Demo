@@ -1,0 +1,31 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../out-tsc/app",
+    "types": []
+  },
+  "files": [
+    "src/main.ts",
+    "src/polyfills.ts",
+  ],
+  "include": [
+    "src/**/*.d.ts",
+    // "src/**/*.ts",
+    "src/app/app.module.ts",
+    // "src/app/asset-configuration/asset-configuration.module.ts",
+    // "src/app/assets/assets.module.ts",
+    // "src/app/coaching/coaching.module.ts",
+    // "src/app/driver-management/driver-management.module.ts",
+    // "src/app/iframe-authentication/iframe-authentication.module.ts",
+    // "src/app/incident-details/incident-details.module.ts",
+    // "src/app/live-view/live-view.module.ts",
+    // "src/app/request-video/request-video.module.ts",
+    // "src/app/trip-details/trip-details.module.ts",
+    // "src/app/coaching/components/page-filter/page-filter.component.ts",
+    // "src/app/request-video/components/request-confirmation/request-confirmation.component.ts",
+    // "src/app/trips/common/trips.constants.ts",
+    // "src/app/trips/common/trips.model.ts",
+    // "src/app/trips/services/trips.service.ts",
+    "src/typings.d.ts"
+  ]
+}

@@ -1,0 +1,39 @@
+<div fxLayout="column" fxLayoutGap="24px">
+  <div fxLayout="column" fxLayoutGap="8px">
+    <h3 class="card-title">{{ 'RoleTemplateComponentTitle' | translate }}</h3>
+    <span class="sub-text">{{ 'RoleTemplateComponentDescription' | translate }}</span>
+  </div>
+
+  <mat-dialog-content class="dialog-content">
+    <mat-radio-group fxLayout="column" fxLayoutGap="16px" class="list-group" labelPosition="before" [formControl]="templateControl">
+      <ng-container *ngFor="let template of templateList">
+        <mat-radio-button
+          [value]="template?.id"
+          fxLayout="row"
+          fxLayoutGap="16px"
+          fxLayoutAlign="space-between center"
+          [ngClass]="{ 'radio-active': templateControl.value === template?.id }"
+        >
+          <div fxLayout="column" fxLayoutGap="4px">
+            <div *ngIf="getRoleTemplateLoader" class="skeleton-line" style="max-width: 240px"></div>
+            <span *ngIf="!getRoleTemplateLoader"
+              ><strong>{{ template?.name }}</strong></span
+            >
+
+            <div *ngIf="getRoleTemplateLoader" class="skeleton-line" style="max-width: 480px"></div>
+            <span *ngIf="!getRoleTemplateLoader" class="sub-text">{{ template?.description }}</span>
+          </div>
+        </mat-radio-button>
+      </ng-container>
+    </mat-radio-group>
+  </mat-dialog-content>
+
+  <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="end center">
+    <button mat-stroked-button (click)="closeTemplate()">
+      {{ 'RoleTemplateComponentCANCELTEMPLATE' | translate }}
+    </button>
+    <button mat-flat-button color="accent" (click)="selectTemplate()" [disabled]="templateControl.invalid">
+      {{ 'RoleTemplateComponentSELECTTEMPLATE' | translate }}
+    </button>
+  </div>
+</div>

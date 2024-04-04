@@ -1,0 +1,172 @@
+<div
+  fxLayout="column"
+  fxLayoutGap="24px"
+  *ngIf="!showFeedbackForm && !isSuccess"
+  [ngClass]="{
+    'dark-theme': (dataService._currentTheme | async) === 'dark'
+  }"
+>
+  <div fxLayout="column" fxLayoutGap="4px">
+    <h3 class="card-title">{{ 'feedbackWidgetHeading' | translate }}</h3>
+    <span class="sub-text">{{ 'feedbackWidgetDescription' | translate }}</span>
+  </div>
+
+  <section fxLayout="column" fxLayoutGap="16px">
+    <div
+      class="feedback-option"
+      fxLayout="row"
+      fxLayoutAlign="space-between center"
+      fxLayoutGap="16px"
+      (click)="getFeedbackType('feature')"
+    >
+      <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center">
+        <div class="icon-feedback success" fxLayout="row" fxLayoutAlign="center center">
+          <mat-icon a>bolt</mat-icon>
+        </div>
+
+        <div fxLayout="column" fxLayoutGap="4px">
+          <span
+            ><strong>{{ 'feedbackWidgetFeature' | translate }}</strong></span
+          >
+          <span class="sub-text">{{ 'feedbackWidgetFeatureDescription' | translate }}</span>
+        </div>
+      </div>
+
+      <mat-icon>navigate_next</mat-icon>
+    </div>
+
+    <div class="feedback-option" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="16px" (click)="getFeedbackType('bug')">
+      <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center">
+        <div class="icon-feedback error" fxLayout="row" fxLayoutAlign="center center">
+          <mat-icon a>error</mat-icon>
+        </div>
+
+        <div fxLayout="column" fxLayoutGap="4px">
+          <span
+            ><strong>{{ 'feedbackWidgetBug' | translate }}</strong></span
+          >
+          <span class="sub-text">{{ 'feedbackWidgetBugDescription' | translate }}</span>
+        </div>
+      </div>
+
+      <mat-icon>navigate_next</mat-icon>
+    </div>
+
+    <div
+      class="feedback-option"
+      fxLayout="row"
+      fxLayoutAlign="space-between center"
+      fxLayoutGap="16px"
+      (click)="getFeedbackType('general')"
+    >
+      <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center">
+        <div class="icon-feedback warn" fxLayout="row" fxLayoutAlign="center center">
+          <mat-icon a>speaker_notes</mat-icon>
+        </div>
+
+        <div fxLayout="column" fxLayoutGap="4px">
+          <span
+            ><strong>{{ 'feedbackWidgetGeneral' | translate }}</strong></span
+          >
+          <span class="sub-text">{{ 'feedbackWidgetGeneralDescription' | translate }}</span>
+        </div>
+      </div>
+
+      <mat-icon>navigate_next</mat-icon>
+    </div>
+  </section>
+</div>
+
+<div
+  fxLayout="column"
+  fxLayoutGap="24px"
+  *ngIf="showFeedbackForm"
+  [ngClass]="{
+    'dark-theme': (dataService._currentTheme | async) === 'dark'
+  }"
+>
+  <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center" *ngIf="feedbackType === 'feature'">
+    <div class="icon-feedback success" fxLayout="row" fxLayoutAlign="center center">
+      <mat-icon a>bolt</mat-icon>
+    </div>
+    <div fxLayout="column" fxLayoutGap="4px">
+      <h3 class="card-title feedback-title">{{ 'feedbackWidgetFeature' | translate }}</h3>
+      <span class="sub-text">{{ 'feedbackWidgetFeatureDescription' | translate }}</span>
+    </div>
+  </div>
+
+  <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center" *ngIf="feedbackType === 'bug'">
+    <div class="icon-feedback error" fxLayout="row" fxLayoutAlign="center center">
+      <mat-icon a>error</mat-icon>
+    </div>
+    <div fxLayout="column" fxLayoutGap="4px">
+      <h3 class="card-title feedback-title">{{ 'feedbackWidgetBug' | translate }}</h3>
+      <span class="sub-text">{{ 'feedbackWidgetBugDescription' | translate }}</span>
+    </div>
+  </div>
+
+  <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center" *ngIf="feedbackType === 'general'">
+    <div class="icon-feedback warn" fxLayout="row" fxLayoutAlign="center center">
+      <mat-icon a>speaker_notes</mat-icon>
+    </div>
+    <div fxLayout="column" fxLayoutGap="4px">
+      <h3 class="card-title feedback-title">{{ 'feedbackWidgetGeneral' | translate }}</h3>
+      <span class="sub-text">{{ 'feedbackWidgetGeneralDescription' | translate }}</span>
+    </div>
+  </div>
+
+  <form [formGroup]="form" fxLayout="column" autocomplete="off" novalidate>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'feedbackWidgetSubject' | translate }}</mat-label>
+      <input matInput formControlName="subject" name="subject" minlength="3" maxlength="48" />
+      <mat-error *ngIf="form.get('subject').hasError('required')"> {{ 'feedbackWidgetSubjectDescription' | translate }} </mat-error>
+      <mat-error *ngIf="!form.get('subject').hasError('required') && form.get('subject').invalid">
+        {{ 'feedbackWidgetSubjectCharacterLength' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="margin-top: 8px">
+      <mat-label>{{ 'feedbackWidgetMessage' | translate }}</mat-label>
+      <textarea
+        matInput
+        rows="6"
+        formControlName="message"
+        name="message"
+        class="feedback-textarea"
+        minlength="48"
+        maxlength="280"
+      ></textarea>
+      <mat-hint align="end">{{ form?.get('message').value?.length || 0 }}/280 {{ 'feedbackWidgetCharacters' | translate }}</mat-hint>
+      <mat-error *ngIf="form.get('message').hasError('required')"> {{ 'feedbackWidgetMessageRequired' | translate }} </mat-error>
+      <mat-error *ngIf="!form.get('message').hasError('required') && form.get('message').invalid">
+        {{ 'feedbackWidgetMessageCharacterLength' | translate }}
+      </mat-error>
+    </mat-form-field>
+  </form>
+
+  <div fxLayout="row" fxLayoutAlign="end" fxLayoutGap="16px">
+    <button mat-stroked-button (click)="closeForm()">{{ 'feedbackWidgetCancel' | translate }}</button>
+    <button mat-flat-button color="accent" [disabled]="form?.invalid" [loading]="loader" (click)="onSubmit()">
+      {{ 'feedbackWidgetSubmit' | translate }}
+    </button>
+  </div>
+</div>
+
+<div
+  fxLayout="column"
+  fxLayoutGap="24px"
+  fxLayoutAlign="center center"
+  *ngIf="!showFeedbackForm && isSuccess"
+  class="success-section"
+  [ngClass]="{
+    'dark-theme': (dataService._currentTheme | async) === 'dark'
+  }"
+>
+  <div fxLayout="column" fxLayoutAlign="start center" fxLayoutGap="16px">
+    <div class="icon-feedback success" fxLayout="row" fxLayoutAlign="center center">
+      <mat-icon a>check_circle</mat-icon>
+    </div>
+    <span class="sub-text">{{ 'feedbackWidgetThankYouNote' | translate }}</span>
+    <button mat-stroked-button mat-dialog-close>{{ 'feedbackWidgetClose' | translate }}</button>
+  </div>
+</div>

@@ -1,0 +1,194 @@
+<div fxLayout="column" fxLayoutGap="24px" fxLayoutAlign="start stretch">
+  <div class="title" fxLayout="row" fxLayoutAlign="space-between center" mat-dialog-title>
+    <span>{{ 'driverEnrollmentUploadImages' | translate }}</span>
+    <button
+      mat-icon-button
+      mat-dialog-close
+      class="btn-close"
+      matTooltip="{{ 'driverEnrollmentClose' | translate }}"
+      [matTooltipPosition]="'left'"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</div>
+
+<div class="enrollment-form" mat-dialog-content>
+  <mat-tab-group [@.disabled]="true" (selectedTabChange)="tabChanged($event)">
+    <mat-tab label="{{ 'driverEnrollmentUpload' | translate }}">
+      <div fxLayout="column" fxLayoutGap="24px">
+        <div fxLayout="row" fxLayoutAlign="space-between start">
+          <div fxLayout="column" fxLayoutGap="4px">
+            <span
+              ><strong>{{ 'driverEnrollmentDriverId' | translate }}- </strong>{{ data?.driverId }}</span
+            >
+            <span
+              ><strong>{{ 'driverEnrollmentDriverName' | translate }} - </strong>{{ data?.driverName }}</span
+            >
+          </div>
+        </div>
+
+        <div *ngIf="conflictPersonError; else uploadNewImages" fxLayout="column" fxLayoutGap="16px">
+          <app-alert *ngIf="showError" [alertType]="'error'" [removeMargin]="true">
+            <span>{{ 'driverEnrollmentPersonAlreadyEnrolled' | translate }}</span>
+          </app-alert>
+
+          <app-alert *ngIf="showSuccess && !showLoader" [alertType]="'success'" [removeMargin]="true">
+            <span *ngIf="!driverDetails?.personId">{{ 'driverEnrollmentSuccessfullyEnolled' | translate }}</span>
+          </app-alert>
+
+          <div class="preview-section">
+            <div *ngFor="let sample of conflictSamples; let i = index" class="preview-container">
+              <img [src]="sample?.url" class="preview-image" />
+              <mat-icon *ngIf="showSuccess" class="image-check right-icon">check_circle</mat-icon>
+            </div>
+          </div>
+
+          <div class="loading-shade" fxLayout="column" fxLayoutAlign="center center" *ngIf="showLoader">
+            <mat-spinner></mat-spinner>
+          </div>
+
+          <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center" *ngIf="showError">
+            <div>{{ 'driverEnrollmentResolveConflict' | translate }}</div>
+            <div fxFlex="1 1 0"></div>
+            <div fxLayout="row" fxLayoutGap="10px">
+              <button mat-flat-button type="button" color="accent" (click)="onAcceptConflict()">YES</button>
+              <button mat-stroked-button type="button" (click)="onRejectConflict()">NO</button>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #uploadNewImages>
+          <div fxLayout="column" fxLayoutGap="16px">
+            <div>{{ 'driverEnrollmentUploadExactlyEightimages' | translate }}</div>
+            <div fxLayout="column" fxLayoutGap="8px">
+              <div>
+                <button mat-stroked-button *ngIf="!showSuccess" [disabled]="showLoader">
+                  <input
+                    class="input-upload"
+                    id="input-file-id"
+                    type="file"
+                    accept=".jpg"
+                    multiple
+                    (change)="chooseImages($event)"
+                    #imageUpload
+                  />
+                  <label for="input-file-id">
+                    <span *ngIf="!isReplaceMode">{{ 'driverEnrollmentChooseImage' | translate }}</span>
+                    <span *ngIf="isReplaceMode">{{ 'driverEnrollmentReplaceImage' | translate }}</span>
+                  </label>
+                </button>
+              </div>
+
+              <app-alert *ngIf="showWarning && !showSuccess" [alertType]="'error'">
+                {{ 'driverEnrollmentPleaseChhose' | translate }} {{ totalUploadCount }}
+                {{ 'driverEnrollmentImageForUploading' | translate }}
+              </app-alert>
+            </div>
+          </div>
+
+          <app-alert *ngIf="invalidSamples?.length && !showLoader" [alertType]="'error'">
+            <span *ngIf="!driverDetails?.personId"
+              >{{ 'driverEnrollmentEnrollmentFailed' | translate }} {{ invalidSamples?.length }}
+              {{ 'driverEnrollmentSuccessfulEnrollment' | translate }}</span
+            >
+            <span *ngIf="driverDetails?.personId"
+              >{{ 'driverEnrollmentModfyImage' | translate }} {{ invalidSamples?.length }}
+              {{ 'driverEnrollmentModifySuccessfulEnrollment' | translate }}</span
+            >
+          </app-alert>
+
+          <app-alert *ngIf="showError && !showLoader" [alertType]="'error'">
+            <span *ngIf="!duplicatePersonError">{{ 'driverEnrollmentSomethingWentWrong' | translate }}</span>
+            <div *ngIf="duplicatePersonError" fxLayout="column" fxLayoutGap="10px">
+              <span> {{ 'driverEnrollmentPersonAlreadyEnrolled' | translate }}</span>
+              <span *ngIf="conflictingDriverId"> {{ 'driverEnrollmentConflictDriverId' | translate }} - {{ conflictingDriverId }}</span>
+            </div>
+          </app-alert>
+
+          <app-alert *ngIf="showSuccess && !showLoader" [alertType]="'success'" [removeMargin]="true">
+            <span *ngIf="!driverDetails?.personId">{{ 'driverEnrollmentSuccessfullyEnolled' | translate }}</span>
+            <span *ngIf="driverDetails?.personId">{{ 'driverEnrollmentDriverImageModified' | translate }}</span>
+          </app-alert>
+
+          <div class="preview-section">
+            <div *ngFor="let img of driverImages; let i = index" class="preview-container">
+              <img [src]="img?.imageUrl" class="preview-image" />
+              <ng-container *ngIf="img?.isValid !== undefined">
+                <mat-icon *ngIf="img?.isValid" class="image-check right-icon">check_circle</mat-icon>
+                <mat-icon *ngIf="!img?.isValid" class="image-check wrong-icon">cancel</mat-icon>
+              </ng-container>
+            </div>
+          </div>
+
+          <div *ngIf="showLoader" fxLayout="column" fxLayoutGap="8px">
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            <div class="loading-text">{{ 'driverEnrollmentUploadingImages' | translate }}</div>
+          </div>
+
+          <div></div>
+
+          <div fxLayoutGap="16px" fxFlexAlign="end">
+            <button
+              mat-flat-button
+              type="button"
+              color="accent"
+              *ngIf="!showSuccess"
+              (click)="onSubmit()"
+              [disabled]="!driverImages?.length"
+              [loading]="showLoader"
+            >
+              {{ 'driverEnrollmentSaveDetails' | translate }}
+            </button>
+          </div>
+        </ng-template>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="{{ 'driverEnrollmentUserGuide' | translate }}">
+      <div fxLayout="column" fxLayoutGap="16px" class="faq-section">
+        <span>{{ 'faqSectonDescribe' | translate }}:</span>
+
+        <h4 class="faq-heading">{{ 'faqSectonImagesReuirements' | translate }}:</h4>
+        <ul class="faq-list">
+          <li>
+            {{ 'faqSectonFrontalView' | translate }}
+          </li>
+          <li>
+            {{ 'faqSectonImagesUploaded' | translate }}
+          </li>
+          <li>
+            {{ 'faqSectonImagesNoOtherPerson' | translate }}
+          </li>
+          <li>{{ 'faqSectonGlassesUsed' | translate }}</li>
+          <li>
+            {{ 'faqSectonIncorrectImages' | translate }}:<br />
+
+            <div class="preview-section">
+              <div *ngFor="let img of imageList; let i = index" class="preview-container">
+                <img [src]="img?.imageUrl" class="preview-image" />
+                <mat-icon *ngIf="img?.isValid" class="image-check right-icon">check_circle</mat-icon>
+                <mat-icon *ngIf="!img?.isValid" class="image-check wrong-icon">cancel</mat-icon>
+              </div>
+            </div>
+          </li>
+        </ul>
+
+        <mat-divider></mat-divider>
+
+        <h4 class="faq-heading">{{ 'faqSectonTechnologyWorks' | translate }}:</h4>
+        <span> {{ 'faqSectonImageUpload' | translate }}</span>
+
+        <mat-divider></mat-divider>
+
+        <h4 class="faq-heading">{{ 'faqSectonDisclaimer' | translate }}:</h4>
+        <span>
+          {{ 'faqSectonExample' | translate }}
+          <a class="text-link" href="https://thispersondoesnotexist.com/" title="thispersondoesnotexist.com website" target="_blank">
+            thispersondoesnotexist.com
+          </a>
+        </span>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

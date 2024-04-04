@@ -1,0 +1,260 @@
+<app-side-navigation>
+  <mat-tab-group
+    class="page-tabs"
+    [@.disabled]="true"
+    (selectedTabChange)="onPageTabChange($event)"
+    [selectedIndex]="currentTabIndex"
+  >
+    <mat-tab *appCheckUiConfigs="['driver_page:overview_tab']">
+      <ng-template mat-tab-label>
+        <label
+          matTooltip="{{ 'driverManagementOverview' | translate }} &#013;&#010;[{{ currentOS === 'mac' ? 'Command' : 'Ctrl' }} + Shift + <]"
+          matTooltipClass="multiline-tooltip"
+          >{{ 'driverManagementOverview' | translate }}</label
+        >
+      </ng-template>
+      <div class="container" fxLayout="column" fxLayoutGap="24px">
+        <app-driver-query (search)="onDriverQuery($event)" [isCoachingRequired]="iscoachingRequired"> </app-driver-query>
+        <app-driver-query-result
+        *ngIf="!driverListLoader && driverQueryState?.driverId"
+          [showViolationCharts]="true"
+          [fleetId]="fleetId"
+          [driverId]="driverQueryState?.driverId"
+          [startDate]="driverQueryState?.paramStartDate"
+          [endDate]="driverQueryState?.paramEndDate"
+          [loader]="driverEventLoader"
+          [driverTags]="driverDetails"
+          [driverTagsLoader]="driverDetailsLoader"
+          (isCoachingRequired)="coachingRequired($event)"
+        >
+        </app-driver-query-result>
+        <div *ngIf="driverListLoader" class="skeleton-loader">
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line"></div>
+        </div>
+        <app-alert *ngIf="driverQueryState?.driverId === '' && !driverListLoader" [alertType]="'info'">
+          {{ 'driverManagementNoDriverFound' | translate }}
+        </app-alert>
+      </div>
+    </mat-tab>
+
+    <ng-container *ngIf="clientConfig?.showManageDriversTab">
+      <mat-tab *appCheckUiConfigs="['driver_page:manage_drivers_tab']">
+        <ng-template mat-tab-label>
+          <label
+            matTooltip="{{ 'driverManagementManageDrivers' | translate }} &#013;&#010;[{{
+              currentOS === 'mac' ? 'Command' : 'Ctrl'
+            }} + Shift + >]"
+            matTooltipClass="multiline-tooltip"
+            >{{ 'driverManagementManageDrivers' | translate }}</label
+          >
+        </ng-template>
+        <div class="container">
+          <div
+            fxLayout="column"
+            fxLayout.xs="column"
+            fxLayout.sm="column"
+            fxLayout.md="column"
+            fxLayoutGap="24px"
+            fxLayoutAlign="space-between stretch"
+          >
+            <mat-card fxFlex="60" fxLayout="column" fxLayoutGap="24px" *appCheckUiConfigs="['driver_page:manage_drivers_tab:driver_list']">
+              <div fxLayout="row" fxLayoutAlign="space-between center">
+                <h3 class="title card-title">
+                  {{ 'driverManagementAllDrivers' | translate }}
+                  <button
+                    mat-icon-button
+                    class="btn-faq"
+                    (click)="dataService?.openFaq('driverList')"
+                    matTooltip="{{ 'viewInformation' | translate }}"
+                    matTooltipPosition="right"
+                  >
+                    <mat-icon>info_outline</mat-icon>
+                  </button>
+                </h3>
+
+                <div fxLayout="row" fxLayoutGap="16px">
+                  <button
+                    *appCheckPermissions="['read:drivers']"
+                    mat-icon-button
+                    color="accent"
+                    class="btn-icon"
+                    [loading]="loader"
+                    (click)="doRefresh()"
+                    matTooltip="{{ 'driverManagementRefresh' | translate }}"
+                    [matTooltipPosition]="'left'"
+                    type="button"
+                  >
+                    <mat-icon>refresh</mat-icon>
+                  </button>
+
+                  <button *appCheckPermissions="['read:drivers']" mat-stroked-button [loading]="csvLoader" (click)="exportUsers()">
+                    {{ 'driverManagementExport' | translate }}
+                  </button>
+
+                  <button mat-flat-button color="accent" (click)="openAddDriverDialog()" *appCheckPermissions="['create:drivers']">
+                    {{ 'driverManagementComponentAddDriver' | translate }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="table-wrap" *appCheckPermissions="['read:drivers']">
+                <table mat-table [dataSource]="tableSource" class="all-driver-table">
+                  <ng-container matColumnDef="accountStatus" *ngIf="clientConfig?.showUserTypeEmail">
+                    <th mat-header-cell *matHeaderCellDef>
+                      <span matTooltip="{{ 'driverManagementStatusInfo' | translate }}" matTooltipPosition="right"
+                        >{{ 'driverManagementStatus' | translate }}
+                        <mat-icon class="info-icon">info_outline</mat-icon>
+                      </span>
+                    </th>
+
+                    <td mat-cell *matCellDef="let driver">
+                      <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+                      <ng-container *ngIf="!loader">
+                        <mat-chip-list [ngClass]="currentTheme === 'dark' ? 'dark-theme' : ''">
+                          <mat-chip class="status-pending" *ngIf="driver?.accountStatus !== 'CONFIRMED'">{{
+                            'driverManagementComponentPENDING' | translate
+                          }}</mat-chip>
+                          <mat-chip class="status-confirmed" *ngIf="driver?.accountStatus === 'CONFIRMED'">{{
+                            'driverManagementComponentCONFIRMED' | translate
+                          }}</mat-chip>
+                        </mat-chip-list>
+                      </ng-container>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="driverImages">
+                    <th mat-header-cell *matHeaderCellDef>
+                      {{ 'driverManagementImages' | translate }}
+                    </th>
+                    <td mat-cell *matCellDef="let driver">
+                      <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+                      <ng-container *ngIf="!loader">
+                        <button
+                          color="accent"
+                          mat-icon-button
+                          matTooltip="{{ 'driverManagementViewImage' | translate }}"
+                          matTooltipPosition="right"
+                          (click)="openDriverImagesDialog(driver)"
+                          [disabled]="!driver?.personId"
+                        >
+                          <mat-icon>photo</mat-icon>
+                        </button>
+                      </ng-container>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="driverName">
+                    <th mat-header-cell *matHeaderCellDef>
+                      {{ 'driverManagementDriverName' | translate }}
+                    </th>
+                    <td mat-cell *matCellDef="let driver">
+                      <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+                      <span *ngIf="!loader"
+                        >{{ driver?.driverName || '-' }}
+                        <mat-icon
+                          *ngIf="driver?.userType === 'INSTALLER'"
+                          matTooltip="{{ 'driverManagementInstaller' | translate }}"
+                          matTooltipPosition="right"
+                          class="icon-installer"
+                          >handyman</mat-icon
+                        >
+                      </span>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="driverId">
+                    <th mat-header-cell *matHeaderCellDef>
+                      {{ 'driverManagementManageDriverId' | translate }}
+                    </th>
+                    <td mat-cell *matCellDef="let driver">
+                      <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+                      <span class="text" *ngIf="!loader">{{ driver?.driverId.toUpperCase() === '_UNASSIGNED' ? ('DriverIdUnassigned' | translate) : (driver?.driverId || '-') }}</span>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="email">
+                    <th mat-header-cell *matHeaderCellDef>
+                      {{ 'driverManagementEmail' | translate }}
+                    </th>
+                    <td mat-cell *matCellDef="let driver">
+                      <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+                      <span class="text" *ngIf="!loader">{{ driver?.email || '-' }}</span>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef>{{ 'driverManagementActions' | translate }}</th>
+                    <td mat-cell *matCellDef="let driver">
+                      <div *ngIf="loader" class="skeleton-line" style="max-width: 160px"></div>
+                      <ng-container *ngIf="!loader">
+                        <ng-container *appCheckPermissions="['update:drivers']">
+                          <button
+                            *ngIf="driver?.userType === 'DRIVER'"
+                            mat-icon-button
+                            color="accent"
+                            [matTooltip]="
+                              driver?.personId ? ('driverManagementModifyImages' | translate) : ('driverManagementAddImages' | translate)
+                            "
+                            matTooltipPosition="left"
+                            (click)="openDriverEnrollmentDialog(driver)"
+                          >
+                            <mat-icon *ngIf="!driver?.personId">add_photo_alternate</mat-icon>
+                            <mat-icon *ngIf="driver?.personId">edit</mat-icon>
+                          </button>
+                        </ng-container>
+                        <button
+                          *appCheckPermissions="['delete:drivers']"
+                          color="accent"
+                          mat-icon-button
+                          [matTooltip]="'driverManagementDeleteDriver' | translate"
+                          matTooltipPosition="left"
+                          (click)="deleteDriver(driver)"
+                          [loading]="driver?.deleteDriverLoader"
+                        >
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                        <button
+                          color="accent"
+                          mat-icon-button
+                          matTooltip="{{ 'driverManagementResendTempPassword' | translate }}"
+                          matTooltipPosition="left"
+                          (click)="resendTempPasswordEmail(driver)"
+                          *ngIf="driver?.email && driver?.accountStatus === 'FORCE_CHANGE_PASSWORD'"
+                          [loading]="driver?.loader"
+                        >
+                          <mat-icon>forward_to_inbox</mat-icon>
+                        </button>
+                      </ng-container>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: tableColumns"></tr>
+                </table>
+
+                <app-alert *ngIf="!loader && !tableSource?.data?.length" [alertType]="'info'" [insideTable]="true">
+                  {{ 'driverManagementNoDriverFound' | translate }}
+                </app-alert>
+
+                <mat-paginator
+                  #paginator="matPaginator"
+                  [length]="tableSource?.data?.length"
+                  [pageSize]="pageSize"
+                  showFirstLastButtons
+                ></mat-paginator>
+              </div>
+
+              <app-alert *appCheckPermissions="['read:drivers']; showError: true" [alertType]="'info'" [removeMargin]="true">
+                <span>{{ 'noPermissionToView' | translate }}</span>
+              </app-alert>
+            </mat-card>
+
+            <app-batch-driver-addition *appCheckUiConfigs="['driver_page:manage_drivers_tab:batch_addition']"></app-batch-driver-addition>
+          </div>
+        </div>
+      </mat-tab>
+    </ng-container>
+  </mat-tab-group>
+</app-side-navigation>
+

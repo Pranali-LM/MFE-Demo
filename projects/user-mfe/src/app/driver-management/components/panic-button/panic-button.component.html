@@ -1,0 +1,82 @@
+<div fxLayout="column" fxLayoutGap="24px">
+  <div fxLayout="row" fxLayoutAlign="end center">
+    <button
+      mat-icon-button
+      color="accent"
+      class="btn-icon"
+      [loading]="panicButtonLoader"
+      (click)="getDriverExternalEvents(true)"
+      matTooltip="{{ 'driverQueryResultRefresh' | translate }}"
+      [matTooltipPosition]="'left'"
+    >
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+
+  <div class="table-wrap">
+    <table mat-table class="video-list-table" [dataSource]="tableSource">
+      <ng-container matColumnDef="requestTimestamp">
+        <th mat-header-cell *matHeaderCellDef>{{ 'driverQueryResultRequestCreated' | translate }}</th>
+        <td mat-cell *matCellDef="let request">
+          <div *ngIf="panicButtonLoader" class="skeleton-line" style="max-width: 240px"></div>
+          <span *ngIf="!panicButtonLoader">
+            {{ request?.timestampUTC | dateConversion: currentTimeZone:currentDateFormat:request?.timestamp || '-' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="assetId">
+        <th mat-header-cell *matHeaderCellDef>{{ 'videoRequestComponentAssetID' | translate }}</th>
+        <td mat-cell *matCellDef="let request">
+          <div *ngIf="panicButtonLoader" class="skeleton-line" style="max-width: 240px"></div>
+          <span *ngIf="!panicButtonLoader">{{ request?.assetName || request?.assetId || '-' }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>{{ 'driverQueryResultActions' | translate }}</th>
+        <td mat-cell *matCellDef="let request; let i = index">
+          <div *ngIf="panicButtonLoader" class="skeleton-line" style="max-width: 240px"></div>
+          <div *ngIf="!panicButtonLoader">
+            <span
+              class="play-button"
+              [matTooltip]="
+                request?.eventVideoFilenameUploadStatus?.status === 'UPLOADED'
+                  ? ('driverQueryResultPlayVideo' | translate)
+                  : ('driverQueryResultUploadPending' | translate)
+              "
+              matTooltipPosition="left"
+            >
+              <button
+                color="accent"
+                [disabled]="request?.eventVideoFilenameUploadStatus?.status !== 'UPLOADED'"
+                mat-icon-button
+                (click)="showMedia(request?.positionIndex)"
+              >
+                <mat-icon>play_circle_outline</mat-icon>
+              </button>
+            </span>
+            <button
+              color="accent"
+              mat-icon-button
+              matTooltip="{{ 'driverQueryResultTripDetails' | translate }}"
+              matTooltipPosition="left"
+              (click)="navigateTo(request)"
+            >
+              <mat-icon>launch</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: tableColumns"></tr>
+    </table>
+
+    <app-alert *ngIf="!panicButtonLoader && !tableSource?.data?.length" [alertType]="'info'" [insideTable]="true">
+      {{ 'driverQueryResultNoVideoRequest' | translate }}
+    </app-alert>
+
+    <mat-paginator class="paginator" #paginator="matPaginator" [pageSize]="5" showFirstLastButtons></mat-paginator>
+  </div>
+</div>

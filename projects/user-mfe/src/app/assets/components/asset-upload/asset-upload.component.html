@@ -1,0 +1,67 @@
+<div fxLayout="column" fxLayoutGap="24px">
+  <h3 class="card title">{{ 'manageAssetsComponentBatchUpdateTitle' | translate }}</h3>
+  <div class="card-body" fxLayout="column" fxLayoutAlign="space-between" fxLayoutGap="48px" *appCheckPermissions="['update:fleet_assets']">
+    <div>
+      <p class="sub-text">
+        {{ 'manageAssetsComponentBatchUpdateDescription' | translate }}
+      </p>
+
+      <p class="sub-text">{{ 'batchUpdateNote' | translate }}</p>
+
+      <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
+        <div class="btn-link text-link-underlined" (click)="downloadAssetUploadSample()">
+          {{ 'manageAssetsComponentDownloadSampleCsv' | translate }}
+        </div>
+        <mat-spinner *ngIf="assetSampleLoader" [diameter]="20"></mat-spinner>
+      </div>
+
+      <app-alert *ngIf="sampleDownloadError" [alertType]="'error'">
+        {{ 'manageAssetsComponentDownloadSampleCsvFailure' | translate }}
+      </app-alert>
+
+      <app-alert
+        *ngIf="assetUpdationStatus"
+        [alertType]="assetUpdationStatus === 'partialSuccess' ? 'info' : assetUpdationStatus"
+        [alertActionText]="assetUpdationStatus === 'partialSuccess' ? ('manageAssetsComponentDownload' | translate) : ''"
+        (alertAction)="downloadFailedAssetList()"
+      >
+        <ng-container [ngSwitch]="assetUpdationStatus">
+          <span *ngSwitchCase="'success'">{{ 'manageAssetsComponentUpdateSuccess' | translate }}</span>
+          <span *ngSwitchCase="'error'">{{ 'manageAssetsComponentUpdateFailed' | translate }}</span>
+          <div *ngSwitchCase="'partialSuccess'" fxLayout="column" fxLayoutGap="4px" fxLayoutAlign="start start">
+            <span>{{ 'manageAssetsComponentUpdatePartiallyFailed' | translate }}</span>
+            <span>{{ 'manageAssetsComponentDownloadPartiallyFailedAssets' | translate }}</span>
+          </div>
+        </ng-container>
+      </app-alert>
+
+      <app-alert *ngIf="showFileError" [alertType]="'error'">{{ 'manageAssetsComponentUploadOnlyCsvError' | translate }}</app-alert>
+    </div>
+
+    <div
+      fxLayout="row"
+      fxLayoutGap="16px"
+      fxLayout.xs="column"
+      fxLayoutAlign="space-between center"
+      fxLayoutAlign.xs="start start"
+      fxLayoutGap.xs="8px"
+    >
+      <button mat-stroked-button class="btn-action">
+        <input class="input-upload" id="input-file-id" type="file" accept=".csv" (change)="selectCsvFile($event)" #fileInputRef />
+        <mat-icon *ngIf="!csvFileSelected" class="file-attach">attach_file</mat-icon>
+        <mat-icon *ngIf="csvFileSelected" class="file-attach">done</mat-icon>
+        <label for="input-file-id" class="input-upload-label">
+          <span *ngIf="csvFileSelected">{{ assetUpdationCsvFile?.name }}</span>
+          <span *ngIf="!csvFileSelected">{{ 'manageAssetsComponentSelectCsvFile' | translate }}</span>
+        </label>
+      </button>
+      <button mat-flat-button [loading]="loader" color="accent" (click)="batchAssetUpdation()" [disabled]="!csvFileSelected">
+        {{ 'manageAssetsComponentSubmit' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <app-alert *appCheckPermissions="['update:fleet_assets']; showError: true" [alertType]="'info'" [removeMargin]="true">
+    <span>{{ 'noPermissionToView' | translate }}</span>
+  </app-alert>
+</div>

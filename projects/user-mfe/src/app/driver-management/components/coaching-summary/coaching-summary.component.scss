@@ -1,0 +1,58 @@
+@import './fonts';
+@import './variables';
+
+.stats-card {
+  padding: 0 !important;
+
+  .card-text {
+    font-size: 18px;
+  }
+}
+
+.session-textarea {
+  resize: none;
+}
+
+.custom-stepper {
+  border-radius: 4px;
+  min-height: 71vh;
+
+  ::ng-deep .mat-horizontal-stepper-header-container {
+    border-bottom: 1px solid $light-border;
+    border-radius: 4px;
+    pointer-events: none;
+  }
+
+  ::ng-deep .mat-horizontal-content-container {
+    padding: 24px;
+  }
+}
+
+.coaching-session-card {
+  padding: 0 !important;
+  min-height: 71vh;
+  margin-bottom: 80px;
+}
+
+.action-area {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  border-top: 1px solid $light-border;
+}
+
+::ng-deep .mat-step-header[aria-selected='true'] {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+.dark-theme {
+  .custom-stepper {
+    ::ng-deep .mat-horizontal-stepper-header-container {
+      border-bottom: 1px solid $dark-border;
+    }
+  }
+
+  .action-area {
+    border-top: 1px solid $dark-border;
+  }
+}

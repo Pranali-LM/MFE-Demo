@@ -1,0 +1,159 @@
+<div
+  fxLayout="column"
+  fxLayoutGap="24px"
+  *ngIf="!isSuccess"
+  [ngClass]="{
+    'dark-theme': (dataService._currentTheme | async) === 'dark'
+  }"
+>
+  <h3 class="card-title">{{ 'confirmRequest' | translate }}</h3>
+
+  <div fxLayout="column" fxLayoutGap="4px">
+    <span class="sub-text">{{ 'confirmRequestReadyToSubmit' | translate }}</span>
+    <span class="sub-text">{{ 'confirmRequestTakeMoreTime' | translate }}</span>
+  </div>
+
+  <div fxLayout="column" fxLayoutGap="16px" class="dvr-data">
+    <div fxLayout="row" fxLayoutGap="16px">
+      <div fxLayout="column" fxLayoutGap="24px" fxFlex="50">
+        <div fxLayout="row" fxLayoutGap="24px">
+          <mat-icon>local_shipping</mat-icon>
+          <div fxLayout="column" fxLayoutGap="4px">
+            <span class="dvr-title">{{ 'confirmRequestAssetId' | translate }}</span>
+            <span class="dvr-subtitle">{{ data?.tripDetails?.asset?.assetName || data?.tripDetails?.asset?.assetId }}</span>
+          </div>
+        </div>
+
+        <div fxLayout="row" fxLayoutGap="24px">
+          <mat-icon>event</mat-icon>
+          <div fxLayout="column" fxLayoutGap="4px">
+            <span class="dvr-title">{{ 'confirmRequestTRIPDATE' | translate }}</span>
+            <span class="dvr-subtitle">{{
+              data?.tripDetails?.startTimeUTC
+                | dateConversion
+                  : (dataService._currentTimeZone | async)
+                  : (dataService._currentDateFormat | async)
+                  : data?.tripDetails?.startTime
+            }}</span>
+          </div>
+        </div>
+
+        <div fxLayout="row" fxLayoutGap="24px">
+          <mat-icon>smart_display</mat-icon>
+          <div fxLayout="column" fxLayoutGap="4px">
+            <span class="dvr-title">{{ 'confirmRequestVIDEOSTARTTIME' | translate }}</span>
+            <span class="dvr-subtitle">{{
+              data?.selectedTimeUTC
+                | dateConversion: (dataService._currentTimeZone | async):(dataService._currentDateFormat | async):data?.selectedTimeLocal
+            }}</span>
+          </div>
+        </div>
+
+        <div fxLayout="row" fxLayoutGap="24px">
+          <mat-icon>schedule</mat-icon>
+          <div fxLayout="column" fxLayoutGap="4px">
+            <span class="dvr-title">{{ 'confirmRequestDURATION' | translate }}</span>
+            <span class="dvr-subtitle"
+              >{{ data?.dvrDuration / 60 }}
+              {{ data?.dvrDuration / 60 === 1 ? ('confirmRequestminute' | translate) : ('confirmRequestminutes' | translate) }}</span
+            >
+          </div>
+        </div>
+      </div>
+      <div fxLayout="column" fxLayoutGap="24px" fxFlex="50">
+        <div fxLayout="row" fxLayoutGap="24px">
+          <mat-icon>hd</mat-icon>
+          <div fxLayout="column" fxLayoutGap="4px">
+            <span class="dvr-title">{{ 'confirmRequestVIDEORESOLUTION' | translate }}</span>
+            <span class="dvr-subtitle">{{ data?.videoResolution }}</span>
+          </div>
+        </div>
+
+        <div fxLayout="row" fxLayoutGap="24px">
+          <mat-icon>featured_video</mat-icon>
+          <div fxLayout="column" fxLayoutGap="4px">
+            <span class="dvr-title">{{ 'confirmRequestVIDEOFORMAT' | translate }}</span>
+            <span class="dvr-subtitle">{{ data?.videoFormat | translate }}</span>
+          </div>
+        </div>
+
+        <div fxLayout="row" fxLayoutGap="24px">
+          <mat-icon>dvr</mat-icon>
+          <div fxLayout="column" fxLayoutGap="4px">
+            <span class="dvr-title">{{ 'confirmRequestTYPE' | translate }}</span>
+            <span class="dvr-subtitle"
+              >{{ data?.enabledTimelapse ? ('confirmRequestTimeLapseVideo' | translate) : ('confirmRequestStandardVideo' | translate)
+              }}<sup *ngIf="data?.enabledTimelapse">*</sup></span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="data?.enabledTimelapse">
+      <span class="dvr-hint"><sup>*</sup>{{ 'videoRequestHint' | translate }}</span>
+    </div>
+  </div>
+
+  <div fxFlexAlign="end" fxLayout="row" fxLayoutGap="16px">
+    <button mat-stroked-button mat-dialog-close>{{ 'videoRequestCANCEL' | translate }}</button>
+    <button mat-flat-button color="accent" (click)="onSubmit()" [loading]="loader">{{ 'confirmRequestSubmit' | translate }}</button>
+  </div>
+
+  <app-alert *ngIf="isError" [alertType]="'error'" [removeMargin]="true">{{ 'confirmRequestUnableToRequest' | translate }}</app-alert>
+</div>
+
+<div
+  fxLayout="column"
+  fxLayoutGap="24px"
+  *ngIf="isSuccess"
+  [ngClass]="{
+    'dark-theme': (dataService._currentTheme | async) === 'dark'
+  }"
+>
+  <div fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="start center">
+    <mat-icon class="icon-success">check_circle</mat-icon>
+    <h3 class="card-title">{{ 'confirmRequestVideosuccessfullyrequested!' | translate }}</h3>
+  </div>
+
+  <div fxLayout="column" fxLayoutGap="4px">
+    <span class="sub-text">{{ 'confirmRequestVideoInProgress' | translate }}</span>
+    <span class="sub-text">{{ 'confirmRequestThanks' | translate }}</span>
+  </div>
+
+  <div fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="center" class="request-timeline">
+    <div fxLayout="column" fxLayoutGap="16px" fxLayoutAlign="center center" fxFlex="25">
+      <mat-icon style="color: #005dbb">history_toggle_off</mat-icon>
+      <span class="timeline-description">{{ 'confirmRequestProcessing' | translate }}</span>
+    </div>
+
+    <mat-icon class="timeline-arrow" fxFlex>east</mat-icon>
+
+    <div fxLayout="column" fxLayoutGap="16px" fxLayoutAlign="center center" fxFlex="25">
+      <mat-icon>cloud_upload</mat-icon>
+      <span class="timeline-description">{{ 'confirmRequestVideoUpload' | translate }}</span>
+    </div>
+
+    <mat-icon class="timeline-arrow" fxFlex>east</mat-icon>
+
+    <div fxLayout="column" fxLayoutGap="16px" fxLayoutAlign="center center" fxFlex="25">
+      <mat-icon>smart_display</mat-icon>
+      <span class="timeline-description">{{ 'confirmRequestReadyToView' | translate }}</span>
+    </div>
+  </div>
+
+  <div class="tip-container" fxLayout="column" fxLayoutGap="8px">
+    <span
+      ><strong>{{ 'confirmRequestTips' | translate }}:</strong></span
+    >
+    <ul class="tip-list">
+      <li class="sub-text">{{ 'confirmRequestDashCamOn' | translate }}</li>
+      <li class="sub-text">{{ 'confirmRequestDashCamLocated' | translate }}</li>
+    </ul>
+  </div>
+
+  <div fxFlexAlign="end" fxLayout="row" fxLayoutGap="16px">
+    <button mat-stroked-button (click)="onClose()">{{ 'confirmRequestRequestAnotherVideo' | translate }}</button>
+    <button mat-flat-button color="accent" (click)="navigateToVideoRequests()">{{ 'confirmRequestGoToSearch' | translate }}</button>
+  </div>
+</div>

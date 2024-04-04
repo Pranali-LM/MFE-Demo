@@ -1,0 +1,97 @@
+<div
+  class="stats"
+  fxLayout="row"
+  fxLayout.md="column"
+  fxLayout.sm="column"
+  fxLayout.xs="column"
+  fxLayoutAlign="space-between"
+  fxLayoutAlign.xs="start"
+  fxLayoutGap="24px"
+>
+  <div fxFlex="75" fxLayout="column" fxLayoutGap="24px">
+    <mat-card fxLayout="column" *appCheckUiConfigs="['driver_page:overview_tab:recommended_incidents_list']">
+      <app-driver-highlights
+        [timezone]="currentTimeZone"
+        [dateFormat]="currentDateFormat"
+        [startDate]="startDate"
+        [endDate]="endDate"
+        [driverId]="driverId"
+      >
+      </app-driver-highlights>
+    </mat-card>
+
+    <mat-card>
+      <mat-tab-group class="card-tabs">
+        <!-- Coaching Panel start -->
+        <mat-tab *appCheckUiConfigs="['driver_page:overview_tab:coaching_panel']">
+          <ng-template mat-tab-label>
+            {{ 'driverQueryResultCoachingPanel' | translate }}
+          </ng-template>
+          <app-coaching-panel [startDate]="startDate" [endDate]="endDate" [driverId]="driverId"></app-coaching-panel>
+        </mat-tab>
+
+        <mat-tab>
+          <ng-template mat-tab-label>
+            {{ 'driverQueryResultCompletedSessions' | translate }}
+          </ng-template>
+          <div fxLayout="column" fxLayoutGap="16px">
+            <div fxLayout="row">
+              <app-completed-session-list
+                style="width: 100%"
+                [driverId]="driverId"
+                [startDate]="startDate"
+                [endDate]="endDate"
+              ></app-completed-session-list>
+            </div>
+          </div>
+        </mat-tab>
+        <!-- Coaching Panel end-->
+
+        <!-- Panic button tab start -->
+        <mat-tab [label]="clientConfig?.externalEventsLabel | translate">
+          <app-panic-button [startDate]="startDate" [endDate]="endDate" [driverId]="driverId"></app-panic-button>
+        </mat-tab>
+        <!-- Panic button tab end -->
+      </mat-tab-group>
+    </mat-card>
+  </div>
+
+  <mat-card fxFlex="25" style="align-self: flex-start">
+    <app-driver-stats
+      [driverStats]="driverDetails"
+      [loader]="loader"
+      [driverTagsLoader]="driverTagsLoader"
+      [driverId]="driverId"
+      (isCoachingRequired)="coachingRequired($event)"
+    ></app-driver-stats>
+  </mat-card>
+</div>
+
+<div fxLayout="column" fxLayoutGap="24px" fxLayoutGap.xs="16px" fxLayoutAlign="start stretch" style="margin-top: 2%">
+  <div
+    *ngIf="showViolationCharts && loadCharts"
+    fxLayout="row"
+    fxLayout.sm="column"
+    fxLayout.xs="column"
+    fxLayout.md="column"
+    fxLayoutGap="24px"
+    fxLayoutAlign="space-between stretch"
+  >
+    <mat-card fxFlex="49.3" class="overflow-hidden" *appCheckUiConfigs="['driver_page:overview_tab:incident_summary']">
+      <app-incident-summary [eventDiff]="driverEventDiffrence" [loader]="loader" [currentTheme]="currentTheme" [type]="'driver'">
+      </app-incident-summary>
+    </mat-card>
+
+    <mat-card fxFlex="49.3" class="overflow-hidden" *appCheckUiConfigs="['driver_page:overview_tab:incident_trend']">
+      <app-driver-incident-trend
+        [startDate]="startDate"
+        [endDate]="endDate"
+        [fleetId]="fleetId"
+        [driverId]="driverId"
+        [enableEventSelection]="true"
+        [currentTheme]="currentTheme"
+      >
+      </app-driver-incident-trend>
+    </mat-card>
+  </div>
+</div>

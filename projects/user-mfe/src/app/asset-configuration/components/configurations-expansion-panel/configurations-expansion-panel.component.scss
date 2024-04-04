@@ -1,0 +1,73 @@
+@import './variables';
+@import './fonts';
+
+mat-expansion-panel {
+  box-shadow: none !important;
+  border: 1px solid $light-border;
+}
+
+.expansion-panel-headers-align .mat-expansion-panel-header-title,
+.expansion-panel-headers-align .mat-expansion-panel-header-description {
+  flex-basis: 0;
+}
+
+.disabled-description {
+  margin-right: 24px;
+}
+
+.save-btn {
+  float: right;
+}
+
+.control-panel {
+  height: 48px;
+  position: relative;
+  display: inline-block;
+}
+
+.panel-title {
+  align-items: center;
+}
+
+.placeholder {
+  font-size: $body-font-size !important;
+  font-weight: 400;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.invalid-panel {
+  border: 1px solid $light-error;
+}
+.error-message {
+  color: $light-error;
+}
+
+.beta-tag {
+  color: $white-color;
+  font-size: $caption-font-size;
+  font-weight: $medium-font-weight;
+  pointer-events: none;
+  background-color: $light-error !important;
+}
+
+.btn-config-faq {
+  visibility: hidden;
+}
+
+.mat-expansion-panel-header:hover .btn-config-faq {
+  visibility: visible;
+}
+
+// mobile
+@media (min-width: 320px) and (max-width: 767px) {
+  ::ng-deep .mat-expansion-panel-body {
+    overflow: auto;
+    overflow-y: hidden;
+  }
+
+  .custom-expansion-panel {
+    min-width: 640px !important;
+    padding-right: 24px !important;
+  }
+}

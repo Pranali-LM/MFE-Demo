@@ -1,0 +1,194 @@
+<div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center" fxLayoutAlign.xs="start start">
+  <h3 class="title card-title">
+    {{ 'recommendedincidentsHeader' | translate }}
+    <button
+      mat-icon-button
+      class="btn-faq"
+      (click)="dataService?.openFaq('recommendedIncidents')"
+      matTooltip="{{ 'viewInformation' | translate }}"
+      matTooltipPosition="right"
+    >
+      <mat-icon>info_outline</mat-icon>
+    </button>
+  </h3>
+
+  <div class="event-selector" fxLayout="row" fxLayoutGap="18px">
+    <mat-form-field class="select-box">
+      <mat-label>{{ 'driverQueryResultSelectIncident' | translate }}</mat-label>
+      <mat-select disableOptionCentering [formControl]="highlightsEventType">
+        <ng-container *ngFor="let event of eventList">
+          <mat-option [value]="event?.key">{{ event?.label | translate }}</mat-option>
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
+    <!-- Display child configs based on the selected event using mat-select -->
+    <div *ngIf="displaySubEventSelection">
+      <mat-form-field>
+        <mat-label>{{ "selectSubEventFilter" | translate }}</mat-label>
+        <mat-select [formControl]="highlightsSubEventType">
+          <ng-container *ngFor="let childConfig of subEventList">
+            <mat-option  [value]="childConfig?.key">
+              {{ childConfig?.label | translate }}
+            </mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+</div>
+
+<div class="severity-video-content" fxLayout="row" #driverHighlights>
+  <app-alert *ngIf="!loader && !videoList.length" [alertType]="'info'">
+    {{ 'driverHighlightsNotFound' | translate }}
+  </app-alert>
+</div>
+
+<div *ngIf="loader" fxLayout="row" fxLayoutGap="24px">
+  <div class="skeleton-loader" [style.width.px]="carouselCardWidth" *ngFor="let event of dummyVideoList">
+    <div class="skeleton-card xs" style="margin-top: 0"></div>
+    <div class="skeleton-line"></div>
+    <div class="skeleton-line"></div>
+    <div class="skeleton-line" style="max-width: 80px"></div>
+  </div>
+</div>
+
+<div class="incident-carousel" *ngIf="!loader" fxLayout="row" fxLayoutGap="24px">
+  <ng-container *ngFor="let incident of paginatedVideoList; let i = index; let isFirst = first; let isLast = last">
+    <div class="carousel-card" [style.width.px]="carouselCardWidth">
+      <div class="media">
+        <video
+          class="incident-video-thumbnail"
+          [class.row-first-item]="isFirst"
+          [class.row-last-item]="isLast"
+          [ngStyle]="{
+            'object-fit': incident?.videoDetails
+              ? incident?.videoDetails?.videoWidth >= 640 && incident?.videoDetails?.videoType === 'sideBySide'
+                ? 'contain'
+                : 'fill'
+              : 'contain'
+          }"
+          [ngClass]="incident?.isVideo ? 'd-inline-block' : 'd-none'"
+          (click)="showMedia(incident)"
+          preload="metadata"
+          #incidentVideo
+          playsinline
+          [muted]="'muted'"
+          onmouseover="this.play()"
+          onmouseout="this.pause();"
+        >
+          <source
+            [src]="
+              ((incident?.mediaFiles && incident?.mediaFiles?.length && incident?.mediaFiles[0]?.mediaFile) || incident?.eventVideoFile) +
+              '#t=0.1'
+            "
+            type="video/mp4"
+          />
+          {{ 'driverHighlightsBrowserNotSupported' | translate }}
+        </video>
+
+        <img
+          class="incident-video-thumbnail"
+          [class.row-first-item]="isFirst"
+          [class.row-last-item]="isLast"
+          [ngStyle]="{
+            'object-fit': incident?.imageDetails
+              ? incident?.imageDetails?.imageWidth >= 640 && incident?.imageDetails?.imageType === 'sideBySide'
+                ? 'contain'
+                : 'fill'
+              : 'contain'
+          }"
+          [ngClass]="incident?.isVideo ? 'd-none' : 'd-inline-block'"
+          (click)="showMedia(incident)"
+          [src]="(incident?.mediaFiles && incident?.mediaFiles?.length && incident?.mediaFiles[0]?.mediaFile) || incident?.eventVideoFile"
+        />
+        <mat-chip-list class="media-chip" *ngIf="!incident?.isVideo">
+          <mat-chip>{{ 'commonIncidentViewImage' | translate }}</mat-chip>
+        </mat-chip-list>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="space-between start">
+        <div class="details" fxLayout="column" fxLayoutGap="4px">
+          <span class="event-name text">{{ incident?.eventTypeLabel | translate }}</span>
+          <span class="timestamp text" *ngIf="incident?.timestampUTC">
+            {{ incident?.timestampUTC | dateConversion : timezone : dateFormat : incident?.timestamp }}
+          </span>
+          <span class="drivername text" *ngIf="(incident?.driverName || incident?.driverId) && !clientConfig?.isAssetCentric">
+            {{ incident?.driverId.toUpperCase() === '_UNASSIGNED' ? ('DriverIdUnassigned' | translate) : (incident?.driverName || incident?.driverId || 'N/A') }}
+          </span>
+          <span class="drivername text" *ngIf="(incident?.asset?.assetName || incident?.assetName || incident?.assetId || incident?.asset?.assetId) && clientConfig?.isAssetCentric">
+            {{ incident?.assetName || incident?.asset?.assetName || incident?.assetId || incident?.asset?.assetId || 'N/A' }}
+          </span>
+          <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
+            <mat-chip-list
+              *ngIf="incident?.bookmark && !incident?.coachingCompleted && !incident?.reportBug"
+              matTooltip="{{ 'commonIncidentViewCoachingStatus' | translate }}"
+              matTooltipPosition="below"
+              ><mat-chip class="incident-chip chip-warn">{{ 'commonIncidentViewCoachingPending' | translate }} </mat-chip></mat-chip-list
+            >
+            <mat-chip-list
+              *ngIf="incident?.bookmark && incident?.coachingCompleted && !incident?.reportBug"
+              matTooltip="{{ 'commonIncidentViewCoachingStatus' | translate }}"
+              matTooltipPosition="below"
+              ><mat-chip class="incident-chip chip-success"
+                >{{ 'commonIncidentViewCoachingCompleted' | translate }}
+              </mat-chip></mat-chip-list
+            >
+            <mat-chip-list
+              *ngIf="incident?.challengeRaised && !incident?.challengeResolved && !incident?.reportBug"
+              matTooltip="{{ 'commonIncidentViewChallengeStatus' | translate }}"
+              matTooltipPosition="below"
+              ><mat-chip class="incident-chip chip-warn">{{ 'commonIncidentViewPendingReview' | translate }}</mat-chip></mat-chip-list
+            >
+            <mat-chip-list
+              *ngIf="incident?.challengeRaised && incident?.challengeResolved && !incident?.challengeAccepted"
+              matTooltip="{{ 'commonIncidentViewChallengeStatus' | translate }}"
+              matTooltipPosition="below"
+              ><mat-chip class="incident-chip chip-error">{{ 'commonIncidentViewChallengeRejected' | translate }}</mat-chip></mat-chip-list
+            >
+
+            <mat-chip-list
+              *ngIf="incident?.reportBug"
+              matTooltip="{{ 'commonIncidentViewIncidentStatus' | translate }}"
+              matTooltipPosition="below"
+              ><mat-chip class="incident-chip chip-error">{{ 'commonIncidentViewIncidentDiscarded' | translate }}</mat-chip></mat-chip-list
+            >
+          </div>
+        </div>
+
+        <div class="action" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
+          <mat-spinner *ngIf="incident?.actionLoader" [diameter]="20"></mat-spinner>
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu" xPosition="before">
+            <button
+              *ngIf="!incident?.bookmark && !incident?.challengeRaised && !incident?.reportBug && incident?.enableSelectForCoaching"
+              mat-menu-item
+              (click)="coachIncident(incident)"
+            >
+              <mat-icon>school</mat-icon><span>{{ 'commonIncidentViewSelectForCoaching' | translate }}</span>
+            </button>
+            <button mat-menu-item (click)="viewTripDetails(incident)">
+              <mat-icon>pin_drop</mat-icon><span>{{ 'commonIncidentViewTripDetails' | translate }}</span>
+            </button>
+            <button
+              *ngIf="!incident?.bookmark && !incident?.challengeRaised && !incident?.reportBug"
+              mat-menu-item
+              (click)="discardIncident(incident)"
+            >
+              <mat-icon>block</mat-icon><span>{{ 'commonIncidentViewDiscardIncident' | translate }}</span>
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<mat-paginator
+  fxShow="videoListObservable?.length > pageSize"
+  hidePageSize
+  (page)="pageEvent($event)"
+  [showFirstLastButtons]="false"
+  #paginator
+  [pageSize]="pageSize"
+></mat-paginator>

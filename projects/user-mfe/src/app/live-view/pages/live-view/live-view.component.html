@@ -1,0 +1,195 @@
+<app-side-navigation>
+  <div fxLayout="row" fxLayoutAlign="stretch" class="live-area" [ngClass]="currentTheme === 'dark' ? 'dark-theme' : ''">
+    <div class="live-asset-map" [ngStyle]="{ width: mapWidth }">
+      <app-mapbox-liveview
+        fxFlex="100"
+        [allDeviceList]="assetListDataSource.filteredData"
+        (markerClick)="deviceMarkerClick($event)"
+        [zoom]="zoom"
+        [mapWidth]="mapWidth"
+        [pageIndex]="pageIndex"
+        #mapboxLiveView
+      ></app-mapbox-liveview>
+    </div>
+
+    <div class="card-block mat-elevation-z1 animate" [ngStyle]="{ transform: 'translateX(' + translateVal + 'px)' }">
+      <button
+        class="table-toggle mat-elevation-z1"
+        (click)="toggleTable()"
+        [matTooltip]="viewType === 'table' ? ('liveViewComponentHideTable' | translate) : ('liveViewComponentShowTable' | translate)"
+        [matTooltipPosition]="'left'"
+      >
+        <mat-icon class="toggle-icon right-icon" *ngIf="viewType === 'table'">arrow_right</mat-icon>
+        <mat-icon class="toggle-icon left-icon" *ngIf="viewType === 'map'">arrow_left</mat-icon>
+      </button>
+
+      <mat-card class="live-details-card">
+        <div fxLayout="column" style="padding: 16px 16px 0 16px">
+          <mat-form-field appearance="outline">
+            <mat-select disableOptionCentering [formControl]="selectedFilter" (selectionChange)="selectFilter($event)">
+              <ng-container *ngFor="let option of optionList">
+                <mat-option [value]="option.id">{{ option.label | translate }}</mat-option>
+              </ng-container>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- tagging filter block -->
+
+          <app-tagging-filter-v2
+            *ngIf="selectedFilter.value === 'tags'"
+            (selectedTags)="selectedTags($event)"
+            [entityType]="'asset'"
+            [dropDownType]="'assign'"
+            [numOfTagsToDisplay]="1"
+            [assignedTagList]="liveViewTags"
+          ></app-tagging-filter-v2>
+
+          <div class="filter" fxLayoutGap="12px" fxLayoutAlign="space-between baseline" *ngIf="selectedFilter.value === 'assetId'">
+            <mat-form-field appearance="outline">
+              <input matInput placeholder="{{ 'liveViewComponentEnterAssetId' | translate }}" [formControl]="searchAssetIdControl" />
+              <mat-icon
+                matSuffix
+                (click)="searchAssetIdControl.reset()"
+                *ngIf="searchAssetIdControl.value"
+                style="cursor: pointer"
+                matTooltip="Clear"
+                >close</mat-icon
+              >
+            </mat-form-field>
+            <button
+              class="btn-icon"
+              mat-icon-button
+              [matMenuTriggerFor]="assetCategoriesMenu"
+              matTooltip="{{ 'liveViewComponentAssetFilter' | translate }}"
+              [disabled]="!allAssets.length"
+            >
+              <mat-icon>filter_list</mat-icon>
+            </button>
+          </div>
+        </div>
+        <!-- tagging filter block -->
+
+        <div fxLayout="column" fxLayoutGap="24px">
+          <app-alert [alertType]="'info'" [removeMargin]="true">
+            {{ 'liveViewMapNoMarkerInfoMessage' | translate }}
+          </app-alert>
+        </div>
+
+        <div fxLayout="column" fxLayoutGap="24px">
+          <div class="table-wrap">
+            <table mat-table [dataSource]="loader ? dummyAssetListDataSource : assetListDataSource" class="width-100 asset-list-table">
+              <ng-container matColumnDef="assetId">
+                <th mat-header-cell *matHeaderCellDef>
+                  {{ 'liveViewComponentAssetId' | translate }}
+                </th>
+                <td mat-cell *matCellDef="let element; let i = index">
+                  <div *ngIf="loader" class="skeleton-line"></div>
+                  <span *ngIf="!loader" class="value" [class]="element?.state | async" [title]="element?.assetId">
+                    {{ element?.asset?.assetName || element?.assetName || element?.assetId }}
+                    <!-- <button mat-flat-button (click)="openAssetDetails(element)"></button> -->
+                  </span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>{{ 'liveViewAssetDetailsActions' | translate }}</th>
+                <td mat-cell *matCellDef="let element; let i = index">
+                  <div *ngIf="loader" class="skeleton-line" style="width: 40px"></div>
+                  <div *ngIf="!loader" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+                    <button
+                      mat-icon-button
+                      [disabled]="!(element?.deviceId && element?.tripId)"
+                      (click)="navigateToTripDetailsPage(element)"
+                      matTooltip="{{ 'liveViewComponentTripDetails' | translate }}"
+                      matTooltipPosition="left"
+                      color="accent"
+                    >
+                      <mat-icon>pin_drop</mat-icon>
+                    </button>
+
+                    <ng-container *appCheckPermissions="['request:live_stream']">
+                      <button
+                        *ngIf="element?.deviceId && (element?.ongoing || element?.isAlwaysOnlineEnabled)" 
+                        mat-icon-button
+                        [disabled]="(element?.state | async) !== deviceState.Active && !element?.isAlwaysOnlineEnabled"
+                        (click)="requestLivestreamAction(element, $event)"
+                        matTooltip="{{ 'liveViewComponentLiveStream' | translate }}"
+                        matTooltipPosition="left"
+                        color="accent"
+                      >
+                        <mat-icon>play_circle_outline</mat-icon>
+                      </button>
+                    </ng-container>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+              <tr
+                mat-row
+                [ngClass]="{ selected: (selectedDevice$ | async)?.assetId === row.assetId, disable: loader }"
+                class="asset-table-row"
+                (click)="onTableRowClick(row)"
+                *matRowDef="let row; columns: displayedColumns"
+              ></tr>
+            </table>
+
+            <app-alert *ngIf="!loader && !assetListDataSource.data?.length" [alertType]="'info'" [insideTable]="true">
+              {{ 'liveViewComponentNoAssetsFound' | translate }}
+            </app-alert>
+
+            <app-alert
+              *ngIf="assetListDataSource.data?.length && assetListDataSource.filter && !assetListDataSource.filteredData.length"
+              [alertType]="'info'"
+              [insideTable]="true"
+            >
+              {{ 'liveViewComponentNoAssetMatch' | translate }} "{{ searchAssetIdControl.value }}"
+            </app-alert>
+
+            <mat-paginator
+              class="sticky-paginator"
+              [hidePageSize]="true"
+              #paginator="matPaginator"
+              [length]="assetListDataSource?.data.length"
+              [pageSize]="tablePageSize"
+              showFirstLastButtons
+            >
+            </mat-paginator>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-drawer #drawer position="end" [autoFocus]="false">
+        <mat-card class="live-details-card">
+          <div fxLayout="column" style="padding: 24px" fxLayoutGap="24px">
+            <div fxLayout="row" fxLayoutGap="8px">
+              <button mat-icon-button (click)="closeAssetDetails()">
+                <mat-icon>keyboard_backspace</mat-icon>
+              </button>
+              <h3>{{ 'liveDetails' | translate }}</h3>
+            </div>
+
+            <app-asset-details-modal
+              [assetDetails]="selectedDevice$ | async"
+              (openLiveStream)="requestLivestreamAction($event)"
+            ></app-asset-details-modal>
+          </div>
+        </mat-card>
+      </mat-drawer>
+    </div>
+  </div>
+
+  <mat-menu #assetCategoriesMenu="matMenu">
+    <form [formGroup]="assetCategories">
+      <div mat-menu-item role="menuitemcheckbox">
+        <mat-checkbox [formControlName]="deviceState.Active">{{ 'liveViewComponentActiveAssets' | translate }}</mat-checkbox>
+      </div>
+      <div mat-menu-item role="menuitemcheckbox">
+        <mat-checkbox [formControlName]="deviceState.Inactive">{{ 'liveViewComponentParkedAssets' | translate }}</mat-checkbox>
+      </div>
+      <div mat-menu-item role="menuitemcheckbox">
+        <mat-checkbox [formControlName]="deviceState.Amber">{{ 'liveViewComponentDormantAssets' | translate }}</mat-checkbox>
+      </div>
+    </form>
+  </mat-menu>
+</app-side-navigation>

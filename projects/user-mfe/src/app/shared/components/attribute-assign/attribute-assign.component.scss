@@ -1,0 +1,34 @@
+.btn-hierarchy {
+  margin-top: 12px;
+}
+.grandchild {
+  padding: 0 24px !important;
+}
+
+@import './fonts';
+
+.input-search {
+  height: 50px;
+  padding: 0px 0px 0px 0px;
+  margin-left: 15px;
+}
+
+.stats-card {
+  padding: 0 !important;
+
+  .card-text {
+    font-size: 20px;
+  }
+}
+
+.custom-tag-assignment {
+  ::ng-deep .mat-select-value {
+    height: 48px !important;
+  }
+}
+
+::ng-deep .mat-optgroup-label {
+  font-size: $caption-font-size !important;
+  text-transform: uppercase;
+  font-family: $font-family;
+}

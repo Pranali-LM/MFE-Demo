@@ -1,0 +1,71 @@
+@import './variables';
+@import './fonts';
+@import './colors';
+
+.header {
+  background-color: $white-color;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  box-shadow: $card-shadow;
+  height: 64px;
+
+  .logo-image {
+    width: 140px;
+    height: 40px;
+    position: relative;
+  }
+
+  .header-chip {
+    background-color: $white-color;
+    border: 1px solid $light-border;
+  }
+}
+
+.dark-theme {
+  &.header {
+    background: $dark-background-contrast !important;
+    color: $white-color !important;
+  }
+}
+
+.route-name {
+  font-size: $body-font-size;
+  font-weight: $normal-font-weight;
+}
+
+.user-info {
+  cursor: default !important;
+}
+
+.btn-profile {
+  font-size: $heading-font-size;
+  background-color: $light-accent;
+  color: $light-accent-contrast;
+  box-shadow: none !important;
+  font-weight: $medium-font-weight;
+}
+
+.dark-theme {
+  .btn-profile {
+    background-color: $dark-accent;
+    color: $dark-accent-contrast;
+  }
+
+  .header-chip {
+    background-color: $dark-background-contrast;
+    border: 1px solid $dark-border;
+  }
+}
+
+// mobile
+@media (min-width: 320px) and (max-width: 767px) {
+  .header {
+    .logo-image {
+      width: 100px;
+      height: 28px;
+    }
+  }
+}

@@ -1,0 +1,26 @@
+<div fxLayout="column" fxLayoutAlign="start stretch" fxLayoutAlign.xs="start stretch" fxLayoutGap="24px">
+  <h3 class="title card-title">
+    {{ 'incidentSummaryGraphTitle' | translate }}
+    <button
+      mat-icon-button
+      class="btn-faq"
+      (click)="dataService?.openFaq(type === 'fleet' ? 'incidentSummary' : 'driverIncidentSummary')"
+      matTooltip="{{'viewInformation' | translate }}"
+      matTooltipPosition="right"
+    >
+      <mat-icon>info_outline</mat-icon>
+    </button>
+  </h3>
+
+  <div class="skeleton-loader" *ngIf="loader">
+    <div class="skeleton-card md" style="margin-top: 24px"></div>
+  </div>
+
+  <div [ngClass]="!loader && showChart ? 'chart-container md' : ''">
+    <canvas id="incidentSummaryChart" [ngClass]="!loader && showChart ? 'd-block' : 'd-none'"></canvas>
+  </div>
+</div>
+
+<app-alert *ngIf="!loader && !showChart" [alertType]="'info'">
+  {{ 'incidentSummaryGraphNotFound' | translate }}
+</app-alert>

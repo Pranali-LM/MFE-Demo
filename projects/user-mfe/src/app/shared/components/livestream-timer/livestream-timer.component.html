@@ -1,0 +1,9 @@
+<div fxLayout="row" fxLayoutAlign="start center">
+  <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="4px">
+    <span>{{ 'liveStreamTimerSreamDuration' | translate }}</span>
+    <mat-icon matTooltip="{{ 'liveStreamTimerDataCosts' | translate }}" class="info-icon">info</mat-icon>
+    <span> &nbsp; - &nbsp;</span>
+  </div>
+
+  <span>{{ elapsedTime | minuteSeconds }} </span>
+</div>

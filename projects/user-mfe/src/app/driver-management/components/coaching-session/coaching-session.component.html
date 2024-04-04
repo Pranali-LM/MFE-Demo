@@ -1,0 +1,84 @@
+<app-side-navigation>
+  <!-- header start-->
+  <div class="page-subheader" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="16px">
+    <div fxLayout="row" fxLayoutGap="16px">
+      <button style="color: white" matTooltip="{{'Previous page' | translate}}" mat-icon-button (click)="openEndSessionConfirmationDialog('BackSpace')">
+        <mat-icon>keyboard_backspace</mat-icon>
+      </button>
+      <h3 class="card-title">{{ 'coachingSession' | translate }}</h3>
+    </div>
+
+    <h3 class="card-title">
+      <app-timer [state]="noActionTimerState"></app-timer>
+    </h3>
+
+    <button mat-raised-button class="btn-page-subheader" (click)="openEndSessionConfirmationDialog('ENDSESSION')">
+      {{ 'ENDSESSION' | translate }}
+    </button>
+  </div>
+  <!-- header ends-->
+
+  <div
+    class="container"
+    [ngClass]="{
+      'dark-theme': (dataService._currentTheme | async) === 'dark'
+    }"
+  >
+    <mat-card fxLayout="column" fxLayoutGap="24px" class="coaching-session-card">
+      <mat-stepper #stepper [linear]="isLinear" class="custom-stepper" [@.disabled]="true">
+          <!-- driver overview step -->
+          <mat-step>
+              <ng-template matStepLabel>{{ 'DriverDetails' | translate }}</ng-template>
+
+              <div fxLayout="column" fxLayoutGap="24px">
+                <app-driver-overview [driverDetails]="driverDetails" [loader]="getCoachableIncidentLoader"></app-driver-overview>
+
+                <mat-card
+                  class="action-area"
+                  fxLayout="row"
+                  fxLayoutAlign="space-between center"
+                  [ngStyle]="{ width: isSideNavOpen ? 'calc(100vw - 220px)' : '100vw', left: isSideNavOpen ? '220px' : '' }"
+                >
+                  <span fxFlex="75">{{ 'driverOverViewFooter' | translate }} </span>
+                  <button type="button" mat-flat-button color="accent" class="stepper-button" (click)="next()" matStepperNext>
+                    {{ 'NEXTSTEP' | translate }}
+                  </button>
+                </mat-card>
+              </div>
+          </mat-step>
+
+          <!-- coaching incident step -->
+          <mat-step>
+            <ng-template matStepLabel>{{ 'CoachingIncidents' | translate }}</ng-template>
+
+            <div fxLayout="column" fxLayoutGap="24px">
+              <app-coachable-incidents
+                [isSideNavOpen]="isSideNavOpen"
+                [stepper]="stepper"
+                [driverDetails]="driverDetails"
+                (clickPrevious)="clickPrevious($event)"
+                (clickNext)="nextButton($event); next()"
+              ></app-coachable-incidents>
+            </div>
+          </mat-step>
+
+          <!-- coaching summary step -->
+          <mat-step>
+              <ng-template matStepLabel>{{'CoachingSummary' | translate}}</ng-template>
+              <div fxLayout="column" fxLayoutGap="24px">
+                <app-coaching-summary
+                  [isSideNavOpen]="isSideNavOpen"
+                  [driverDetails]="driverDetails"
+                  [coachedDetails]="coachingDetails"
+                  [stepper]="stepper"
+                  [loading]="coachingCompleteLoader"
+                  (clickPrevious)="clickPrevious($event)"
+                  (coachingComplete)="coachingComplete($event)"
+                >
+                </app-coaching-summary>
+              </div>
+          </mat-step>
+      </mat-stepper>
+    </mat-card>
+  </div>
+</app-side-navigation>

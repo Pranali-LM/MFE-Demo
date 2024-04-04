@@ -1,0 +1,114 @@
+<div class="width-100">
+  <div class="skeleton-loader" *ngIf="assetConfigService.isLoadingConfig | async; else config">
+    <ng-container *ngFor="let i of [].constructor(4)">
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line"></div>
+      <br />
+    </ng-container>
+  </div>
+</div>
+
+<ng-template #config>
+  <ng-container *ngIf="settingsForm; else noConfig">
+    <div class="config-wrap" fxLayout="column" fxLayoutGap="24px" fxLayoutAlign="center stretch">
+      <app-alert [alertType]="'error'" *ngIf="settingsForm.invalid">
+        {{ 'dutyTypePleaseEnter' | translate }}
+      </app-alert>
+
+      <form [formGroup]="settingsForm">
+        <ng-container *ngTemplateOutlet="accordian; context: { panels: expansionPanels, formGroup: settingsForm }"></ng-container>
+      </form>
+    </div>
+  </ng-container>
+</ng-template>
+
+<ng-template #noConfig>
+  <app-alert [alertType]="'error'">
+    {{ 'dutyTypeFetchConfiguration' | translate }}
+  </app-alert>
+</ng-template>
+
+<ng-template #accordian let-panels="panels" let-formGroup="formGroup">
+  <mat-accordion class="expansion-panel-headers-align">
+    <div class="custom-expansion-panel" [formGroup]="getFormGroup(formGroup, panel.panelKey)" *ngFor="let panel of panels">
+      <mat-expansion-panel
+        [ngClass]="{ 'invalid-panel': formGroup.get(panel.panelKey).invalid }"
+        [hideToggle]="panel?.content?.length === 0 && panel?.internalPanel?.length === 0"
+        [disabled]="panel.disabled ? closePanel(idx) : false"
+        #idx
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title class="panel-title" (click)="$event.stopPropagation()">
+            <div fxLayout="row" fxLayoutGap="18px" fxLayoutAlign="start center">
+              <span style="width: max-content;">{{ panel.title | translate }}</span>
+
+              <mat-chip-list *ngIf="panel?.beta">
+                <mat-chip class="beta-tag">BETA</mat-chip>
+              </mat-chip-list>
+
+              <button
+                *ngIf="panel?.showFAQ && !panel?.disabled"
+                mat-icon-button
+                class="btn-config-faq"
+                (click)="dataService?.openConfigDescription(panel.title)"
+                matTooltip="{{ 'viewInformation' | translate }}"
+                matTooltipPosition="right"
+              >
+                <mat-icon>info_outline</mat-icon>
+              </button>
+
+            </div>
+            <span *ngIf="formGroup.get(panel.panelKey).invalid" class="error-message"> * </span>
+          </mat-panel-title>
+
+          <mat-panel-description
+            [ngClass]="{
+              'disabled-description': panel?.disabled || !panel?.content?.length
+            }"
+            *ngIf="panel?.description && panel?.description.length"
+            (click)="$event.stopPropagation()"
+          >
+            <div class="width-100 control-panel" fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="space-between center">
+              <ng-container *ngFor="let config of panel?.description; let i = index">
+                <span *ngIf="panel?.description?.length === 1"></span>
+                <app-dynamic-form-control [form]="getFormGroup(formGroup, panel.panelKey)" [config]="config"> </app-dynamic-form-control>
+              </ng-container>
+            </div>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div
+          fxLayout="row wrap"
+          fxLayoutGap="48px grid"
+          fxLayoutAlign="start"
+          fxLayout.xs="column"
+          fxLayoutAlign.xs="space-between start"
+          style="padding-bottom: 12px"
+          *ngIf="panel?.content && panel?.content.length"
+        >
+          <ng-container *ngFor="let config of panel?.content">
+            <app-dynamic-form-control
+              fxFlex.xs="100"
+              fxFlex.sm="50"
+              fxFlex.md="33"
+              fxFlex.lg="33"
+              *ngIf="config?.ngIf ? config?.ngIf(getFormGroup(formGroup, panel?.panelKey)) : true"
+              [form]="getFormGroup(formGroup, panel.panelKey)"
+              [config]="config"
+            >
+            </app-dynamic-form-control>
+          </ng-container>
+        </div>
+
+        <ng-container *ngIf="panel?.internalPanel?.length > 0">
+          <ng-container
+            *ngTemplateOutlet="
+              accordian;
+              context: { panels: panel?.internalPanel, formGroup: getFormGroup(getFormGroup(formGroup, panel.panelKey), 'internalPanel') }
+            "
+          ></ng-container>
+        </ng-container>
+      </mat-expansion-panel>
+    </div>
+  </mat-accordion>
+</ng-template>

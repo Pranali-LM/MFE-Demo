@@ -1,0 +1,87 @@
+<div class="stats" fxLayout="column" fxLayoutGap="24px">
+  <div class="stats-card">
+    <div class="skeleton-loader" *ngIf="loader">
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line"></div>
+    </div>
+    <ng-container *ngIf="!loader">
+      <div class="card-title">INCIDENT TIME</div>
+      <div class="card-text">
+        {{
+          incidentDetails?.timestampUTC
+            | dateConversion
+              : (dataService._currentTimeZone | async)
+              : (dataService._currentDateFormat | async)
+              : incidentDetails?.timestamp || '-'
+        }}
+      </div>
+    </ng-container>
+  </div>
+  <div class="stats-card">
+    <div class="skeleton-loader" *ngIf="loader">
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line"></div>
+    </div>
+    <ng-container *ngIf="!loader">
+      <div class="card-title">DRIVER</div>
+      <div class="card-text">{{ incidentDetails?.driverName || incidentDetails?.driverId || '-' }}</div>
+    </ng-container>
+  </div>
+  <div class="stats-card">
+    <div class="skeleton-loader" *ngIf="loader">
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line"></div>
+    </div>
+    <ng-container *ngIf="!loader">
+      <div class="card-title">ASSET ID</div>
+      <div class="card-text">{{ incidentDetails?.asset?.assetId || '-' }}</div>
+    </ng-container>
+  </div>
+  <div class="stats-card">
+    <div class="skeleton-loader" *ngIf="loader">
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line"></div>
+    </div>
+    <ng-container *ngIf="!loader">
+      <div class="card-title">DRIVER ID</div>
+      <div class="card-text">{{ incidentDetails?.driverId || '-' }}</div>
+    </ng-container>
+  </div>
+
+  <div class="stats-card">
+    <div class="skeleton-loader" *ngIf="loader">
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line"></div>
+    </div>
+    <ng-container *ngIf="!loader">
+      <div class="card-title">STATUS</div>
+      <div fxLayout="row" fxLayoutAlign="space-between center" >
+        <div class="card-text">
+          <mat-chip-list>
+            <mat-chip *ngFor="let tag of workflowTags">
+              {{ tag}}
+            </mat-chip>
+            <mat-chip *ngIf="workflowTags?.length === 0">
+              {{ workFlowStatus}}
+            </mat-chip>
+          </mat-chip-list>               
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="16px">
+          <button mat-stroked-button 
+            color="accent" 
+            (click)="markAsNew()"
+            [loading]="workflowTagLoader">
+              MARK AS NEW
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <app-tag-chip [tagList]="eventTagList" 
+          [eventIndex]="incidentDetails?.eventIndex" 
+          [loader]="loader" [entityName]="'event'" 
+          [tripId]="incidentDetails?.tripId"
+          [tagListLoader]="tagListLoader">
+  </app-tag-chip>
+</div>

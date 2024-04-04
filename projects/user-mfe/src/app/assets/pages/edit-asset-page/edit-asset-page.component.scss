@@ -1,0 +1,14 @@
+@import './variables';
+@import './fonts';
+
+.loading-shade {
+  position: absolute;
+}
+
+.placeholder {
+  font-size: $caption-font-size !important;
+}
+
+.deviceId-dutyTye-row {
+  margin-bottom: 0px !important;
+}

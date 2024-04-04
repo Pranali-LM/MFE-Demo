@@ -1,0 +1,166 @@
+<app-side-navigation>
+  <div class="page-subheader" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="16px">
+    <div fxLayout="row" fxLayoutGap="16px">
+      <button style="color: #ffffff" matTooltip="{{ 'PreviousPageToolTip' | translate }}" mat-icon-button (click)="navigateBack()">
+        <mat-icon>keyboard_backspace</mat-icon>
+      </button>
+      <h3 class="card-title">{{ actionName | translate | titlecase }} {{ 'Asset' | translate }}</h3>
+    </div>
+  </div>
+
+  <form fxLayout="column" autocomplete="off" novalidate [formGroup]="assetForm" *ngIf="assetForm; else loadingAssetDetails">
+    <section class="container" fxLayout="column" fxLayoutGap="24px">
+      <!-- Basic Information -->
+      <mat-card fxLayout="row" fxLayout.sm="column" fxLayoutAlign="space-between start" fxLayoutGap="96px" fxLayoutGap.sm="24px">
+        <div fxLayout="column" fxLayoutGap="8px" fxFlex="35">
+          <h3>{{ 'EditAssetBasicInformation' | translate }}</h3>
+          <span class="sub-text" *ngIf="!clientConfig?.isAssetCentric">{{ 'EditAssetBasicDescription' | translate }}</span>
+          <span class="sub-text" *ngIf="clientConfig?.isAssetCentric">{{ 'EditAssetBasicDescriptionAssetcentric' | translate }}</span>
+        </div>
+
+        <div fxFlex fxLayout="column" fxLayoutGap="24px" style="width: 100%">
+          <div fxLayout="row" fxLayoutGap="24px" class="deviceId-dutyTye-row">
+            <!-- Device ID -->
+            <ng-container *ngIf="isDeviceIdPrimaryKey(); else serialNumberValue">
+              <mat-form-field appearance="outline" fxFlex *ngIf="assetDetails?.deviceId">
+                <mat-label>{{ 'manageDeviceComponentDeviceID' | translate }}</mat-label>
+                <input matInput formControlName="deviceId" type="text" name="deviceId" type="text" [errorStateMatcher]="matcher" />
+              </mat-form-field>
+            </ng-container>
+
+            <ng-template #serialNumberValue>
+              <mat-form-field appearance="outline" fxFlex *ngIf="assetDetails?.serialNumber">
+                <mat-label>{{ 'manageDeviceComponentSerialNumber' | translate }}</mat-label>
+                <input matInput formControlName="serialNumber" type="text" name="serialNumber" type="text" [errorStateMatcher]="matcher" />
+              </mat-form-field>
+            </ng-template>
+
+            <!-- Duty type -->
+            <mat-form-field appearance="outline" fxFlex>
+              <mat-label>{{ 'assetConfiguraionDutyType' | translate }}</mat-label>
+              <mat-select disableOptionCentering placeholder="{{ 'editAssetComponentDutyType' | translate }}" formControlName="dutyType">
+                <mat-option *ngFor="let option of availableDutyTypes" [value]="option.value">
+                  {{ option.label | translate }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div fxLayout="row" fxLayoutGap="24px">
+            <!-- Asset ID -->
+            <mat-form-field appearance="outline" fxFlex>
+              <mat-label>{{ 'editAssetComponentAssetID' | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="assetId"
+                type="text"
+                name="assetId"
+                type="text"
+                [errorStateMatcher]="matcher"
+                maxlength="48"
+              />
+              <mat-hint *ngIf="isDeviceIdPrimaryKey(); else serialNumberHint">{{ 'editAssetComponentHint' | translate }}</mat-hint>
+              <ng-template #serialNumberHint>
+                <mat-hint>{{ 'editAssetComponentHintSerialNumber' | translate }}</mat-hint>
+              </ng-template>
+              <mat-error *ngIf="assetForm?.get('assetId').invalid">
+                {{ 'editAssetComponentErrorMessage' | translate }}
+              </mat-error>
+            </mat-form-field>
+
+            <!-- Asset Name -->
+            <mat-form-field appearance="outline" fxFlex>
+              <mat-label>{{ 'manageDeviceComponentAssetName' | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="assetName"
+                type="text"
+                name="assetName"
+                type="text"
+              />
+              <mat-error *ngIf="assetForm?.get('assetName').hasError('pattern')">
+                {{ 'editAssetNamePatternError' | translate }}
+              </mat-error>
+              <mat-error *ngIf="assetForm?.get('assetName').hasError('maxlength')">
+                {{ 'editAssetNameMaxLengthError' | translate }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div fxLayout="row" fxLayoutGap="24px" *ngIf="!clientConfig?.isAssetCentric">
+            <!-- Default Driver -->
+            <app-autocomplete
+              fxFlex
+              placeholder="{{ 'editAssetComponentDriverID' | translate }}"
+              [inputValue]="assetForm?.value?.defaultDriverId"
+              [list]="fleetDriverList"
+              displayProp="driverId"
+              (valueChange)="driverChanged($event)"
+              [customOptions]="customOptions"
+            >
+            </app-autocomplete>
+          </div>
+
+          <div fxLayout="row" fxLayoutGap="24px" *ngIf="mdvrSupported && !mdvrConfigured">
+            <!-- Configure MDVR Toggle -->
+            <div fxLayout="column" fxLayoutGap="8px">
+              <mat-label class="placeholder" fxLayout="row" fxLayoutAlign="start center">
+                <span>Configure External Cameras</span>
+              </mat-label>
+              <mat-slide-toggle
+                disableRipple
+                formControlName="configureMdvr"
+                class="toggle"
+                aria-label="ON/OFF"
+                (change)="onConfigureMdvrToggle()"
+              ></mat-slide-toggle>
+            </div>
+          </div>
+        </div>
+      </mat-card>
+
+      <!-- MDVR Configurations -->
+      <mat-card *ngIf="mdvrSupported && assetForm?.get('configureMdvr').value">
+        <app-mdvr-config [assetDetails]="assetDetails" [deviceModelConfig]="deviceModelConfig" #mdvrConfigComp></app-mdvr-config>
+      </mat-card>
+
+      <!-- Tagging Configurations -->
+      <mat-card fxLayout="row" fxLayout.sm="column" fxLayoutAlign="space-between start" fxLayoutGap="96px" fxLayoutGap.sm="24px">
+        <div fxLayout="column" fxLayoutGap="8px" fxFlex="35">
+          <h3>{{ 'EditAssetAssignTag' | translate }}</h3>
+          <span class="sub-text">{{ 'EditAssetAssignTagDescription' | translate }}</span>
+        </div>
+
+        <div fxFlex fxLayout="column" style="width: 100%">
+          <app-tagging-filter-v2
+            (selectedTags)="selectedTags($event)"
+            [entityType]="'asset'"
+            [dropDownType]="'assign'"
+            [numOfTagsToDisplay]="3"
+            [assignedTagList]="assetTags"
+          ></app-tagging-filter-v2>
+        </div>
+      </mat-card>
+      
+      <!-- Save Details -->
+      <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="end center">
+        <button
+          mat-flat-button
+          [loading]="loader"
+          color="accent"
+          (click)="onSubmit()"
+          [disabled]="assetForm.invalid || mdvrConfigComp?.mdvrConfigForm?.invalid"
+        >
+          {{ 'editAssetComponentSaveDetails' | translate }}
+        </button>
+      </div>
+    </section>
+  </form>
+
+  <ng-template #loadingAssetDetails>
+    <section class="container loading-shade" fxLayout="column" fxLayoutGap="24px" fxLayoutAlign="center center">
+      <mat-spinner></mat-spinner>
+      <div>{{ 'EditAssetLoadingDetails' | translate }}</div>
+    </section>
+  </ng-template>
+</app-side-navigation>

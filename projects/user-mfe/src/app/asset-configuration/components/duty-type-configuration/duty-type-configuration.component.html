@@ -1,0 +1,180 @@
+<mat-tab-group
+  class="page-tabs"
+  #tabGroup
+  (selectedTabChange)="onPageTabChange($event)"
+  [@.disabled]="true"
+  [selectedIndex]="currentTabIndex"
+>
+  <mat-tab *appCheckUiConfigs="['configuration_page:basic_tab']">
+    <ng-template mat-tab-label>
+      <label
+        matTooltip="{{ 'dutyTypeComponentBASIC' | translate }} &#013;&#010;[{{ currentOS === 'mac' ? 'Command' : 'Ctrl' }} + Shift + <]"
+        matTooltipClass="multiline-tooltip"
+        >{{ 'dutyTypeComponentBASIC' | translate }}</label
+      >
+    </ng-template>
+
+    <ng-template matTabContent>
+      <div class="container" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutGap="24px">
+        <mat-card fxLayout="column" fxLayoutGap="24px" *ngIf="isShowBasicConfig">
+          <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="16px">
+            <h3 class="title">
+              {{ 'basicConfigurationsTitle' | translate }}
+              <button
+                mat-icon-button
+                class="btn-faq"
+                (click)="dataService?.openFaq('basicConfigurations')"
+                matTooltip="{{ 'viewInformation' | translate }}"
+                matTooltipPosition="right"
+              >
+                <mat-icon>info_outline</mat-icon>
+              </button>
+            </h3>
+
+            <mat-button-toggle-group (change)="onDutyTypeChange($event)" *appCheckPermissions="['read:fleet_config']">
+              <ng-container *ngFor="let option of availableDutyTypes">
+                <mat-button-toggle class="btn-toggle" [value]="option?.key" [ngClass]="{ active: option?.key === currentDutyType }">
+                  {{ option?.display | translate }}
+                </mat-button-toggle>
+              </ng-container>
+            </mat-button-toggle-group>
+          </div>
+
+          <app-alert *appCheckPermissions="['read:fleet_config']; showError: true" [alertType]="'info'" [removeMargin]="true">
+            {{ 'dutyTypePermission' | translate }}
+          </app-alert>
+
+          <app-alert *appCheckPermissions="['read:fleet_config']" alertType="info" [removeMargin]="true">
+            {{ 'Traffic Light Violation is only applicable to the USA as of now' | translate }}
+          </app-alert>
+
+          <ng-container *appCheckPermissions="['read:fleet_config']">
+            <app-basic-configurations (saveChanges)="saveChanges($event, 'basic')"></app-basic-configurations>
+          </ng-container>
+        </mat-card>
+
+        <mat-card *ngIf="!isLoadingConfig && !isShowBasicConfig">
+          <h3 class="title">
+            {{ 'basicConfigurationsTitle' | translate }}
+            <button
+              mat-icon-button
+              class="btn-faq"
+              (click)="dataService?.openFaq('basicConfigurations')"
+              matTooltip="{{ 'viewInformation' | translate }}"
+              matTooltipPosition="right"
+            >
+              <mat-icon>info_outline</mat-icon>
+            </button>
+          </h3>
+          <app-alert [alertType]="'info'">{{ 'basicEventsEmpty' | translate }} </app-alert>
+        </mat-card>
+
+        <mat-card fxLayout="column" fxLayoutGap="24px" *ngIf="isShowCustomConfig">
+          <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="16px">
+            <h3 class="title">
+              {{ 'customConfigurationTitle' | translate }}
+            </h3>
+            <mat-button-toggle-group (change)="onCustomDutyTypeChange($event)" *appCheckPermissions="['read:fleet_config']">
+              <ng-container *ngFor="let option of availableDutyTypes">
+                <mat-button-toggle class="btn-toggle" [value]="option?.key" [ngClass]="{ active: option?.key === currentCustomDutyType }">
+                  {{ option?.display | translate }}
+                </mat-button-toggle>
+              </ng-container>
+            </mat-button-toggle-group>
+          </div>
+
+          <app-alert *appCheckPermissions="['read:fleet_config']; showError: true" [alertType]="'info'" [removeMargin]="true">
+            {{ 'dutyTypePermission' | translate }}
+          </app-alert>
+
+          <ng-container *appCheckPermissions="['read:fleet_config']">
+            <app-custom-configurations (saveChanges)="saveCustomEventChanges($event)"></app-custom-configurations>
+          </ng-container>
+        </mat-card>
+      </div>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab *appCheckUiConfigs="['configuration_page:advanced_tab']">
+    <ng-template mat-tab-label>
+      <label
+        matTooltip="{{ 'dutyTypeComponentADVANCED' | translate }} &#013;&#010;[{{ currentOS === 'mac' ? 'Command' : 'Ctrl' }} + Shift + >]"
+        matTooltipClass="multiline-tooltip"
+        >{{ 'dutyTypeComponentADVANCED' | translate }}</label
+      >
+    </ng-template>
+
+    <ng-template matTabContent>
+      <div class="container" fxLayout="row" fxLayout.sm="column" fxLayoutGap="24px">
+        <mat-card fxLayout="column" fxLayoutGap="24px" [fxFlex]="!clientConfig?.isAssetCentric ? '50' : '100'">
+          <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="16px">
+            <h3 class="title">
+              {{ 'advancedConfigurationsTitle' | translate }}
+              <button
+                mat-icon-button
+                class="btn-faq"
+                (click)="dataService?.openFaq('advancedConfigurations')"
+                matTooltip="{{ 'viewInformation' | translate }}"
+                matTooltipPosition="right"
+              >
+                <mat-icon>info_outline</mat-icon>
+              </button>
+            </h3>
+            <mat-button-toggle-group (change)="onDutyTypeChange($event)" *appCheckPermissions="['read:fleet_config']">
+              <ng-container *ngFor="let option of availableDutyTypes">
+                <mat-button-toggle class="btn-toggle" [value]="option?.key" [ngClass]="{ active: option?.key === currentDutyType }">
+                  {{ option?.display | translate }}
+                </mat-button-toggle>
+              </ng-container>
+            </mat-button-toggle-group>
+          </div>
+
+          <app-alert *appCheckPermissions="['read:fleet_config']; showError: true" [alertType]="'info'" [removeMargin]="true">
+            {{ 'dutyTypePermission' | translate }}
+          </app-alert>
+
+          <ng-container *appCheckPermissions="['read:fleet_config']">
+            <app-advanced-configurations (saveChanges)="saveChanges($event, 'advanced')"></app-advanced-configurations>
+          </ng-container>
+        </mat-card>
+
+        <mat-card fxFlex="50" fxLayout="column" fxLayoutGap="16px" *ngIf="!clientConfig?.isAssetCentric">
+          <app-driver-configurations></app-driver-configurations>
+        </mat-card>
+      </div>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab *appCheckUiConfigs="['configuration_page:coaching_tab']">
+    <ng-template mat-tab-label>
+      <label
+        matTooltip="{{ 'coachingHeader' | translate }} &#013;&#010;[{{ currentOS === 'mac' ? 'Command' : 'Ctrl' }} + Shift + >]"
+        matTooltipClass="multiline-tooltip"
+      >
+        {{ 'coachingHeader' | translate }}
+      </label>
+    </ng-template>
+    <ng-template matTabContent>
+      <div class="container">
+        <app-coaching-threshold></app-coaching-threshold>
+      </div>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab *appCheckUiConfigs="['configuration_page:tagging_tab']">
+    <ng-template mat-tab-label>
+      <label
+        matTooltip="{{ 'taggingHeader' | translate }} &#013;&#010;[{{ currentOS === 'mac' ? 'Command' : 'Ctrl' }} + Shift + >]"
+        matTooltipClass="multiline-tooltip"
+      >
+        {{ 'taggingHeader' | translate }}
+      </label>
+    </ng-template>
+    <ng-template matTabContent>
+      <div class="container">
+        <app-tagging></app-tagging>
+      </div>
+    </ng-template>
+  </mat-tab>
+</mat-tab-group>
+

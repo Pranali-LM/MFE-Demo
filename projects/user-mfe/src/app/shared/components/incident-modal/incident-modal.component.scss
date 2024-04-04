@@ -1,0 +1,403 @@
+@import './variables';
+@import './fonts';
+
+.carousel-container {
+  display: block;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.custom-paginator {
+  position: absolute;
+  top: -8px;
+  right: 156px;
+}
+
+.metadata-title {
+  font-weight: $medium-font-weight;
+}
+
+.edit-mode {
+  width: 1056px;
+  position: relative;
+  min-height: 605px;
+}
+
+.edit-section {
+  padding: 24px;
+  border-radius: 4px;
+  height: 605px;
+}
+
+::ng-deep .mat-paginator-range-label {
+  margin: 0 16px !important;
+}
+
+::ng-deep {
+  .mat-slider-track-fill,
+  .mat-slider-wrapper,
+  .mat-slider-track-wrapper,
+  .mat-slider-track-background {
+    height: 4px !important;
+    border-radius: 24px;
+    background-color: $light-border;
+  }
+
+  .mat-slider:hover {
+    cursor: pointer;
+    .mat-slider-track-background {
+      background-color: $light-border;
+    }
+  }
+}
+
+.modal-header {
+  margin-bottom: 8px !important;
+}
+
+.video-container {
+  position: relative;
+
+  .custom-btn {
+    position: absolute;
+    right: 16px;
+    bottom: 24px;
+    background-color: rgba(0, 0, 0, 0.5);
+    visibility: hidden;
+
+    mat-icon {
+      color: $white-color;
+    }
+  }
+
+  &:hover .custom-btn {
+    visibility: visible;
+  }
+}
+
+.dual-video,
+.dual-image {
+  video,
+  img {
+    object-fit: cover;
+    border-radius: 4px;
+    background-color: $black-color;
+  }
+}
+
+.image-container {
+  max-height: 316px;
+  width: 100%;
+  position: relative;
+  background-color: $black-color;
+  text-align: center;
+  border-radius: 4px;
+}
+
+.no-media-container {
+  height: 300px;
+  width: 1056px;
+  position: relative;
+  background-color: $black-color;
+  text-align: center;
+  border-radius: 4px;
+
+  .no-media-text {
+    color: $white-color;
+    font-size: $heading-font-size;
+    margin: 0;
+    font-weight: $bold-font-weight;
+  }
+}
+
+.single-video,
+.single-image {
+  width: 100%;
+
+  video,
+  img {
+    object-fit: contain;
+    border-radius: 4px;
+    background-color: $black-color;
+  }
+}
+
+.video-seeker {
+  height: 5px;
+  background-color: $light-border;
+  border-radius: 8px;
+  position: relative;
+  cursor: pointer;
+  margin: 16px 0;
+
+  .event-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    transform: translateY(-5px);
+    cursor: pointer;
+    z-index: 200;
+
+    &:hover {
+      width: 20px;
+      height: 20px;
+      transform: translate(-2px, -8px);
+    }
+  }
+
+  .seeker {
+    background-color: $light-success;
+    height: 5px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: 8px;
+    transition: width 0.3s linear;
+  }
+}
+
+.timelapse-timeline {
+  position: relative;
+  display: block;
+  margin: 16px 0;
+}
+
+.seperator,
+.incident-time,
+.incident-driver {
+  font-size: $body-font-size;
+  font-weight: $normal-font-weight;
+}
+
+.incident-map {
+  .no-map {
+    font-size: $heading-font-size;
+    text-transform: uppercase;
+    font-weight: $bold-font-weight;
+    margin: 0;
+  }
+}
+
+.incident-map img {
+  transform: scale(0.5);
+  transform-origin: top left;
+}
+
+.map-area,
+.incident-map {
+  width: 520px;
+  height: 220px;
+  position: relative;
+  border-radius: 4px;
+  border: 1px solid $light-border;
+  background-color: #eee;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.incident-map ::ng-deep {
+  position: relative;
+
+  .mapbox-map {
+    height: 100%;
+    width: 100%;
+  }
+}
+
+.btn-icon {
+  border: 1px solid $light-border;
+}
+
+.comment-panel {
+  .comment-box {
+    height: 48px;
+    padding: 0px 16px;
+    background-color: $light-border;
+    border-radius: 0.25rem;
+    border: none;
+    outline: none;
+    font-size: $body-font-size;
+  }
+
+  .send-button {
+    width: 48px;
+    height: 48px;
+    border: 1px solid $light-border;
+  }
+}
+
+.tag-option {
+  margin-bottom: 16px;
+}
+
+.comment-area {
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 24px 0;
+
+  .comment-icon {
+    width: 48px;
+    height: 48px;
+    text-align: center;
+    border-radius: 50%;
+    border: 1px solid $light-border;
+    font-weight: $medium-font-weight;
+  }
+
+  .comment-text {
+    font-size: $body-font-size;
+    max-width: 480px;
+  }
+
+  .comment-time {
+    font-size: $caption-font-size;
+  }
+}
+
+.display-inline-block {
+  display: inline-block;
+}
+
+.d-none {
+  display: none !important;
+}
+
+.width-100 {
+  width: 100%;
+}
+
+.video-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transition: translate(-50%, -50%);
+}
+
+.custom-select {
+  margin-top: 24px;
+  margin-bottom: 48px;
+
+  ::ng-deep .mat-select-panel {
+    max-height: 160px;
+  }
+}
+
+.timeline-info {
+  margin: 16px 0;
+  font-size: $body-font-size !important;
+}
+
+.info-icon {
+  margin-left: 4px;
+  margin-right: 4px;
+  vertical-align: middle;
+  line-height: 20px;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.btn-coaching {
+  margin-top: 48px;
+  background-color: $light-success;
+}
+
+.notification-comment {
+  background-color: $white-color !important;
+  padding: 12px !important;
+  margin: 0 !important;
+  border: 1px solid $light-border;
+}
+
+.mat-chip.mat-standard-chip::after {
+  background-color: $white-color !important;
+}
+
+.success-icon {
+  color: $light-success;
+}
+
+.video-container,
+.image-container {
+  .res-chip {
+    visibility: hidden;
+    position: absolute;
+    z-index: 100;
+    right: 12px;
+    top: 12px;
+
+    mat-chip {
+      border-radius: 4px;
+    }
+  }
+
+  &:hover {
+    .res-chip {
+      visibility: visible;
+    }
+  }
+}
+
+.direction-info {
+  position: absolute;
+  left: 8px;
+  z-index: 1000;
+  top: 8px;
+  cursor: default;
+  background-color: $orange-color;
+}
+
+// tablet
+@media (min-width: 768px) and (max-width: 1360px) {
+  .comment-area {
+    height: 240px;
+    padding: 24px 0 64px;
+  }
+
+  video,
+  img {
+    max-height: 360px !important;
+    width: 60vw !important;
+    object-fit: contain !important;
+  }
+
+  .tab-group {
+    width: 100%;
+  }
+
+  .no-media-container {
+    width: 60vw !important;
+  }
+
+  .custom-paginator {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin-top: 16px;
+  }
+}
+
+// mobile
+@media (min-width: 320px) and (max-width: 767px) and (orientation: portrait) {
+  video,
+  img {
+    height: 240px !important;
+    width: 100% !important;
+    object-fit: contain !important;
+  }
+
+  .no-media-container {
+    width: 240px !important;
+  }
+
+  .custom-paginator {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin-top: 16px;
+  }
+}

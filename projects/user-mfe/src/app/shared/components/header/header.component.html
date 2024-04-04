@@ -1,0 +1,221 @@
+<mat-toolbar
+  class="header"
+  [ngClass]="currentTheme === 'dark' ? 'dark-theme' : ''"
+  fxLayout="row"
+  fxLayoutAlign="space-between center"
+  fxLayoutGap="24px"
+  *ngIf="config?.showHeader"
+>
+  <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="12px">
+    <button
+      mat-icon-button
+      (click)="toggleSideNav()"
+      matTooltip="{{ 'headerToggleMenuTooltip' | translate }} &#013;&#010;[{{ currentOS === 'mac' ? 'Command' : 'Ctrl' }} + Shift + F]"
+      matTooltipClass="multiline-tooltip"
+    >
+      <mat-icon>menu</mat-icon>
+    </button>
+    <a routerLink="/" class="logo" fxLayout="row" fxLayoutAlign="center center">
+      <img
+        class="logo-image"
+        [src]="currentTheme === 'light' ? config?.logo?.lightLogo : config?.logo?.darkLogo"
+        [alt]="config?.logo?.alt"
+        [ngStyle]="{ width: config?.logo?.width, height: config?.logo?.height }"
+        *ngIf="!config?.showPartnerLogo"
+      />
+      <ng-container *ngIf="config?.showPartnerLogo">
+        <img
+          class="logo-image"
+          [src]="currentTheme === 'light' ? config?.logo?.lightLogo : config?.logo?.darkLogo"
+          [alt]="config?.logo?.alt"
+          [ngStyle]="{ width: config?.logo?.width, height: config?.logo?.height }"
+          *ngIf="config?.showPartnerLogo && !isTouchDevice"
+        />
+        <img
+          class="logo-image"
+          [src]="currentTheme === 'light' ? config?.logo?.mobileModeLightLogo : config?.logo?.mobileModeDarkLogo"
+          [alt]="config?.logo?.alt"
+          [ngStyle]="{ width: config?.logo?.mobileModeWidth, height: config?.logo?.mobileModeHeight }"
+          *ngIf="config?.showPartnerLogo && isTouchDevice"
+        />
+        <mat-divider vertical style="height: 40px; margin: 0px 16px"></mat-divider>
+        <img
+          class="logo-image route-name"
+          [src]="currentTheme === 'light' ? config?.partnerLogo?.lightLogo : config?.partnerLogo?.darkLogo"
+          [alt]="config?.partnerLogo?.alt"
+          [ngStyle]="{ width: config?.partnerLogo?.width, height: config?.partnerLogo?.height }"
+          *ngIf="config?.showPartnerLogo && !isTouchDevice"
+        />
+        <img
+          class="logo-image route-name"
+          [src]="currentTheme === 'light' ? config?.partnerLogo?.mobileModeLightLogo : config?.partnerLogo?.mobileModeDarkLogo"
+          [alt]="config?.partnerLogo?.alt"
+          [ngStyle]="{ width: config?.partnerLogo?.mobileModeWidth, height: config?.partnerLogo?.mobileModeHeight }"
+          *ngIf="config?.showPartnerLogo && isTouchDevice"
+        />
+      </ng-container>
+    </a>
+
+    <mat-chip-list
+      ><mat-chip class="header-chip" disableRipple>{{ portalReleaseVersion }}</mat-chip></mat-chip-list
+    >
+
+    <ng-container *ngIf="!isSideNavOpen && !isTouchDevice && !isMobile">
+      <mat-divider vertical style="height: 24px"></mat-divider>
+      <p class="route-name">{{ currentRouteName | translate }}</p>
+    </ng-container>
+  </div>
+
+  <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="end center">
+    <span *ngIf="!isTouchDevice" class="account-id" matTooltip="{{ 'headerAccounIDTooltip' | translate }}">{{
+      currentFleetInfo?.fleetName || currentFleetInfo?.fleetId
+    }}</span>
+
+    <button
+      matTooltip="{{ 'headerComponentPortalSearch' | translate }} &#013;&#010;[{{ currentOS === 'mac' ? 'Command' : 'Ctrl' }} + Shift + K]"
+      matTooltipClass="multiline-tooltip"
+      mat-icon-button
+      (click)="openPortalSearch()"
+    >
+      <mat-icon>search</mat-icon>
+    </button>
+
+    <button
+      *ngIf="config.showTheme"
+      matTooltip="{{ 'headerComponentSwitchTheme' | translate }} &#013;&#010;[{{ currentOS === 'mac' ? 'Command' : 'Ctrl' }} + Shift + M]"
+      matTooltipClass="multiline-tooltip"
+      mat-icon-button
+      (click)="changeTheme()"
+    >
+      <mat-icon *ngIf="currentTheme === 'dark'">light_mode</mat-icon>
+      <mat-icon *ngIf="currentTheme === 'light'">dark_mode</mat-icon>
+    </button>
+
+    <button
+      (click)="profileClick()"
+      mat-mini-fab
+      color="primary"
+      class="btn-profile"
+      matTooltip="{{ 'headerProfileTooltip' | translate }}"
+      [matMenuTriggerFor]="profileMenu"
+      matTooltipPosition="left"
+      matTooltipShowDelay="500"
+      *ngIf="config?.showUserProfile"
+    >
+      {{ userProfileIcon | uppercase }}
+    </button>
+  </div>
+</mat-toolbar>
+
+<mat-menu #profileMenu="matMenu">
+  <div
+    class="user-info"
+    mat-menu-item
+    [matTooltip]="fleetManagerName"
+    matTooltipPosition="left"
+    matTooltipShowDelay="500"
+    *ngIf="fleetManagerName?.length"
+  >
+    <mat-icon>person</mat-icon>
+    <span>{{ fleetManagerName }}</span>
+  </div>
+  <div
+    class="user-info"
+    mat-menu-item
+    [matTooltip]="currentFleetInfo?.role?.roleName"
+    matTooltipPosition="left"
+    matTooltipShowDelay="500"
+    *ngIf="currentFleetInfo?.role?.roleName"
+  >
+    <mat-icon>badge</mat-icon>
+    <span>{{ currentFleetInfo?.role?.roleName }}</span>
+  </div>
+  <div class="user-info" mat-menu-item [matTooltip]="loginName" matTooltipPosition="left" matTooltipShowDelay="500">
+    <mat-icon>email</mat-icon>
+    <span>{{ loginName }}</span>
+  </div>
+  <mat-divider></mat-divider>
+  <button *ngIf="isTouchDevice && isMobile" class="user-info" mat-menu-item disabled>
+    <mat-icon>local_shipping</mat-icon>
+    <span>{{ currentFleetInfo?.fleetName || currentFleetInfo?.fleetId }}</span>
+  </button>
+  <button *ngIf="userFleetList?.length > 1" mat-menu-item [matMenuTriggerFor]="selectAccount" [disabled]="isInternalRoute">
+    <mat-icon>autorenew</mat-icon>
+    <span>{{ 'profileMenuSwitchAccount' | translate }}</span>
+  </button>
+  <button mat-menu-item [matMenuTriggerFor]="securityOptions" *ngIf="config?.showSecurityButton && loginType === 'fleetmanager'">
+    <mat-icon>security</mat-icon>
+    <span>{{ 'headerComponentSecurity' | translate }}</span>
+  </button>
+  <button
+    mat-menu-item
+    (click)="openUserSettings()"
+    matTooltip="{{ 'headerComponentSettings' | translate }} &#013;&#010;[{{ currentOS === 'mac' ? 'Command' : 'Ctrl' }} + Shift + S]"
+    matTooltipPosition="left"
+    matTooltipShowDelay="500"
+    matTooltipClass="multiline-tooltip"
+  >
+    <mat-icon>settings</mat-icon>
+    <span>{{ 'headerComponentSettings' | translate }}</span>
+  </button>
+  <button
+    mat-menu-item
+    (click)="openShortcutsList()"
+    matTooltip="{{ 'headerComponentKeyboardShortcuts' | translate }} &#013;&#010;[{{
+      currentOS === 'mac' ? 'Command' : 'Ctrl'
+    }} + Shift + H]"
+    matTooltipPosition="left"
+    matTooltipShowDelay="500"
+    matTooltipClass="multiline-tooltip"
+  >
+    <mat-icon>keyboard</mat-icon>
+    <span>{{ 'headerComponentKeyboardShortcuts' | translate }}</span>
+  </button>
+  <button *ngIf="!isTouchDevice && config?.showFeatureAnnouncement" mat-menu-item (click)="OpenFeatureAnnouncementModal()">
+    <mat-icon>campaign</mat-icon>
+    <span>{{ 'profileMenuFeartureAnnouncement' | translate }}</span>
+  </button>
+
+  <div *ngIf="config?.showLogoutButton">
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>{{ 'profileMenuLogout' | translate }}</span>
+    </button>
+  </div>
+</mat-menu>
+
+<mat-menu #selectAccount="matMenu">
+  <app-select-fleet [currentFleet]="currentFleetInfo?.fleetId" [userFleetList]="userFleetList" (fleetChange)="changeUserFleet($event)">
+  </app-select-fleet>
+</mat-menu>
+
+<mat-menu #securityOptions="matMenu">
+  <button mat-menu-item (click)="openChangePassword()">
+    <mat-icon>password</mat-icon>
+    <span>{{ 'changePasswordHeader' | translate }}</span>
+  </button>
+  <button mat-menu-item (click)="openTwoFactorAuthentication()">
+    <mat-icon>devices</mat-icon>
+    <span>{{ 'twoFactorAuthenticationHeader' | translate }}</span>
+  </button>
+  <button mat-menu-item (click)="openCookieConsent()">
+    <mat-icon>admin_panel_settings</mat-icon>
+    <span>{{ 'cookieConsentTitle' | translate }}</span>
+  </button>
+  <a
+    mat-menu-item
+    class="privacy-text"
+    *ngIf="config?.showPrivacyPolicyLink"
+    href="https://www.lightmetrics.co/privacy-policy-2/"
+    target="_blank"
+    (click)="privacyPolicy()"
+  >
+    <mat-icon>launch</mat-icon>
+    <span> {{ 'privacyPolicy' | translate }}</span>
+  </a>
+</mat-menu>
+
+<div class="loading-shade" *ngIf="isLogout" fxLayout="column" fxLayoutAlign="center center">
+  <mat-spinner></mat-spinner>
+</div>

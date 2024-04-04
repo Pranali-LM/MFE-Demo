@@ -1,0 +1,110 @@
+<mat-form-field class="" *ngIf="dropDownType === 'filter'">
+  <mat-label>
+    <div fxLayout="row" fxLayoutAlign="space-between start">
+      <span *ngIf="getAllTagsLoader; else selectTagsLabel">Loading Tags...</span>
+      <ng-template #selectTagsLabel>
+        <span>{{ filteredAttribute?.length ? ('TaggingComponentV2SelectTagFilter' | translate) : ('TagsTableComponentNoTagsFound' | translate) }}</span>
+      </ng-template>
+      <mat-spinner matSuffix *ngIf="getAllTagsLoader" mode="indeterminate" diameter="20"></mat-spinner>
+    </div>
+  </mat-label>
+  <mat-select [formControl]="tags" multiple #tagsDropdown (openedChange)="onOpenChange(multiUserSearch)">
+    <mat-select-trigger>
+      {{ tagList[0] || '' }}
+      <span *ngIf="(tagList.length || 0) > 1"> (+{{ (tagList.length || 0) - 1 }} {{ tagList.length === 2 ? 'other' : 'others' }}) </span>
+    </mat-select-trigger>
+    <input class="input-search" #multiUserSearch type="text" matInput placeholder="{{'TagsTableComponentSearchTags' | translate}}" (input)="onInputChange($event)" />
+    <mat-divider></mat-divider>
+
+    <app-alert [alertType]="'info'" [insideTable]="true" [removeMargin]="true" *ngIf="!filteredAttribute?.length">{{'TagsTableComponentNoTagsFound' | translate}}</app-alert>
+
+    <ng-container *ngFor="let attribute of filteredAttribute">
+      <mat-optgroup [label]="attribute?.optionGroupLabel || attribute?.attributeName" *ngIf="attribute?.tags?.length">
+        <mat-option *ngFor="let tag of attribute?.tags" [value]="tag.tagId" [disabled]="tag.disabled"> {{ tag.tagName }} </mat-option>
+      </mat-optgroup>
+      <mat-divider *ngIf="attribute?.tags?.length"></mat-divider>
+    </ng-container>
+  </mat-select>
+</mat-form-field>
+
+<div fxLayout="column" fxLayoutGap="8px">
+  <mat-form-field *ngIf="dropDownType === 'assign'" appearance="outline" class="custom-tag-assignment" [disabled]="totalTags === 0">
+    <mat-label>
+      <div fxLayout="row" fxLayoutAlign="space-between start">
+        <span *ngIf="getAllTagsLoader; else selectTagsLabel">Loading Tags...</span>
+        <ng-template #selectTagsLabel>
+          <span>{{ totalTags > 0 ? (entityType === 'driver' ? '' : ('TaggingComponentV2SelectTagFilter' | translate)) : ('TagsTableComponentNoTagsFound' | translate) }}</span>
+        </ng-template>
+        <mat-spinner matSuffix *ngIf="getAllTagsLoader" mode="indeterminate" diameter="20"></mat-spinner>
+      </div>
+    </mat-label>
+    <mat-select [formControl]="tags" multiple #tagsDropdown (openedChange)="onOpenChange(multiUserSearch)">
+      <mat-select-trigger>
+        <mat-chip-list>
+          <ng-container *ngFor="let tag of tagList; let i = index">
+            <mat-chip *ngIf="i < numOfTagsToDisplay && tagList[i]">
+              {{ tag }}
+            </mat-chip>
+          </ng-container>
+          &nbsp;
+          <span *ngIf="numOfTagsToDisplay < tagList?.length" class="additional-tags">
+            (+{{ tagList?.length - numOfTagsToDisplay }} others)
+          </span>
+        </mat-chip-list>
+      </mat-select-trigger>
+      <input class="input-search" #multiUserSearch type="text" matInput placeholder="{{'TagsTableComponentSearchTags' | translate}}" (input)="onInputChange($event)" />
+      <mat-divider></mat-divider>
+
+      <app-alert [alertType]="'info'" [insideTable]="true" [removeMargin]="true" *ngIf="!filteredAttribute?.length"
+        >{{'TagsTableComponentNoTagsFound'|translate}}</app-alert
+      >
+
+      <ng-container *ngFor="let attribute of filteredAttribute">
+        <mat-optgroup [label]="attribute?.optionGroupLabel || attribute?.attributeName" *ngIf="attribute?.tags?.length">
+          <mat-option *ngFor="let tag of attribute?.tags" [value]="tag.tagId" [disabled]="tag.tagStatus === 'INACTIVE' || tag.disabled"
+          [matTooltip]="getTooltip(tag)" >
+            {{ tag.tagName }}
+          </mat-option>
+        </mat-optgroup>
+        <mat-divider *ngIf="attribute?.tags?.length"></mat-divider>
+      </ng-container>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<ng-container *ngIf="dropDownType === 'assign' && 0">
+  <div fxLayout="column" fxLayoutGap="8px" *ngIf="!getAllTagsLoader">
+    <mat-form-field appearance="outline" class="custom-tag-assignment">
+      <mat-select [formControl]="tags" multiple #tagsDropdown (openedChange)="onOpenChange(multiUserSearch)">
+        <mat-select-trigger>
+          <mat-chip-list>
+            <ng-container *ngFor="let tag of tagList; let i = index">
+              <mat-chip *ngIf="i < numOfTagsToDisplay && tagList[i]">
+                {{ tag }}
+              </mat-chip>
+            </ng-container>
+            &nbsp;
+            <span *ngIf="numOfTagsToDisplay < tagList?.length" class="additional-tags">
+              (+{{ tagList?.length - numOfTagsToDisplay }} others)
+            </span>
+          </mat-chip-list>
+        </mat-select-trigger>
+
+        <input class="input-search" #multiUserSearch type="text" matInput placeholder="Search Tags" (input)="onInputChange($event)" />
+        <mat-divider></mat-divider>
+        <ng-container *ngFor="let attribute of filteredAttribute">
+          <mat-optgroup [label]="attribute?.optionGroupLabel || attribute?.attributeName" *ngIf="attribute?.tags?.length">
+            <mat-option *ngFor="let tag of attribute?.tags" [value]="tag.tagId" [disabled]="tag.tagStatus === 'INACTIVE' || tag.disabled" >
+              {{ tag.tagName }}
+            </mat-option>
+          </mat-optgroup>
+          <mat-divider *ngIf="attribute?.tags?.length"></mat-divider>
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <ng-container *ngIf="getAllTagsLoader">
+    <div class="skeleton-line"></div>
+    <div class="skeleton-line"></div>
+  </ng-container>
+</ng-container>

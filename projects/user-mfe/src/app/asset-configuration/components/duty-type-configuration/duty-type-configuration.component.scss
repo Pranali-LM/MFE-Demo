@@ -1,0 +1,28 @@
+@import './variables';
+
+mat-expansion-panel {
+  box-shadow: none !important;
+  border: 1px solid $light-border;
+}
+
+.mat-expansion-panel-header {
+  height: 64px !important;
+}
+
+::ng-deep .mat-expansion-panel-body {
+  padding: 24px !important;
+}
+
+.disabled-description {
+  margin-right: 24px;
+}
+
+.save-btn {
+  float: right;
+}
+
+::ng-deep app-dynamic-form-control {
+  mat-form-field {
+    width: 185px;
+  }
+}

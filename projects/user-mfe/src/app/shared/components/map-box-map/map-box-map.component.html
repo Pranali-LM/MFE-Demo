@@ -1,0 +1,56 @@
+<div class="map" [id]="mapId" class="mapbox-map">
+  <button
+    [matMenuTriggerFor]="menu"
+    *ngIf="markerList?.length"
+    class="btn-map btn-layers"
+    (click)="recenterMarkers()"
+    mat-icon-button
+    matTooltip="{{ 'mapComponentLayers' | translate }}"
+    [matTooltipPosition]="'right'"
+    [ngStyle]="customMapOptions?.recenterButton"
+  >
+    <mat-icon>layers</mat-icon>
+  </button>
+
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="switchLayer('streets-v12')" [disabled]="currentLayer === 'streets-v12'">
+      <mat-icon>add_road</mat-icon>
+      <span>{{ 'mapComponentStreetLayer' | translate }}</span>
+    </button>
+    <button mat-menu-item (click)="switchLayer('satellite-streets-v12')" [disabled]="currentLayer === 'satellite-streets-v12'">
+      <mat-icon>satellite_alt</mat-icon>
+      <span>{{ 'mapComponentSatelliteLayer' | translate }}</span>
+    </button>
+    <button mat-menu-item (click)="switchLayer('light-v11')" [disabled]="currentLayer === 'light-v11'">
+      <mat-icon>light_mode</mat-icon>
+      <span>{{ 'mapComponentLightLayer' | translate }}</span>
+    </button>
+    <button mat-menu-item (click)="switchLayer('dark-v11')" [disabled]="currentLayer === 'dark-v11'">
+      <mat-icon>dark_mode</mat-icon>
+      <span>{{ 'mapComponentDarkLayer' | translate }}</span>
+    </button>
+  </mat-menu>
+
+  <button
+    *ngIf="markerList?.length"
+    class="btn-map btn-recenter"
+    (click)="recenterMarkers()"
+    mat-icon-button
+    matTooltip="{{ 'mapComponentRecenter' | translate }}"
+    [matTooltipPosition]="'right'"
+    [ngStyle]="customMapOptions?.recenterButton"
+  >
+    <mat-icon>gps_fixed</mat-icon>
+  </button>
+
+  <button *ngIf="bearing >= 0" mat-icon-button class="direction-info" [matTooltip]="bearing + bearingSuffix" matTooltipPosition="right">
+    <mat-icon [ngStyle]="{ transform: 'rotate(' + bearing + 'deg)' }">north</mat-icon>
+  </button>
+
+  <div class="mat-elevation-z2 speed" *ngIf="speed !== null && speed !== undefined" [ngStyle]="customMapOptions?.speedText">
+    <ng-container *ngIf="(dataService?._currentMetricUnit | async) === 'Miles'; else speedInKmph">
+      {{ speed * 2.237 | number : '1.0-0' }} mph
+    </ng-container>
+    <ng-template #speedInKmph> {{ speed * 3.6 | number : '1.0-0' }} kmph</ng-template>
+  </div>
+</div>

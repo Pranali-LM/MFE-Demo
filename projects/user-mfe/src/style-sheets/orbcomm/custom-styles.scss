@@ -1,0 +1,77 @@
+@import './variables';
+
+app-header {
+  border-bottom: 1px solid #292929;
+
+  .header {
+    div:nth-child(2) {
+      display: none !important;
+    }
+    .logo {
+      display: none !important;
+    }
+  }
+}
+
+mat-sidenav {
+  background-color: $white-color !important;
+
+  .side-menu {
+    li {
+      a {
+        color: $black-color !important;
+        &:hover {
+          background-color: #d2322d !important;
+          color: $white-color !important;
+        }
+      }
+    }
+  }
+}
+
+.table-wrap {
+  overflow: auto;
+
+  table {
+    width: 100%;
+  }
+
+  th.mat-header-cell {
+    font-size: 14px;
+    background-color: #000;
+    color: white;
+
+    .mat-sort-header-arrow {
+      color: white;
+    }
+  }
+
+  tr.mat-row:not(.trip-detail-row) {
+    &:nth-child(odd) {
+      background-color: #f8f8f8;
+    }
+    &:nth-child(even) {
+      background-color: #f1f1f1;
+    }
+    &:hover {
+      background-color: #e4e4d1;
+    }
+    &.selected {
+      background-color: #fcf8b2 !important;
+    }
+  }
+
+  .trip-list-table {
+    tr.mat-row:not(.trip-detail-row) {
+      &:nth-child(4n + 1) {
+        background-color: #f8f8f8;
+      }
+      &:nth-child(4n - 1) {
+        background-color: #f1f1f1;
+      }
+      &:hover {
+        background-color: #e4e4d1;
+      }
+    }
+  }
+}

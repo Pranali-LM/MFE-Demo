@@ -1,0 +1,39 @@
+<app-side-navigation>
+  <mat-tab-group
+    class="page-tabs"
+    #tabGroup
+    (selectedTabChange)="onPageTabChange($event)"
+    [@.disabled]="true"
+    [selectedIndex]="currentTabIndex"
+  >
+    <mat-tab *appCheckUiConfigs="['user_management_page:users_tab']">
+      <ng-template mat-tab-label>
+        <label
+          matTooltip="{{ 'UserManagementComponentUsersToolTip' | translate }} &#013;&#010;[{{
+            currentOS === 'mac' ? 'Command' : 'Ctrl'
+          }} + Shift + <]"
+          matTooltipClass="multiline-tooltip"
+          >{{ 'UserManagementComponentUsers' | translate }}</label
+        >
+      </ng-template>
+      <ng-template matTabContent>
+        <app-user-list-v2></app-user-list-v2>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <label
+          matTooltip="{{ 'UserManagementComponentRolesToolTip' | translate }} &#013;&#010;[{{
+            currentOS === 'mac' ? 'Command' : 'Ctrl'
+          }} + Shift + >]"
+          matTooltipClass="multiline-tooltip"
+          >{{ 'UserManagementComponentRoles' | translate }}</label
+        >
+      </ng-template>
+      <ng-template matTabContent>
+        <app-manage-roles></app-manage-roles>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+</app-side-navigation>

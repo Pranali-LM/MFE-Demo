@@ -1,0 +1,182 @@
+<div class="driver-modal" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="8px">
+  <div class="driver-image" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="16px">
+    <div class="card-title">{{ 'driverImageComponentDriverImage' | translate }}</div>
+    <span tabindex="0"></span>
+    <button
+      mat-icon-button
+      (click)="onClose()"
+      class="btn-close"
+      matTooltip="{{ 'driverImageComponentCloseModal' | translate }}"
+      [matTooltipPosition]="'left'"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-tab-group mat-stretch-tabs #tabGroup (selectedTabChange)="tabChanged($event)" [@.disabled]="true">
+    <mat-tab *ngIf="data?.recognizedDriverImage">
+      <ng-template mat-tab-label>
+        <span>{{ 'driverImageComponentRecognisedDriver' | translate }}</span>
+      </ng-template>
+      <ng-template matTabContent>
+        <app-media-player [mediaUrl]="data?.recognizedDriverImage"></app-media-player>
+
+        <div
+          *ngIf="!data?.frResultsCorrected"
+          fxLayout="row"
+          fxLayout="space-between center"
+          fxLayoutGap="16px"
+        >
+          <div fxFlex="45" fxLayout="column" fxLayoutAlign="center start">
+            <p *ngIf="data?.driverId" class="modal-desc">
+              <strong>{{ 'driverImageComponentDriverId' | translate }} - </strong>{{ data?.driverId }}
+            </p>
+            <p *ngIf="data?.driverName" class="modal-desc">
+              <strong>{{ 'driverImageComponentDriverName' | translate }} - </strong>{{ data?.driverName }}
+            </p>
+          </div>
+
+          <mat-divider [vertical]="true" *ngIf="data?.metaData?.driverId"></mat-divider>
+
+          <div fxFlex="45" fxLayout="column" fxLayoutAlign="center start">
+            <p *ngIf="data?.metaData?.driverId" class="modal-desc">
+              <strong>{{ 'driverImageComponentRecognizedDriverId' | translate }} - </strong>{{ data?.metaData?.driverId }}
+            </p>
+            <p *ngIf="data?.metaData?.driverName" class="modal-desc">
+              <strong>{{ 'driverImageComponentRecognizedDriverName' | translate }} - </strong>{{ data?.metaData?.driverName }}
+            </p>
+          </div>
+        </div>
+
+        <div fxLayout="column" fxLayoutAlign="center start">
+          <app-alert *ngIf="data?.frResultsCorrected && data?.recognizedDriverImage" [alertType]="'error'">
+            {{ 'driverImageComponentIncorrectFeedback' | translate }}
+          </app-alert>
+
+          <app-alert *ngIf="!data?.recognizedDriverImage" [alertType]="'info'">
+            <div fxLayout="column" fxLayoutGap="8px">
+              <span *ngIf="!showFaceBox">{{ 'driverImageComponentNotRecognized' | translate }}</span>
+              <span *ngIf="!showFaceBox && data?.frResultsCorrected"> {{ 'driverImageComponentFeedbackProvided' | translate }}</span>
+              <span *ngIf="showFaceBox">{{ 'driverImageComponentHighlightedDriver' | translate }}</span>
+              <span *ngIf="showFaceBox && data?.frResultsCorrected"> {{ 'driverImageComponentFeedback' | translate }}</span>
+            </div>
+          </app-alert>
+        </div>
+      </ng-template>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span>{{ 'driverImageComponentCaturedImage' | translate }}</span>
+      </ng-template>
+      <ng-template matTabContent>
+        <app-media-player [mediaUrl]="data?.sampleDriverImage"></app-media-player>
+        <canvas *ngIf="data?.sampleDriverImage && !isMobile" id="image-canvas" width="640" height="360" #imageCanvas>
+          {{ 'driverImageComponentBrowserNotSupport' | translate }}</canvas
+        >
+
+        <div fxLayout="column" fxLayoutAlign="center start">
+          <ng-container *ngIf="!data?.frResultsCorrected">
+            <p *ngIf="data?.driverId" class="modal-desc">
+              <strong>{{ 'driverImageComponentDriverId' | translate }} - </strong>{{ data?.driverId }}
+            </p>
+            <p *ngIf="data?.driverName" class="modal-desc">
+              <strong>{{ 'driverImageComponentDriverName' | translate }} - </strong>{{ data?.driverName }}
+            </p>
+          </ng-container>
+
+          <app-alert *ngIf="data?.frResultsCorrected && data?.recognizedDriverImage" [alertType]="'error'">
+            {{ 'driverImageComponentIncorrectFeedback' | translate }}
+          </app-alert>
+
+          <app-alert *ngIf="!data?.recognizedDriverImage" [alertType]="'info'">
+            <div fxLayout="column" fxLayoutGap="8px">
+              <span *ngIf="!showFaceBox">{{ 'driverImageComponentNotRecognized' | translate }}</span>
+              <span *ngIf="!showFaceBox && data?.frResultsCorrected"> {{ 'driverImageComponentFeedbackProvided' | translate }}</span>
+              <ng-container *ngIf="showFaceBox">
+                <span>{{ 'driverImageComponentHighlightedDriver' | translate }}</span>
+                <span *ngIf="data?.driverId !== '_UNASSIGNED' && clientConfig?.showManageDriversTab">
+                  {{ 'driverImageComponentEnrollHighlightedDriver' | translate }}
+                  <a
+                    rel="noreferrer"
+                    class="text-link"
+                    [routerLink]="['../drivers']"
+                    [queryParams]="{ tab: 'manage-drivers', enrollDriverId: data?.driverId }"
+                    (click)="onClose()"
+                    >{{ 'driverImageComponentHere' | translate }}</a
+                  >
+                  &#46;
+                </span>
+              </ng-container>
+              <span *ngIf="showFaceBox && data?.frResultsCorrected"> {{ 'driverImageComponentFeedbackProvided' | translate }}</span>
+            </div>
+          </app-alert>
+        </div>
+      </ng-template>
+    </mat-tab>
+    <mat-tab *ngIf="data?.showFeedbackTab">
+      <ng-template mat-tab-label>
+        <span>{{ 'driverImageComponentFeedbackTitle' | translate }}</span>
+      </ng-template>
+      <ng-template matTabContent>
+        <div class="feedback-section">
+          <form [formGroup]="tripFrFeedbackForm" (ngSubmit)="sendTripFrFeedback()">
+            <div fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="16px">
+              <app-alert *ngIf="data?.frResultsCorrected" [alertType]="'info'" [removeMargin]="true">
+                {{ 'driverImageComponentTripFeedbackProvided' | translate }}
+              </app-alert>
+
+              <div fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="8px">
+                <span *ngIf="data?.recognizedDriverImage">{{ 'driverImageComponentDriverTripIncoorect' | translate }}</span>
+                <span *ngIf="!data?.recognizedDriverImage">{{ 'driverImageComponentDriverUnrecognized' | translate }}</span>
+                <span>{{ 'driverImageComponentChooseCorrectDriver' | translate }}</span>
+                <br />
+                <span
+                  ><strong>{{ 'driverImageComponentNote' | translate }}:&nbsp;</strong
+                  >{{ 'driverImageComponentDriverNotEnrolled' | translate }}</span
+                >
+              </div>
+
+              <div class="skeleton-loader width-100" style="margin-top: 16px" *ngIf="loader">
+                <div class="skeleton-card xs"></div>
+              </div>
+
+              <app-alert *ngIf="!loader && !enrolledDriverList?.length" [alertType]="'info'">
+                {{ 'driverImageComponentFetchingFailed' | translate }}
+              </app-alert>
+
+              <ng-container *ngIf="enrolledDriverList?.length && !loader">
+                <app-autocomplete
+                  placeholder="{{ 'driverImageComponentSelectDriver' | translate }}"
+                  [list]="enrolledDriverList"
+                  [customOptions]="customOptions"
+                  displayProp="driverId"
+                  (valueChange)="selectedDriver($event)"
+                >
+                </app-autocomplete>
+
+                <button
+                  class="btn-action"
+                  [loading]="feedbackLoader"
+                  [disabled]="tripFrFeedbackForm?.invalid"
+                  type="submit"
+                  mat-raised-button
+                  color="accent"
+                >
+                  {{ 'driverImageComponentSendFeedback' | translate }}
+                </button>
+
+                <app-alert *ngIf="showSuccess" [alertType]="'success'">
+                  {{ 'driverImageComponentFeedbackSentSuccess' | translate }}
+                </app-alert>
+
+                <app-alert *ngIf="showError" [alertType]="'error'">
+                  {{ 'driverImageComponentFeedbackSentFailed' | translate }}
+                </app-alert>
+              </ng-container>
+            </div>
+          </form>
+        </div>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+</div>

@@ -1,0 +1,68 @@
+<div class="width-100">
+  <div class="skeleton-loader" *ngIf="assetConfigService.isLoadingConfig | async; else config">
+    <div class="skeleton-card xxs" style="margin-bottom: 24px"></div>
+  </div>
+</div>
+
+<ng-template #config>
+  <ng-container *ngIf="assetConfigForm; else noConfig">
+    <div class="config-wrap" fxLayout="column" fxLayoutGap="4px" fxLayoutAlign="center stretch">
+      <app-alert [alertType]="'error'" *ngIf="assetConfigForm.invalid">
+        {{ 'assetConfigurationsPleaseEnter' | translate }}
+      </app-alert>
+
+      <form [formGroup]="assetConfigForm">
+        <ng-container *ngTemplateOutlet="accordian; context: { panels: expansionPanels, formGroup: assetConfigForm }"></ng-container>
+      </form>
+    </div>
+  </ng-container>
+</ng-template>
+
+<ng-template #noConfig>
+  <app-alert [alertType]="'error'">
+    {{ 'assetConfigurationsFetchConfiguration' | translate }}
+  </app-alert>
+</ng-template>
+
+<ng-template #accordian let-panels="panels" let-formGroup="formGroup">
+  <mat-accordion class="expansion-panel-headers-align">
+    <div class="custom-expansion-panel" [formGroup]="getFormGroup(formGroup, panel.panelKey)" *ngFor="let panel of panels">
+      <div
+        fxLayout="row wrap"
+        fxLayoutGap="48px grid"
+        fxLayoutAlign="start"
+        fxLayout.xs="column"
+        fxLayoutAlign.xs="space-between start"
+        *ngIf="panel?.content && panel?.content.length"
+      >
+        <ng-container *ngFor="let config of panel?.content">
+          <app-dynamic-form-control
+            fxFlex.xs="100"
+            fxFlex.sm="50"
+            fxFlex.md="23"
+            fxFlex.lg="23"
+            *ngIf="config?.ngIf ? config?.ngIf(getFormGroup(formGroup, panel?.panelKey)) : true"
+            [form]="getFormGroup(formGroup, panel.panelKey)"
+            [config]="config"
+          >
+          </app-dynamic-form-control>
+        </ng-container>
+      </div>
+      <ng-container>
+        <div fxLayout="row" fxLayoutAlign="end" fxLayoutGap="16px" fxFlexAlign="end" class="save-button">
+          <button
+            *appCheckPermissions="['update:fleet_config']"
+            mat-flat-button
+            class="save-btn"
+            color="accent"
+            (click)="onSaveChanges(assetId)"
+            [loading]="assetConfigService.isUpdatingConfig | async"
+            [disabled]="assetConfigFormCheck().invalid || (assetConfigService.isAssetConfigDirty | async) === false"
+          >
+            {{ 'assetConfiguraionSave' | translate }}
+          </button>
+        </div>
+      </ng-container>
+    </div>
+  </mat-accordion>
+</ng-template>

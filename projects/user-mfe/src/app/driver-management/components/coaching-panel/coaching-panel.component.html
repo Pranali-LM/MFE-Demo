@@ -1,0 +1,48 @@
+<div fxLayout="column" fxLayoutGap="16px">
+  <div fxLayout="row" fxLayoutAlign="end center" fxLayout.xs="column" fxLayoutAlign.xs="start start" fxLayoutGap="24px">
+    <button
+      mat-icon-button
+      color="accent"
+      class="btn-icon"
+      [loading]="bookmarkLoader"
+      (click)="getBookmarkedVideos(true)"
+      matTooltip="{{ 'driverQueryResultRefresh' | translate }}"
+      [matTooltipPosition]="'left'"
+    >
+      <mat-icon>refresh</mat-icon>
+    </button>
+
+    <mat-form-field class="select-box" fxLayout="row" fxLayoutGap="18px">
+      <mat-label>{{ 'driverQueryResultSelectVideoType' | translate }}</mat-label>
+      <mat-select disableOptionCentering [formControl]="bookmarkType">
+        <ng-container *ngFor="let bkType of bookmarkTypeList">
+          <mat-option [value]="bkType?.value">{{ bkType?.label | translate }}</mat-option>
+          <mat-divider *ngIf="bkType?.showDivider"></mat-divider>
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
+    <div *ngIf="displaySubEventSelection">
+      <mat-form-field>
+        <mat-label>{{ "selectSubEventFilter" | translate }}</mat-label>
+        <mat-select [formControl]="subEventType">
+          <ng-container *ngFor="let childConfig of subEventList">
+            <mat-option  [value]="childConfig?.key">
+              {{ childConfig?.label | translate }}
+            </mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div fxLayout="row">
+    <app-bookmarked-videos
+      style="width: 100%"
+      [bookmarkList]="bookmarkList"
+      [loader]="bookmarkLoader"
+      [timezone]="currentTimeZone"
+      [dateFormat]="currentDateFormat"
+      [videoType]="selectedBookmarkType"
+    ></app-bookmarked-videos>
+  </div>
+</div>

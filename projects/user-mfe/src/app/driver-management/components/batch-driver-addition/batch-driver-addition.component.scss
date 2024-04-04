@@ -1,0 +1,41 @@
+@import './variables';
+@import './fonts';
+
+.card-body {
+  min-height: 240px;
+  p {
+    margin-top: 0;
+  }
+}
+
+.input-upload {
+  width: 100%;
+  height: 40px;
+  position: absolute;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  opacity: 0;
+  cursor: pointer !important;
+}
+
+.input-upload-label {
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 300px;
+}
+
+.file-attach {
+  margin-right: 4px;
+  height: 20px;
+  width: 20px;
+  font-size: 20px;
+  line-height: 20px;
+}
+
+.btn-link {
+  cursor: pointer;
+}

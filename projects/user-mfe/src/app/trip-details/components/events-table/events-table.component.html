@@ -1,0 +1,161 @@
+<div class="table-side-panel" [ngClass]="currentTheme === 'dark' ? 'dark-theme' : ''">
+  <button
+    class="table-toggle mat-elevation-z1 animate"
+    (click)="toggleTable()"
+    [matTooltip]="toggleButtonTitle"
+    matTooltipPosition="left"
+    [ngStyle]="{ transform: 'translateX(' + translateVal + 'px)' }"
+  >
+    <mat-icon class="toggle-icon right-icon" *ngIf="viewType === 'table'">arrow_right</mat-icon>
+    <mat-icon class="toggle-icon left-icon" *ngIf="viewType === 'map'">arrow_left</mat-icon>
+  </button>
+
+  <div class="animate" [ngStyle]="{ transform: 'translateX(' + translateVal + 'px)' }">
+    <mat-button-toggle-group name="fontStyle" aria-label="Font Style" class="btn-group">
+      <mat-button-toggle
+        class="btn-group-item"
+        value="All"
+        matTooltip="{{ 'eventsTableEventSeverity' | translate }}"
+        [matTooltipPosition]="'left'"
+        [ngClass]="{ active: selectedSeverity === 'all' }"
+        (click)="filterEventsTables('all')"
+        >{{ 'eventsTableAll' | translate }}</mat-button-toggle
+      >
+      <mat-button-toggle
+        class="btn-group-item"
+        value="High"
+        matTooltip="{{ 'eventsTableEventSeverity' | translate }}"
+        [matTooltipPosition]="'left'"
+        [ngClass]="{ active: selectedSeverity === 'high' }"
+        (click)="filterEventsTables('high')"
+        ><span class="dot-icon high"></span> {{ 'eventsTableHigh' | translate }}</mat-button-toggle
+      >
+      <mat-button-toggle
+        class="btn-group-item"
+        value="Medium"
+        matTooltip="{{ 'eventsTableEventSeverity' | translate }}"
+        [matTooltipPosition]="'left'"
+        [ngClass]="{ active: selectedSeverity === 'medium' }"
+        (click)="filterEventsTables('medium')"
+        ><span class="dot-icon medium"></span> {{ 'eventsTableMedium' | translate }}</mat-button-toggle
+      >
+      <mat-button-toggle
+        class="btn-group-item"
+        value="Low"
+        matTooltip="{{ 'eventsTableEventSeverity' | translate }}"
+        [matTooltipPosition]="'left'"
+        [ngClass]="{ active: selectedSeverity === 'low' }"
+        (click)="filterEventsTables('low')"
+        ><span class="dot-icon low"></span>{{ 'eventsTableLow' | translate }}</mat-button-toggle
+      >
+    </mat-button-toggle-group>
+
+    <div class="table-wrap animate">
+      <table class="events-table custom-shadow" mat-table [dataSource]="tripEventsList" *ngIf="eventsList.length">
+        <ng-container matColumnDef="eventType">
+          <th mat-header-cell *matHeaderCellDef>{{ 'eventsTableIncident' | translate }}</th>
+          <td class="event-type" mat-cell *matCellDef="let event">
+            <span *ngIf="selectedSeverity === 'all'" class="dot-icon" [ngClass]="event?.severityCategory"></span>
+            <span> {{ event.eventTypeLabel | translate }}</span>
+            <span> - </span>
+            <span>{{ event.timestampUTC | dateConversion : currentTimeZone : 'HH:mm' : event.timestamp }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="timestamp">
+          <th mat-header-cell *matHeaderCellDef>{{ 'eventsTableActions' | translate }}</th>
+          <td mat-cell *matCellDef="let event; let i = index" class="event-value">
+            <ng-container *ngIf="!event?.showLoader">
+              <button
+                mat-icon-button
+                class="btn-play no-shadow"
+                [class.disabled]="!(event?.eventVideoFilename || event?.eventVideoFile || event?.mediaFiles?.length)"
+                [disabled]="!(event?.eventVideoFilename || event?.eventVideoFile || event?.mediaFiles?.length)"
+                matTooltip="{{ 'eventsTablePlayVideo' | translate }}"
+                [matTooltipPosition]="'left'"
+                color="accent"
+                (click)="showMedia(i)"
+              >
+                <mat-icon>play_circle_outline</mat-icon>
+              </button>
+              <button
+                color="accent"
+                [fxHide]="event?.videoDetails?.videoHeight === 720"
+                class="btn-hd no-shadow"
+                mat-icon-button
+                aria-label="HD"
+                [disabled]="event?.edvrStatusClass === 'finished'"
+                *ngIf="
+                  event?.isEventSpecificEdvrEnabled &&
+                  dvrEnabled &&
+                  !event?.isEventVideoRatelimited &&
+                  !event?.isDvrEvent &&
+                  (!event?.isExternalEvent || event?.eventMediaType === 'video')
+                "
+                [matTooltip]="event?.edvrDisplayTitle"
+                [matTooltipPosition]="'left'"
+                (click)="requestEDVR(event, i)"
+              >
+                <mat-icon>hd</mat-icon>
+              </button>
+              <mat-icon
+                [fxHide]="event?.videoDetails?.videoHeight === 720"
+                class="edvr-icon"
+                *ngIf="
+                  (event?.isEventSpecificEdvrEnabled || event?.isEventVideoRatelimited) &&
+                  dvrEnabled &&
+                  !event?.isDvrEvent &&
+                  (!event?.isExternalEvent || event?.eventMediaType === 'video') &&
+                  event?.edvrStatusClass
+                "
+                [ngClass]="event?.edvrStatusClass"
+                [matTooltip]="event?.edvrDisplayTitle"
+                [matTooltipPosition]="'left'"
+                >upload</mat-icon
+              >
+
+              <button
+                color="accent"
+                class="btn-hd no-shadow"
+                mat-icon-button
+                *ngIf="event?.isEventVideoRatelimited && !event?.edvrRequests?.length"
+                [matTooltip]="event?.edvrDisplayTitle"
+                [matTooltipPosition]="'left'"
+                (click)="showMedia(i)"
+              >
+                <mat-icon>videocam</mat-icon>
+              </button>
+            </ng-container>
+            <div *ngIf="event?.showLoader" class="skeleton-line"></div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="tripEventsTableColumns; sticky: true"></tr>
+        <tr
+          [ngStyle]="{ background: row.clicked ? '#d6d1d1' : null }"
+          [ngClass]="{ externalEvent: row.isExternalEvent }"
+          mat-row
+          *matRowDef="let row; columns: tripEventsTableColumns"
+        ></tr>
+      </table>
+<div class="no-events-found" *ngIf="eventsList && !eventsList.length">
+      <ng-container>
+        <app-alert *ngIf="selectedSeverity === 'all'; else noSeverityEvents" [alertType]="'info'" [insideTable]="true" >
+          {{ 'eventsTableNoEventsFound' | translate }}
+        </app-alert>
+
+        <ng-template #noSeverityEvents>
+          <app-alert [alertType]="'info'" [insideTable]="true">
+            <ng-container [ngSwitch]="selectedSeverity">
+              <span *ngSwitchCase="'low'">{{ 'noEventsBasedOnLowSeverity' | translate }}</span>
+              <span *ngSwitchCase="'medium'">{{ 'noEventsBasedOnMediumSeverity' | translate }}</span>
+              <span *ngSwitchCase="'high'">{{ 'noEventsBasedOnHighSeverity' | translate }}</span>
+            </ng-container>
+          </app-alert>
+        </ng-template>
+      </ng-container>
+</div>
+      <mat-paginator class="paginator" #paginator="matPaginator" [pageSize]="PageSize" showFirstLastButtons></mat-paginator>
+    </div>
+  </div>
+</div>

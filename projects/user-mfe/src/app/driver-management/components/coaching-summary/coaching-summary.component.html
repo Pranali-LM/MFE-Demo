@@ -1,0 +1,147 @@
+<div
+  fxLayout="row"
+  fxLayout.md="column"
+  fxLayout.sm="column"
+  fxLayout.xs="column"
+  fxLayoutGap="24px"
+  fxLayoutAlign="space-between stretch"
+  *ngIf="driverDetails?.violations?.length"
+>
+  <div fxFlex="25" fxLayout="column" fxLayoutGap="24px" class="details-container">
+    <h3 class="title card-title">{{ 'Details' | translate }}</h3>
+    <div class="stats-card">
+      <div class="skeleton-loader" *ngIf="loader">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+      </div>
+      <ng-container *ngIf="!loader">
+        <div class="card-title">{{ 'DRIVERID' | translate }}</div>
+        <div class="card-text">{{ driverDetails?.driverId || '-' }}</div>
+      </ng-container>
+    </div>
+    <div class="stats-card">
+      <div class="skeleton-loader" *ngIf="loader">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+      </div>
+      <ng-container *ngIf="!loader">
+        <div class="card-title">{{ 'DRIVERNAME' | translate }}</div>
+        <div class="card-text">{{ driverDetails?.driverName || '-' }}</div>
+      </ng-container>
+    </div>
+    <div class="stats-card">
+      <div class="skeleton-loader" *ngIf="loader">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+      </div>
+      <ng-container *ngIf="!loader">
+        <div class="card-title">{{ 'COACHEDBY' | translate }}</div>
+        <div class="card-text">{{ userInfo.name || '-' }}</div>
+      </ng-container>
+    </div>
+    <div class="stats-card">
+      <div class="skeleton-loader" *ngIf="loader">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+      </div>
+      <ng-container *ngIf="!loader">
+        <div class="card-title">{{ 'INCIDENTSCOACHED' | translate }}</div>
+        <div class="card-text">
+          <ng-container *ngIf="coachedDetails?.totalCoachedIncidentCount > 0; else noEvents">
+            <span *ngFor="let event of coachedDetails?.incidentSummery; let i = index">
+              <ng-conatiner *ngIf="event?.coachedIncidentCount">
+                {{ eventsConfig[event?.incidentName].label || '-' | translate }}
+                <ng-container *ngIf="!(i === coachedDetails?.incidentSummery?.length - 1)">,</ng-container>
+              </ng-conatiner>
+            </span>
+          </ng-container>
+          <ng-template #noEvents>
+            <span>-</span>
+          </ng-template>
+        </div>
+      </ng-container>
+    </div>
+    <div class="stats-card">
+      <div class="skeleton-loader" *ngIf="loader">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+      </div>
+      <ng-container *ngIf="!loader">
+        <div class="card-title">{{ 'COACHEDINCIDENTSCOUNT' | translate }}</div>
+        <div class="card-text">{{ coachedDetails?.totalCoachedIncidentCount || '-' }}</div>
+      </ng-container>
+    </div>
+  </div>
+
+  <mat-divider vertical></mat-divider>
+
+  <div fxLayout="column" fxLayoutGap="24px" fxFlex>
+    <h3 class="title card-title">{{ 'CoachingIncidentBreakup' | translate }}</h3>
+    <div class="table-wrap">
+      <table mat-table [dataSource]="dataSource">
+        <ng-container matColumnDef="incidentName">
+          <th mat-header-cell *matHeaderCellDef>{{ 'eventsTableIncident' | translate }}</th>
+          <td mat-cell *matCellDef="let element">{{ eventsConfig[element?.incidentName].label }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="coachedCount">
+          <th mat-header-cell *matHeaderCellDef>{{ 'CoachedCount' | translate }}</th>
+          <td mat-cell *matCellDef="let element">{{ element?.coachedIncidentCount }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="skippedCount">
+          <th mat-header-cell *matHeaderCellDef>{{ 'SkippedCount' | translate }}</th>
+          <td mat-cell *matCellDef="let element">{{ element?.skippedIncidentCount }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+  </div>
+
+  <div fxFlex="25" fxLayout="column" fxLayoutGap="24px">
+    <h3 class="title card-title">{{ 'AddSessionNote' | translate }}</h3>
+
+    <mat-form-field appearance="fill">
+      <mat-label>{{ 'EnterSessionNote(optional)' | translate }}</mat-label>
+      <textarea matInput rows="20" class="session-textarea" [formControl]="sessionComment" maxLength="240"></textarea>
+      <mat-hint align="end">{{ sessionComment.value?.length ?? 0 }}/240</mat-hint>
+      <mat-error *ngIf="sessionComment.hasError('maxlength')">{{ 'MaximumLengthExceeded' | translate }}</mat-error>
+    </mat-form-field>
+  </div>
+</div>
+
+<ng-container *ngIf="!driverDetails?.violations?.length">
+  <div class="severity-video-content" fxLayout="row" style="width: 100%">
+    <app-alert [alertType]="'info'">
+      {{ 'noSessionData' | translate }}
+    </app-alert>
+  </div>
+</ng-container>
+
+<mat-card
+  class="action-area"
+  fxLayout="row"
+  fxLayoutAlign="space-between center"
+  fxLayoutGap="16px"
+  [ngStyle]="{ width: isSideNavOpen ? 'calc(100vw - 220px)' : '100vw', left: isSideNavOpen ? '220px' : '' }"
+>
+  <span fxFlex="75">{{ 'summerFooter' | translate }}</span>
+  <div fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="16px">
+    <button type="button" mat-stroked-button class="stepper-button" fxLayoutAlign="start center" (click)="previous()">
+      {{ 'PREVIOUSSTEP' | translate }}
+    </button>
+    <button
+      type="button"
+      mat-flat-button
+      color="accent"
+      class="stepper-button"
+      (click)="onCoachingComplete()"
+      [loading]="loading"
+      [disabled]="!driverDetails?.violations?.length"
+    >
+      {{ 'COMPLETECOACHING' | translate }}
+    </button>
+  </div>
+</mat-card>

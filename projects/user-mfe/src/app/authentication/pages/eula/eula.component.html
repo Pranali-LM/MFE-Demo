@@ -1,0 +1,90 @@
+<ng-container *ngIf="step === 0">
+  <div fxLayout="column" fxLayoutGap="16px">
+    <h3 class="title">License Agreement Rejected</h3>
+
+    <div fxLayout="column" fxLayoutGap="96px">
+      <p>
+        It seems you have rejected the End User License Agreement (EULA). You can no longer use the portal, unless you agree to the license
+        agreement. Please contact your service provider for more information regarding the license.
+      </p>
+      <div class="row" fxLayoutAlign="end center">
+        <button type="button" mat-flat-button color="accent" (click)="viewAgreement()">View Agreement</button>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="step === 1">
+  <section fxLayout="column" fxLayoutGap="16px">
+    <div fxLayout="row" fxLayoutAlign="space-between center">
+      <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
+        <h3 class="title">License Agreement</h3>
+      </div>
+    </div>
+
+    <div fxLayout="column" fxLayoutGap="4px">
+      <h4 class="feature-title"><b>STEP #1 - Read and Accept the agreement at the end of the document</b></h4>
+    </div>
+
+    <mat-dialog-content fxLayout="column" fxLayoutGap="16px" class="agreement-container">
+      <app-eula-document></app-eula-document>
+
+      <mat-divider></mat-divider>
+
+      <mat-checkbox [formControl]="acceptAgreement">I accept the terms in the license agreement </mat-checkbox>
+
+      <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="end">
+        <button type="button" mat-stroked-button (click)="reject()" [disabled]="acceptAgreement.value">REJECT</button>
+        <button type="button" mat-flat-button color="accent" (click)="next()" [disabled]="!acceptAgreement.value">ACCEPT</button>
+      </div>
+    </mat-dialog-content>
+  </section>
+</ng-container>
+
+<ng-container *ngIf="step === 2">
+  <section fxLayout="column" fxLayoutGap="16px">
+    <div fxLayout="row" fxLayoutAlign="space-between center">
+      <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
+        <h3 class="title">License Agreement</h3>
+      </div>
+    </div>
+
+    <div fxLayout="column" fxLayoutGap="16px">
+      <h4 class="feature-title"><b>STEP #2 - Fill in the details</b></h4>
+      <span><i>Name and Email Address cannot be modified</i></span>
+    </div>
+
+    <mat-dialog-content>
+      <form [formGroup]="consentForm" fxLayout="column" fxLayoutGap="48px">
+        <div fxLayout="column">
+          <mat-form-field appearance="outline">
+            <mat-label>Full Name</mat-label>
+            <input matInput formControlName="name" type="text" name="name" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" type="email" name="email" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Job Title</mat-label>
+            <input matInput formControlName="jobTitle" type="text" name="jobTitle" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Organization Name</mat-label>
+            <input matInput formControlName="organizationName" type="text" name="organizationName" />
+          </mat-form-field>
+        </div>
+      </form>
+
+      <div fxLayout="row" fxLayoutAlign="end" fxLayoutGap="16px">
+        <button type="button" mat-stroked-button cdkFocusInitial (click)="viewAgreement()" [disabled]="loader">BACK</button>
+        <button type="button" mat-flat-button color="accent" (click)="confirm()" [disabled]="consentForm.invalid" [loading]="loader">
+          CONFIRM
+        </button>
+      </div>
+    </mat-dialog-content>
+  </section>
+</ng-container>

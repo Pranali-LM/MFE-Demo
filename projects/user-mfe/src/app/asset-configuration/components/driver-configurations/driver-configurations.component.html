@@ -1,0 +1,75 @@
+<div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="16px">
+  <h3 class="title">
+    {{ 'dutyTypeDriverConfiguraion' | translate }}
+    <button
+      mat-icon-button
+      class="btn-faq"
+      (click)="dataService?.openFaq('driverConfigurations')"
+      matTooltip="{{ 'viewInformation' | translate }}"
+      matTooltipPosition="right"
+    >
+      <mat-icon>info_outline</mat-icon>
+    </button>
+  </h3>
+</div>
+
+<div fxLayout="column" fxLayoutGap="24px">
+  <div class="skeleton-loader" *ngIf="consentLoader">
+    <div class="skeleton-card xxs"></div>
+  </div>
+
+  <app-alert
+    *ngIf="!hasGivenAudioConsent && !consentLoader"
+    [removeMargin]="true"
+    [alertType]="'info'"
+    alertActionText="{{ 'driverConfigGiveConsent' | translate }}"
+    (alertAction)="openAudioConsentDialog()"
+  >
+    {{ 'driverConfigRequireChanges' | translate }}
+  </app-alert>
+
+  <div class="table-wrap">
+    <table mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="driverId">
+        <th mat-header-cell *matHeaderCellDef>{{ 'driverConfigDriverID' | translate }}</th>
+        <td mat-cell *matCellDef="let element">
+          <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+          <span *ngIf="!loader">{{ element?.driverId.toUpperCase() === '_UNASSIGNED' ? ('DriverIdUnassigned' | translate) : (element?.driverId || '-') }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="driverName">
+        <th mat-header-cell *matHeaderCellDef>{{ 'driverConfigName' | translate }}</th>
+        <td mat-cell *matCellDef="let element">
+          <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+          <span *ngIf="!loader">{{ element?.driverName || '-' }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>{{ 'driverConfigAudioRecording' | translate }}</th>
+        <td mat-cell *matCellDef="let element">
+          <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+          <span *ngIf="!loader">
+            <mat-slide-toggle
+              [checked]="element?.audioRecording"
+              *ngIf="!element?.loader"
+              [disabled]="!hasGivenAudioConsent"
+              (change)="onToggleChange($event, element)"
+            ></mat-slide-toggle>
+            <mat-spinner *ngIf="element?.loader" [diameter]="20"></mat-spinner>
+          </span>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: tableColumns"></tr>
+    </table>
+
+    <app-alert *ngIf="!loader && !dataSource?.data?.length" [alertType]="'info'" [insideTable]="true">
+      {{ 'driverConfigNoDriverFound' | translate }}
+    </app-alert>
+
+    <mat-paginator #paginator="matPaginator" [length]="totalCount" [pageSize]="pageSize" showFirstLastButtons> </mat-paginator>
+  </div>
+</div>

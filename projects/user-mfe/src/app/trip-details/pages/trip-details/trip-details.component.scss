@@ -1,0 +1,180 @@
+@import './variables';
+@import './colors';
+@import './fonts';
+
+.trip-detail-wrap {
+  overflow: hidden;
+}
+
+.mapbox-map {
+  height: 100%;
+  width: 100%;
+}
+
+.trip-map ::ng-deep {
+  position: relative;
+
+  .mapbox-map {
+    height: 100%;
+    width: 100%;
+  }
+
+  .map {
+    height: calc(100vh - (64px + 80px));
+  }
+
+  .map-with-alert {
+    height: calc(100vh - (64px + 80px + 56px));
+  }
+}
+
+.trip-events-table {
+  position: absolute;
+  display: inline-block;
+  z-index: 1000;
+  top: 0;
+  right: 0;
+  width: 400px;
+  height: 0;
+}
+
+.trip-summary {
+  position: relative;
+  width: 100%;
+  padding: 8px 24px;
+  height: 80px;
+  max-height: 80px;
+  overflow: hidden;
+  background-color: $page-subheader-color;
+
+  .summary-title {
+    font-weight: $normal-font-weight;
+    font-size: $caption-font-size;
+    margin-bottom: 4px !important;
+    text-transform: uppercase;
+    color: $white-color;
+  }
+
+  .summary-value {
+    font-weight: $medium-font-weight;
+    max-width: 240px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: $heading-font-size;
+    z-index: 100;
+    color: $white-color;
+  }
+}
+
+.ongoing-chip {
+  pointer-events: none;
+  font-weight: $medium-font-weight;
+
+  &.active {
+    color: $light-success;
+  }
+  &.amber {
+    color: $amber-color;
+  }
+}
+
+.menu-item {
+  padding: 16px;
+}
+
+.trip-id-value {
+  max-width: 200px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.mobile-copy {
+  visibility: visible;
+}
+
+.driver-id {
+  vertical-align: middle;
+}
+
+.no-btn {
+  background: none;
+  border: none;
+}
+
+.driver-thumbnail {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: 50%;
+  vertical-align: middle;
+  border: 2px solid $white-color;
+  cursor: pointer;
+  background: transparent;
+
+  &:hover {
+    border: 2px solid $light-accent;
+  }
+}
+
+.trip-loader {
+  top: 64px !important;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.mobile-driver-name {
+  display: none;
+}
+
+.livestream-icon {
+  margin-right: 4px;
+}
+
+.d-none {
+  display: none !important;
+}
+
+.location {
+  position: relative;
+  padding-right: 16px;
+  border-right: 1px solid $white-color;
+}
+
+.location-icon {
+  width: 12px;
+  height: 12px;
+  line-height: 12px;
+  font-size: 12px;
+  margin-right: 8px;
+  vertical-align: baseline;
+}
+
+.start-icon {
+  color: $dark-success-background;
+}
+
+.end-icon {
+  color: $dark-error-background;
+}
+
+.connector-line {
+  position: absolute;
+  width: 1px;
+  height: 24px;
+  background-color: $light-border;
+  top: 12px;
+  left: 5.25px;
+  z-index: 1;
+}
+
+.location-info {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-request {
+  color: $black-color;
+  background-color: $white-color;
+}

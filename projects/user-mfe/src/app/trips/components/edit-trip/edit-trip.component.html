@@ -1,0 +1,121 @@
+<app-side-navigation>
+  <div class="page-subheader" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="16px">
+    <div fxLayout="row" fxLayoutGap="16px">
+      <button
+        style="color: #ffffff"
+        matTooltip="{{ 'EditUserComponentPreviouspageToolTip' | translate }}"
+        mat-icon-button
+        (click)="navigateBack()"
+      >
+        <mat-icon>keyboard_backspace</mat-icon>
+      </button>
+      <h3 class="card-title">{{ actionName | translate | titlecase }} {{ 'Trip' | translate }}</h3>
+    </div>
+  </div>
+
+  <section class="container" fxLayout="column" fxLayoutGap="24px" *ngIf="!tripDetailsLoader; else tripDetailsLoading">
+    <mat-card fxLayout="row" fxLayout.sm="column" fxLayoutAlign="space-between start" fxLayoutGap="96px" fxLayoutGap.sm="24px">
+      <div fxLayout="column" fxLayoutGap="8px" fxFlex="35">
+        <h3>{{ 'TripDetails' | translate }}</h3>
+        <span class="text-content">{{ 'editTripDetailsdescription1' | translate }}</span>
+      </div>
+
+      <div fxLayout="column" fxFlex="65" fxLayoutGap="16px" class="edit-trips">
+        <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center">
+          <div class="stats-card">
+            <div class="skeleton-loader" *ngIf="loader">
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line"></div>
+            </div>
+            <ng-container *ngIf="!loader">
+              <div class="card-title">{{ 'editTripDetailsDriverId' | translate }}</div>
+              <div class="card-text">
+                <span [matTooltip]="tripDetails?.driverId || 'NA'">
+                  {{ tripDetails?.driverId || 'NA' }}
+                </span>
+              </div>
+            </ng-container>
+          </div>
+          <div class="stats-card">
+            <div class="skeleton-loader" *ngIf="loader">
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line"></div>
+            </div>
+            <ng-container *ngIf="!loader">
+              <div class="card-title">{{ 'editTripDetailsAssetId' | translate }}</div>
+              <div class="card-text">
+                <span [matTooltip]="tripDetails?.asset?.assetId || 'NA'">
+                  {{ tripDetails?.asset?.assetId }}
+                </span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+
+        <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center">
+          <div class="stats-card">
+            <div class="skeleton-loader" *ngIf="loader">
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line"></div>
+            </div>
+            <ng-container *ngIf="!loader">
+              <div class="card-title">{{ 'editTripDetailsDriverName' | translate }}</div>
+              <div class="card-text">
+                <span [matTooltip]="tripDetails?.driverName || 'NA'">
+                  {{ tripDetails?.driverName || 'NA' }}
+                </span>
+              </div>
+            </ng-container>
+          </div>
+          <div class="stats-card">
+            <div class="skeleton-loader" *ngIf="loader">
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line"></div>
+            </div>
+            <ng-container *ngIf="!loader">
+              <div class="card-title">{{ 'editTripDetailsStartTime' | translate }}</div>
+              <div class="card-text">
+                <span [matTooltip]="tripDetails?.startTime || 'NA'">
+                  {{
+                    tripDetails?.startTimeUTC
+                      | dateConversion
+                        : (dataService._currentTimeZone | async)
+                        : (dataService._currentDateFormat | async)
+                        : tripDetails?.startTime
+                  }}
+                </span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+
+    <mat-card fxLayout="row" fxLayout.sm="column" fxLayoutAlign="space-between start" fxLayoutGap="96px" fxLayoutGap.sm="24px">
+      <div fxLayout="column" fxLayoutGap="8px" fxFlex="35">
+        <h3>{{ 'editTripDetailsAssignTags' | translate }}</h3>
+        <span class="sub-text">{{ 'editTripDetailsAssignTagsdescription' | translate }}</span>
+      </div>
+
+      <div fxFlex fxLayout="column" style="width: 100%">
+        <app-tagging-filter-v2
+          (selectedTags)="selectedTags($event)"
+          [entityType]="'trip'"
+          [dropDownType]="'assign'"
+          [numOfTagsToDisplay]="3"
+          [assignedTagList]="tripTags"
+        ></app-tagging-filter-v2>
+      </div>
+    </mat-card>
+
+    <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="end center">
+      <button type="submit" mat-flat-button color="accent" (click)="onSaveDetails()" [loading]="updateTagsLoader">
+        {{ 'editTripDetailsSaveDetails' | translate }}
+      </button>
+    </div>
+  </section>
+
+  <ng-template #tripDetailsLoading>
+    <section class="container" fxLayout="column" fxLayoutGap="24px">{{ 'editTripDetailsLoading' | translate }}</section>
+  </ng-template>
+</app-side-navigation>

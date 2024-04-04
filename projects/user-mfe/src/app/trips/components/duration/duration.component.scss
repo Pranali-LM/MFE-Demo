@@ -1,0 +1,12 @@
+@import './variables';
+@import './colors';
+
+.btn-filter {
+  border: 1px solid $light-accent;
+}
+
+.info-icon {
+  font-size: 20px;
+  position: relative;
+  margin-top: 6px;
+}

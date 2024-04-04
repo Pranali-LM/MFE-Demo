@@ -1,0 +1,26 @@
+@import './variables';
+@import './colors';
+@import './fonts';
+
+.input-upload {
+  width: 100%;
+  height: 40px;
+  position: absolute;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.faq-section {
+  padding-right: 24px;
+}
+
+.enrollment-form {
+  ::ng-deep .mat-tab-body-content {
+    padding-top: 24px;
+    height: 448px !important;
+  }
+}

@@ -1,0 +1,42 @@
+<div fxLayout="column" fxLayoutGap="24px">
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <h3 class="card-title">{{ 'driverImagesHeader' | translate }}</h3>
+
+    <button
+      mat-icon-button
+      class="btn-close"
+      matTooltip="{{ 'driverImagesCloseModal' | translate }}"
+      [matTooltipPosition]="'left'"
+      mat-dialog-close
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div fxLayout="column" fxLayoutGap="8px">
+    <span>
+      <strong>{{ 'driverImagesDriverId' | translate }} - </strong>{{ data?.driver?.driverId || '-' }}
+    </span>
+    <span
+      ><strong>{{ 'driverImagesDriverName' | translate }} - </strong>{{ data?.driver?.driverName || '-' }}</span
+    >
+  </div>
+
+  <app-alert *ngIf="data?.infoMessage" [alertType]="'info'" removeMargin="true">
+    {{ data?.infoMessage | translate }}
+  </app-alert>
+
+  <div class="preview-section" *ngIf="!loader">
+    <div *ngFor="let img of driverImages; let i = index" class="preview-container">
+      <img [src]="img?.url" class="preview-image" />
+    </div>
+  </div>
+
+  <div class="skeleton-loader" style="margin-top: 16px" *ngIf="loader">
+    <div class="skeleton-card md"></div>
+  </div>
+
+  <app-alert *ngIf="!loader && !driverImages.length" [alertType]="'info'">
+    {{ 'driverImagesNoDriverImages' | translate }}
+  </app-alert>
+</div>

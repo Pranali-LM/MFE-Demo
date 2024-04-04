@@ -1,0 +1,13 @@
+<ng-container *ngFor="let fleet of userFleetList">
+  <button
+    class="btn-menu"
+    mat-menu-item
+    [ngClass]="fleet?.fleetId === currentFleet ? 'active' : ''"
+    (click)="onFleetChange(fleet?.fleetId)"
+    matTooltip="{{ 'headerAccounIDTooltip' | translate }} : {{ fleet?.fleetId }}"
+    matTooltipPosition="left"
+    matTooltipShowDelay="500"
+  >
+    {{ fleet?.fleetName || fleet?.fleetId }}
+  </button>
+</ng-container>

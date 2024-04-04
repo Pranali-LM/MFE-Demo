@@ -1,0 +1,120 @@
+@import './variables';
+@import './fonts';
+
+.driver-management-section {
+  margin-top: 80px;
+}
+
+.input-icon {
+  cursor: pointer;
+}
+
+.driver-signup-card {
+  min-height: 480px;
+}
+
+.driver-image-uploaded {
+  color: $light-success;
+}
+
+.btn-edit {
+  visibility: hidden;
+}
+
+.edit-column {
+  display: flex;
+  align-items: center;
+
+  .text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+  }
+}
+
+tr:hover {
+  .btn-edit {
+    visibility: visible;
+  }
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+.status-confirmed {
+  color: $light-success;
+  background-color: $light-success-background;
+}
+
+.status-pending {
+  color: $light-warn;
+  background-color: $light-warn-background;
+}
+
+.info-icon {
+  vertical-align: middle;
+  font-size: 20px;
+  margin-left: 4px;
+  position: relative;
+}
+
+.icon-installer {
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+  line-height: 20px;
+  vertical-align: middle;
+  margin-left: 4px;
+  color: $light-success;
+}
+
+.add-driver-section {
+  border: 1px solid $light-border;
+}
+
+::ng-deep .mat-horizontal-stepper-header {
+  pointer-events: none !important;
+}
+
+::ng-deep .mat-horizontal-content-container {
+  padding: 8px 24px 24px 24px !important;
+}
+
+.dark-theme {
+  .status-confirmed {
+    color: $dark-success !important;
+    background-color: $dark-success-background !important;
+  }
+
+  .status-pending {
+    color: $dark-warn !important;
+    background-color: $dark-warn-background !important;
+  }
+}
+
+// tablet
+@media (min-width: 768px) and (max-width: 1360px) {
+  .btn-edit {
+    visibility: visible !important;
+  }
+
+  .all-driver-table,
+  .mat-paginator {
+    min-width: 1280px !important;
+  }
+}
+
+// mobile
+@media (min-width: 320px) and (max-width: 767px) {
+  .all-driver-table,
+  .mat-paginator {
+    min-width: 767px !important;
+  }
+
+  .btn-edit {
+    visibility: visible !important;
+  }
+}

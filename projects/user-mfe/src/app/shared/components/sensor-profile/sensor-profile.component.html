@@ -1,0 +1,22 @@
+<div class="skeleton-loader" *ngIf="accProfileLoader">
+  <div class="skeleton-card sm"></div>
+</div>
+
+<div
+  class="chart-area acc-profile"
+  [ngClass]="!accProfileLoader && isChartDataAvailable ? 'd-block' : 'd-none'"
+  fxLayout="column"
+  fxLayoutGap="16px"
+  #accProfileRef
+>
+  <div class="drag-line" *ngIf="isChartDataAvailable" [ngStyle]="{ transform: 'translateX(' + updatedTranslateVal + 'px)' }"></div>
+  <div [ngClass]="!accProfileLoader && isChartDataAvailable ? 'chart-container xxs' : ''">
+    <canvas id="incidentSensorProfileChart" [ngClass]="!accProfileLoader && isChartDataAvailable ? 'd-block' : 'd-none'"></canvas>
+  </div>
+</div>
+
+<div *ngIf="!isChartDataAvailable">
+  <app-alert [alertType]="'info'">
+    {{ 'sensorProfileAcceleroMeterNotAvailable' | translate }}
+  </app-alert>
+</div>

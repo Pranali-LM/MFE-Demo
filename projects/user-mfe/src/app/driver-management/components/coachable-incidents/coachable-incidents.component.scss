@@ -1,0 +1,135 @@
+@import './variables';
+@import './fonts';
+
+.coaching-video {
+  height: 360px;
+  width: 100%;
+  background-color: $black-color;
+  border-radius: 4px;
+}
+
+.coaching-selection {
+  margin-right: 24px;
+
+  .mat-list-option {
+    border-radius: 4px;
+  }
+}
+
+.incident-media,
+.dual-video {
+  height: 300px;
+  width: 100%;
+  background-color: $black-color;
+  border-radius: 4px;
+  justify-content: space-evenly;
+}
+
+.video-card {
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+.video-controls {
+  padding: 16px 0 0 0;
+}
+
+.video-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transition: translate(-50%, -50%);
+}
+
+.video-container {
+  position: relative;
+
+  .custom-btn {
+    position: absolute;
+    right: 16px;
+    bottom: 24px;
+    background-color: rgba(0, 0, 0, 0.5);
+    visibility: hidden;
+
+    mat-icon {
+      color: $white-color;
+    }
+  }
+
+  &:hover .custom-btn {
+    visibility: visible;
+  }
+}
+
+.no-media-container {
+  height: 300px;
+  width: 100%;
+  position: relative;
+  background-color: $black-color;
+  text-align: center;
+  border-radius: 4px;
+
+  .no-media-text {
+    color: $white-color;
+    font-size: $heading-font-size;
+    margin: 0;
+    font-weight: $bold-font-weight;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1360px) {
+  .no-media-container {
+    width: 60vw !important;
+  }
+}
+
+// mobile
+@media (min-width: 320px) and (max-width: 767px) and (orientation: portrait) {
+  .no-media-container {
+    width: 240px !important;
+  }
+}
+
+.custom-stepper {
+  border-radius: 4px;
+  min-height: 71vh;
+
+  ::ng-deep .mat-horizontal-stepper-header-container {
+    border-bottom: 1px solid $light-border;
+    border-radius: 4px;
+    pointer-events: none;
+  }
+
+  ::ng-deep .mat-horizontal-content-container {
+    padding: 24px;
+  }
+}
+
+.coaching-session-card {
+  padding: 0 !important;
+  min-height: 71vh;
+  margin-bottom: 80px;
+}
+
+.action-area {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  border-top: 1px solid $light-border;
+}
+
+::ng-deep .mat-step-header[aria-selected='true'] {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+.dark-theme {
+  .custom-stepper {
+    ::ng-deep .mat-horizontal-stepper-header-container {
+      border-bottom: 1px solid $dark-border;
+    }
+  }
+
+  .action-area {
+    border-top: 1px solid $dark-border;
+  }
+}

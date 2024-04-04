@@ -1,0 +1,172 @@
+<div
+  class="details"
+  fxLayout="row"
+  fxLayoutAlign="space-between center"
+  fxLayoutGap="24px"
+  cdkDrag
+  cdkDragRootElement=".cdk-overlay-pane"
+  cdkDragBoundary=".cdk-overlay-container"
+>
+  <div fxLayout="row" fxLayoutAlign="flex-start center" fxLayoutGap="4px">
+    <div class="card-title">{{ 'liveStreamLiveStreaming' | translate }}</div>
+    <div class="subtitle" *ngIf="data?.assetId"><span class="seperator">|</span>{{ data?.assetName || data?.assetId }}</div>
+  </div>
+  <span tabindex="0"></span>
+  <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+    <div class="drag-handle" cdkDragHandle>
+      <mat-icon>drag_indicator</mat-icon>
+    </div>
+    <button
+      mat-icon-button
+      class="btn-close"
+      (click)="onCloseAction()"
+      matTooltip="{{ 'liveStreamModalCloseModal' | translate }}"
+      [matTooltipPosition]="'left'"
+      [disabled]="isRequestingLivestream"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</div>
+
+<div
+  fxLayout="column"
+  fxLayoutGap="25px"
+  class="user-confirmation-shade"
+  [ngClass]="{ 'user-confirmation-shade': verifySession || showReviewActionDialog }"
+>
+  <div class="loading-shade" *ngIf="verifySession">
+    <mat-card class="user-confirmation-card" fxLayout="column">
+      <mat-card-content>{{ 'liveStreamModalContinueWatching' | translate }}</mat-card-content>
+      <mat-card-actions fxFlex="row" fxLayoutAlign="flex-end center" fxLayoutGap="5px">
+        <button class="btn-submit" mat-stroked-button (click)="onCloseAction()">
+          <span> {{ 'liveStreamModalContinueWatchingNo' | translate }} </span>
+          <span> (<app-timer [state]="noActionTimerState" (paused)="onNoActionTimerPause()"></app-timer>) </span>
+        </button>
+        <button class="btn-submit" color="accent" mat-flat-button (click)="continueStreaming()">
+          {{ 'liveStreamModalYes' | translate }}
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <div class="loading-shade" *ngIf="showReviewActionDialog">
+    <mat-card class="user-confirmation-card" fxLayout="column">
+      <mat-card-content>{{ 'liveStreamModalAccessOngoingStream' | translate }}</mat-card-content>
+      <mat-card-actions fxFlex="row" fxLayoutAlign="flex-end center" fxLayoutGap="5px">
+        <button class="btn-submit" mat-stroked-button (click)="onCloseAction()">
+          {{ 'liveStreamModalContinueWatchingNo' | translate }}
+        </button>
+        <button class="btn-submit" color="accent" mat-flat-button (click)="onReviewLivestream()">
+          {{ 'liveStreamModalYes' | translate }}
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <div class="live-video-section">
+    <div class="loading-shade" fxLayout="column" fxLayoutAlign="center center" *ngIf="isRequestingLivestream">
+      <mat-spinner></mat-spinner>
+      <span>{{ 'liveStreamModalRequestLiveStream' | translate }}...</span>
+    </div>
+
+    <video
+      [appHlsVideoPlayer]="livestreamDetails?.streamSessionURL"
+      controls
+      autoplay
+      [muted]="'muted'"
+      class="live-video"
+      (hlsError)="hlsErrorHandler()"
+      [fxHide]="isRequestingLivestream"
+      #liveVideo
+    ></video>
+  </div>
+
+  <app-alert *ngIf="errorMessage" alertType="error">
+    <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center">
+      <span>{{ errorMessage | translate }}</span>
+      <span fxFlex="1 1 0"></span>
+      <button class="btn-submit" color="accent" *ngIf="enabledRetryOnFailure" mat-stroked-button (click)="onRetryLivestreamAction()">
+        {{ 'liveStreamModalRetry' | translate }}
+      </button>
+      <button mat-icon-button class="btn-close" color="accent" (click)="errorMessage = null">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </app-alert>
+
+  <form [formGroup]="livestreamForm" class="livestream-form">
+    <div fxLayout="row wrap" fxFlexAlign="start center" fxLayoutGap="24px">
+      <mat-form-field class="select-box">
+        <mat-select
+          disableOptionCentering
+          placeholder="{{ 'liveStreamModalVideoFormat' | translate }}"
+          formControlName="videoFormat"
+          name="livestreamVideoFormat"
+          (selectionChange)="onVideoFormatChange($event)"
+        >
+          <mat-option *ngFor="let format of livestreamVideoFormats" [value]="format?.value">
+            {{ format?.text | translate }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field *ngIf="livestreamForm?.value?.videoFormat === 'MDVR'">
+        <mat-select
+          disableOptionCentering
+          placeholder="{{ 'rangeSliderMdvrViews' | translate }}"
+          name="mdvrViews"
+          formControlName="mdvrViews"
+          [multiple]="isEvoCamera"
+          (selectionChange)="onMdvrViewsSelection($event)"
+        >
+          <mat-select-trigger *ngIf="isEvoCamera">
+            {{ getMdvrViewLabel(livestreamForm?.value?.mdvrViews?.[0]) }}
+            <span *ngIf="(livestreamForm?.value?.mdvrViews?.length || 0) > 1" class="example-additional-selection">
+              (+{{ (livestreamForm?.value?.mdvrViews?.length || 0) - 1 }}
+              {{ livestreamForm?.value?.mdvrViews?.length === 2 ? 'other' : 'others' }})
+            </span>
+          </mat-select-trigger>
+
+          <ng-container *ngFor="let format of availableMdvrViews">
+            <mat-option [value]="format?.view">
+              {{ format?.viewLabel | translate }}
+            </mat-option>
+            <mat-divider *ngIf="format?.showDivider"></mat-divider>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="select-box">
+        <mat-select
+          disableOptionCentering
+          placeholder="{{ 'liveStreamModalVideoResolution' | translate }}"
+          formControlName="videoResolution"
+          name="livestreamResolution"
+        >
+          <mat-option *ngFor="let resolution of livestreamResolutions" [value]="resolution">
+            {{ resolution }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </form>
+
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <app-livestream-timer
+      #livestreamTimer
+      [alertInterval]="verifySessionInterval"
+      (intervalAlert)="verifySessionTimerAlert()"
+    ></app-livestream-timer>
+
+    <button
+      class="btn-submit"
+      color="accent"
+      [disabled]="livestreamForm.invalid || (isDirty$ | async) === false || isRequestingLivestream"
+      mat-flat-button
+      (click)="onReRequestLivestreamAction()"
+    >
+      {{ 'liveStreamModalApply' | translate }}
+    </button>
+  </div>
+</div>

@@ -1,0 +1,17 @@
+<div class="page-header" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="end center" fxLayoutAlign.xs="start stretch" fxLayoutGap="24px">
+  <mat-form-field class="select-duration select-box">
+    <mat-label>{{ 'globalFilterSelectDuration' | translate }}</mat-label>
+    <mat-select disableOptionCentering [(value)]="durationDays" (selectionChange)="durationChange($event)">
+      <mat-option *ngFor="let duration of durationList" [value]="duration.days">
+        {{ duration.title | translate }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <app-tagging-filter-v2
+    (selectedTags)="selectedTags($event)"
+    [entityType]="entityType"
+    [dropDownType]="'filter'"
+    [assignedTagList]="homeTags"
+  ></app-tagging-filter-v2>
+</div>

@@ -1,0 +1,58 @@
+@import './fonts';
+@import './variables';
+@import './colors';
+
+.feature-announcement-container {
+  position: relative;
+  display: block;
+}
+
+.feature-img-container {
+  height: 300px;
+  border-radius: 4px;
+  position: relative;
+  padding: 24px;
+  overflow: hidden;
+  background-color: $page-background;
+}
+
+.feature-img {
+  max-height: 64%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 4px;
+  max-width: 80%;
+  border-radius: 8px;
+  background-color: $white-color;
+  padding: 24px;
+}
+
+.custom-paginator {
+  position: absolute;
+  top: -8px;
+  right: 48px;
+  background-color: $white-color;
+}
+
+::ng-deep .mat-paginator-range-label {
+  margin: 0 16px !important;
+}
+
+.feature-description {
+  margin-bottom: 0 !important;
+  li {
+    line-height: 24px;
+  }
+}
+
+.dark-theme {
+  .feature-img-container {
+    background-color: $dark-background;
+  }
+
+  .custom-paginator {
+    background-color: $dark-background-contrast;
+  }
+}

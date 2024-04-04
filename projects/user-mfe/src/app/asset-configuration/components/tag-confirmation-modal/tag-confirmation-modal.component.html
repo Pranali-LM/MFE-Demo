@@ -1,0 +1,86 @@
+<div fxLayout="column" fxLayoutGap="24px">
+  <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="16px">
+    <h3 class="title">{{ 'TagConfirmationModelComponentTitle' | translate }}</h3>
+    <button mat-icon-button class="btn-close" mat-dialog-close matTooltip="{{ 'Close' | translate }}" [matTooltipPosition]="'left'">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <ng-container [ngSwitch]="data?.type">
+    <span *ngSwitchCase="'ATTRIBUTE'">
+      <div fxLayout="column" fxLayoutGap="8px" *ngIf="data?.action === 'ACTIVE'">
+        <span class="sub-text"
+          >{{ 'TagConfirmationModelComponenDescription1' | translate }} {{ 'TagConfirmationModelComponenActivate' | translate }}
+          {{ 'TagConfirmationModelComponentAttributeDescription' | translate }}
+        </span>
+        <span class="sub-text"
+          ><strong>{{ 'NOTE:' | translate }} </strong>{{ 'TagConfirmationModelComponenActivateDesc' | translate }}</span
+        >
+      </div>
+      <div fxLayout="column" fxLayoutGap="8px" *ngIf="data?.action === 'INACTIVE'">
+        <span class="sub-text"
+          >{{ 'TagConfirmationModelComponenDescription1' | translate }} {{ 'TagConfirmationModelComponenDeactivate' | translate }}
+          {{ 'TagConfirmationModelComponentAttributeDescription' | translate }}
+        </span>
+        <span class="sub-text"
+          ><strong>{{ 'NOTE:' | translate }} </strong>{{ 'TagConfirmationModelComponenDeactivateDesc' | translate }}</span
+        >
+      </div>
+      <div fxLayout="column" fxLayoutGap="8px" *ngIf="data?.action === 'DELETE'">
+        <span class="sub-text"
+          >{{ 'TagConfirmationModelComponenDescription1' | translate }} {{ 'TagConfirmationModelComponenDelete' | translate }}
+          {{ 'TagConfirmationModelComponentAttributeDescription' | translate }}
+        </span>
+        <span class="sub-text"
+          ><strong>{{ 'NOTE:' | translate }} </strong>{{ 'TagConfirmationModelComponenDeleteDesc' | translate }}</span
+        >
+      </div>
+    </span>
+
+    <span *ngSwitchCase="'TAG'">
+      <div fxLayout="column" fxLayoutGap="8px" *ngIf="data?.action === 'ACTIVE'">
+        <span class="sub-text"
+          >{{ 'TagConfirmationModelComponenDescription1' | translate }} {{ 'TagConfirmationModelComponenActivate' | translate }}
+          {{ 'TagConfirmationModelComponentTagDescription' | translate }}
+        </span>
+        <span class="sub-text"
+          ><strong>{{ 'NOTE:' | translate }} </strong>{{ 'TagConfirmationModelComponenTagActivateDesc' | translate }}</span
+        >
+      </div>
+      <div fxLayout="column" fxLayoutGap="8px" *ngIf="data?.action === 'INACTIVE'">
+        <span class="sub-text"
+          >{{ 'TagConfirmationModelComponenDescription1' | translate }} {{ 'TagConfirmationModelComponenDeactivate' | translate }}
+          {{ 'TagConfirmationModelComponentTagDescription' | translate }}
+        </span>
+        <span class="sub-text"
+          ><strong>{{ 'NOTE:' | translate }} </strong>{{ 'TagConfirmationModelComponenTagDeactivateDesc' | translate }}</span
+        >
+      </div>
+      <div fxLayout="column" fxLayoutGap="8px" *ngIf="data?.action === 'DELETE'">
+        <span class="sub-text"
+          >{{ 'TagConfirmationModelComponenDescription1' | translate }} {{ 'TagConfirmationModelComponenDelete' | translate }}
+          {{ 'TagConfirmationModelComponentTagDescription' | translate }}
+        </span>
+        <span class="sub-text"
+          ><strong>{{ 'NOTE:' | translate }} </strong>{{ 'TagConfirmationModelComponenTagDeleteDesc' | translate }}</span
+        >
+      </div>
+    </span>
+  </ng-container>
+
+  <div fxLayout="row" fxFlexAlign="end" fxLayoutGap="16px">
+    <button mat-stroked-button mat-dialog-close>{{ 'ConfirmationModelComponentCancel' | translate }}</button>
+    <button mat-flat-button color="accent" (click)="onClose()" [disabled]="data?.type === 'ATTRIBUTE' && data?.isDisable">
+      <ng-container *ngIf="data?.action === 'ACTIVE'">
+        {{ 'TagConfirmationModelComponenActivate' | translate }}
+      </ng-container>
+      <ng-container *ngIf="data?.action === 'INACTIVE'">
+        {{ 'TagConfirmationModelComponenDeactivate' | translate }}
+      </ng-container>
+      <ng-container *ngIf="data?.action === 'DELETE'">
+        {{ 'TagConfirmationModelComponenDelete' | translate }}
+      </ng-container >
+      {{ data?.type | translate }}
+    </button>
+  </div>
+</div>

@@ -1,0 +1,7 @@
+<div [formGroup]="form">
+  <div [ngSwitch]="config?.controlType">
+    <app-input *ngSwitchCase="'textbox'" [form]="form" [config]="config"></app-input>
+    <app-select *ngSwitchCase="'dropdown'" [form]="form" [config]="config"></app-select>
+    <app-slide-toggle *ngSwitchCase="'toggle'" [form]="form" [config]="config"></app-slide-toggle>
+  </div>
+</div>

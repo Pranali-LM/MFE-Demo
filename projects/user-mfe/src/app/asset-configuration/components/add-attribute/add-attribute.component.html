@@ -1,0 +1,78 @@
+<app-side-navigation>
+  <div class="page-subheader" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="16px">
+    <div fxLayout="row" fxLayoutGap="16px">
+      <button
+        style="color: #ffffff"
+        matTooltip="{{ 'EditUserComponentPreviouspageToolTip' | translate }}"
+        mat-icon-button
+        (click)="navigateBack()"
+      >
+        <mat-icon>keyboard_backspace</mat-icon>
+      </button>
+      <h3 class="card-title">{{ actionName | translate | titlecase }} {{ 'Attributes' | translate }}</h3>
+    </div>
+  </div>
+
+  <form fxLayout="column" autocomplete="off" novalidate [formGroup]="form" *ngIf="form; else loadingUserDetails">
+    <section class="container" fxLayout="column" fxLayoutGap="24px">
+      <!-- <app-alert *ngIf="actionName === 'edit'" [alertType]="'info'" [removeMargin]="true" [requireBorder]="true">{{
+        'EditUserComponentEditDescription' | translate
+      }}</app-alert> -->
+
+      <mat-card fxLayout="row" fxLayout.sm="column" fxLayoutAlign="space-between start" fxLayoutGap="96px" fxLayoutGap.sm="24px">
+        <div fxLayout="column" fxLayoutGap="8px" fxFlex="35">
+          <h3>Attribute Information</h3>
+          <span class="text-content">{{ 'AddAttributeDialogdescription1' | translate }}</span>
+          <span class="text-content">
+            {{ 'AddAttributeDialogdescription2' | translate }} <strong>{{ 'AddAttributeDialogdescription3' | translate }}</strong>
+            {{ 'AddAttributeDialogdescription4' | translate }} <strong>{{ 'AddAttributeDialogdescription5' | translate }} </strong
+            >{{ 'AddAttributeDialogdescription6' | translate }} <strong>{{ 'AddAttributeDialogdescription7' | translate }}</strong>
+            {{ 'AddAttributeDialogdescription8' | translate }}
+          </span>
+        </div>
+
+        <div fxFlex fxLayout="column" style="width: 100%">
+          <div fxLayout="row" fxLayoutGap="24px">
+            <mat-form-field appearance="outline" fxFlex>
+              <mat-label>{{ 'AddAttributeSelectType' | translate }}</mat-label>
+              <mat-select formControlName="attributeType" disableOptionCentering>
+                <mat-option *ngFor="let types of allowedTypes" [value]="types.value">{{ types.Label }}</mat-option>
+              </mat-select>
+              <mat-error *ngIf="form.get('attributeType').hasError('required')">{{ 'AddAttributeSelectTypeRequired' | translate }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" fxFlex>
+              <mat-label>{{ 'AddAttributeAttributeSelectEntity' | translate }}</mat-label>
+              <mat-select formControlName="entities" disableOptionCentering multiple>
+                <mat-option *ngFor="let types of enityList" [value]="types.entityName">{{ types.entityName | titlecase}}</mat-option>
+              </mat-select>
+              <mat-error *ngIf="form.get('entities').hasError('required')">{{ 'AddAttributeAttributeSelectEntityRequired' | translate }}</mat-error>
+            </mat-form-field>
+          </div>
+          <mat-form-field appearance="outline" fxFlex>
+            <mat-label> {{ 'AddAttributeAttributeName' | translate }} </mat-label>
+            <input matInput type="text" formControlName="attributeName" name="attributeName" />
+            <mat-hint>{{ 'AddAttributeDialogMinimum3charectors' | translate }}</mat-hint>
+            <mat-error *ngIf="form.get('attributeName').hasError('required')">{{ 'AddAttributeAttributeNameRequired' | translate }}</mat-error>
+            <mat-error *ngIf="form.get('attributeName').hasError('pattern')">{{ 'AddAttributeAttributeNamePattern' | translate }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" fxFlex>
+            <mat-label>Description (optional)</mat-label>
+            <textarea matInput placeholder="Enter description" formControlName="description"></textarea>
+          </mat-form-field>
+        </div>
+      </mat-card>
+
+      <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="end center">
+        <button type="submit" mat-flat-button color="accent" [loading]="loader" [disabled]="form?.invalid" (click)="onSubmit()">
+          {{ 'EditUserComponentSAVEDETAILS' | translate }}
+        </button>
+      </div>
+    </section>
+  </form>
+
+  <ng-template #loadingUserDetails>
+    <section class="container" fxLayout="column" fxLayoutGap="24px">{{ 'AddAttributeDetailsLoading' | translate }}</section>
+  </ng-template>
+</app-side-navigation>

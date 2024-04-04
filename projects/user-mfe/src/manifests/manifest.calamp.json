@@ -1,0 +1,88 @@
+{
+  "name": "iOn Vision",
+  "short_name": "iOn Vision",
+  "theme_color": "#1ca5e8",
+  "background_color": "#d4eaed",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "../assets/calamp/pwa-icons/icon_x72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "../assets/calamp/pwa-icons/icon_x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "../assets/calamp/pwa-icons/icon_x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "../assets/calamp/pwa-icons/icon_x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "../assets/calamp/pwa-icons/icon_x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "../assets/calamp/pwa-icons/icon_x384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "../assets/calamp/pwa-icons/icon_x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "../assets/calamp/pwa-icons/maskable_icon_x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "../assets/calamp/pwa-icons/maskable_icon_x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "../assets/calamp/pwa-icons/maskable_icon_x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "../assets/calamp/pwa-icons/maskable_icon_x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "../assets/calamp/pwa-icons/maskable_icon_x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "../assets/calamp/pwa-icons/maskable_icon_x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "../assets/calamp/pwa-icons/maskable_icon_x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

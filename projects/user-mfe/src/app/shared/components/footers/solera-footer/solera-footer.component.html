@@ -1,0 +1,59 @@
+<footer
+  fxLayout="row"
+  fxLayoutAlign="space-between center"
+  fxLayout.lt-lg="column"
+  fxLayoutAlign.lt-lg="center start"
+  fxLayoutGap.lt-lg="30px"
+>
+  <div fxLayout="row" fxLayoutGap="25px">
+    <div>&#169; {{ data?.copyrightyear }} Solera, Inc. All rights reserved.</div>
+    <div fxLayout="row" fxLayoutGap="10px">
+      <a href="https://www.omnitracs.com/terms-use/" target="_blank">Terms of Use</a>
+      <span>|</span>
+      <a href="https://www.omnitracs.com/privacy-policy/" target="_blank">Privacy Policy.</a>
+    </div>
+  </div>
+
+  <div
+    fxLayout="row"
+    fxLayoutAlign="start center"
+    fxLayoutGap="20px"
+    fxLayout.lt-lg="column"
+    fxLayoutAlign.lt-lg="center start"
+    fxLayoutGap.lt-lg="10px"
+  >
+    <ng-container
+      [ngTemplateOutlet]="contactInfo"
+      [ngTemplateOutletContext]="{ iso: 'US & CA', email: 'protectsupport@solera.com', phone: '1-800-541-7490' }"
+    ></ng-container>
+    <ng-container
+      [ngTemplateOutlet]="contactInfo"
+      [ngTemplateOutletContext]="{ iso: 'UK', email: 'protectsupport@solera.com', phone: '448-000-984-014' }"
+    ></ng-container>
+    <ng-container
+      [ngTemplateOutlet]="contactInfo"
+      [ngTemplateOutletContext]="{ iso: 'MX', email: 'DL-OT-soportemx@omnitracs.com', phone: '5511020460' }"
+    ></ng-container>
+  </div>
+</footer>
+
+<ng-template #contactInfo let-iso="iso" let-email="email" let-phone="phone">
+  <div
+    fxLayout="column"
+    fxLayoutAlign="center start"
+    fxLayoutGap="10px"
+    fxLayout.lt-lg="row"
+    fxLayoutAlign.lt-lg="start center"
+    fxLayoutGap.lt-lg="10px"
+  >
+    <div>{{ iso }}:</div>
+    <div fxLayout="row" fxLayoutAlign="start end" fxLayoutGap="5px">
+      <mat-icon>mail</mat-icon>
+      <a [href]="'mailto:' + email">{{ email }}</a>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="start end" fxLayoutGap="5px">
+      <mat-icon>call</mat-icon>
+      <a [href]="'tel:' + phone">{{ phone }}</a>
+    </div>
+  </div>
+</ng-template>

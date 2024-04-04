@@ -1,0 +1,367 @@
+<app-side-navigation>
+  <div class="page-subheader" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="16px">
+    <div fxLayout="row" fxLayoutGap="16px">
+      <button style="color: #ffffff" matTooltip="{{'Previous page' | translate}}" mat-icon-button (click)="navigateBack()">
+        <mat-icon>keyboard_backspace</mat-icon>
+      </button>
+      <h3 class="card-title">{{ 'fleetSafetyReportTitle' | translate }}</h3>
+    </div>
+
+    <button mat-raised-button class="btn-page-subheader" [loading]="loader">
+      {{ 'fleetSafetyReportsComponentDownload' | translate }}
+    </button>
+  </div>
+
+  <div class="container" fxLayout="column" fxLayoutGap="24px">
+    <section fxLayout="row" fxLayoutAlign="space-between center">
+      <h2>{{ eventsConfig[incidentType].label || incidentType }}</h2>
+      <div fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="16px">
+        <button mat-stroked-button color="accent" (click)="openDiscardIncidentDialog()">DISCARD INCIDENT</button>
+        <button mat-flat-button color="accent" [disabled]="true" (click)="openIncidentFeedbackDialog()">PROVIDE FEEDBACK</button>
+      </div>
+    </section>
+
+    <section fxLayout="row" fxLayoutGap="24px">
+      <div fxFlex fxLayout="column" fxLayoutGap="24px">
+        <mat-card class="video-card" fxLayout="column">
+          <ng-container *ngIf="(incidentMedia1 || incidentMedia2) && isMediaAvailable; else noMedia">
+            <!-- dual video -->
+            <div
+              fxLayout="row"
+              fxLayoutGap="16px"
+              class="dual-video"
+              *ngIf="incidentMedia1 && incidentMedia2 && mediaType === 'VIDEO' && !isTouchDevice"
+            >
+              <div class="video-container">
+                <video
+                  class="incident-video"
+                  id="incidentVideo"
+                  width="520px"
+                  height="300px"
+                  [preload]="presentIndex === incident?.positionIndex ? 'auto' : 'metadata'"
+                  muted
+                >
+                  <source type="video/mp4" src="{{ incidentMedia1 }}#t=0.1" (error)="onPlaybackError()" />
+                </video>
+                <button
+                  mat-icon-button
+                  class="custom-btn"
+                  (click)="toggleFullscreen('incidentVideo')"
+                  [matTooltip]="isFullscreen ? ('incidentModalExitFullScreen' | translate) : ('incidentModalEnterFullScreen' | translate)"
+                  [matTooltipPosition]="'left'"
+                >
+                  <mat-icon *ngIf="isFullscreen">fullscreen_exit</mat-icon>
+                  <mat-icon *ngIf="!isFullscreen">fullscreen</mat-icon>
+                </button>
+
+                <mat-chip-list class="res-chip" *ngIf="videoResolution">
+                  <mat-chip>{{ videoResolution }}p</mat-chip>
+                </mat-chip-list>
+
+                <mat-spinner *ngIf="videoLoader" class="video-loader" color="white" strokeWidth="2" [diameter]="32"></mat-spinner>
+              </div>
+              <div class="video-container">
+                <video
+                  class="incident-video"
+                  id="incidentVideo2"
+                  width="520px"
+                  height="300px"
+                  muted
+                  [preload]="presentIndex === incident?.positionIndex ? 'auto' : 'metadata'"
+                >
+                  <source type="video/mp4" src="{{ incidentMedia2 }}#t=0.1" (error)="onPlaybackError()" />
+                </video>
+                <button
+                  mat-icon-button
+                  class="custom-btn"
+                  (click)="toggleFullscreen('incidentVideo2')"
+                  [matTooltip]="isFullscreen ? ('incidentModalExitFullScreen' | translate) : ('incidentModalEnterFullScreen' | translate)"
+                  [matTooltipPosition]="'left'"
+                >
+                  <mat-icon *ngIf="isFullscreen">fullscreen_exit</mat-icon>
+                  <mat-icon *ngIf="!isFullscreen">fullscreen</mat-icon>
+                </button>
+
+                <mat-chip-list class="res-chip" *ngIf="videoResolution">
+                  <mat-chip>{{ videoResolution }}p</mat-chip>
+                </mat-chip-list>
+
+                <mat-spinner *ngIf="videoLoader" class="video-loader" color="white" strokeWidth="2" [diameter]="32"></mat-spinner>
+              </div>
+            </div>
+
+            <!-- dual video touch device -->
+            <div
+              fxLayout="row"
+              fxLayoutGap="16px"
+              class="dual-video"
+              *ngIf="incidentMedia1 && incidentMedia2 && mediaType === 'VIDEO' && isTouchDevice"
+            >
+              <div class="video-container" [ngStyle]="{ display: isMediaStream1 ? 'block' : 'none' }">
+                <video
+                  id="incidentVideo"
+                  width="520px"
+                  height="300px"
+                  [preload]="presentIndex === incident?.positionIndex ? 'auto' : 'metadata'"
+                  muted
+                >
+                  <source type="video/mp4" src="{{ incidentMedia1 }}#t=0.1" (error)="onPlaybackError()" />
+                </video>
+                <button
+                  mat-icon-button
+                  class="custom-btn"
+                  (click)="toggleFullscreen('incidentVideo')"
+                  [matTooltip]="isFullscreen ? ('incidentModalExitFullScreen' | translate) : ('incidentModalEnterFullScreen' | translate)"
+                  [matTooltipPosition]="'left'"
+                >
+                  <mat-icon *ngIf="isFullscreen">fullscreen_exit</mat-icon>
+                  <mat-icon *ngIf="!isFullscreen">fullscreen</mat-icon>
+                </button>
+
+                <mat-spinner *ngIf="videoLoader" class="video-loader" color="white" strokeWidth="2" [diameter]="32"></mat-spinner>
+              </div>
+              <div class="video-container" [ngStyle]="{ display: isMediaStream1 ? 'none' : 'block' }">
+                <video
+                  id="incidentVideo2"
+                  width="520px"
+                  height="300px"
+                  muted
+                  [preload]="presentIndex === incident?.positionIndex ? 'auto' : 'metadata'"
+                >
+                  <source type="video/mp4" src="{{ incidentMedia2 }}#t=0.1" (error)="onPlaybackError()" />
+                </video>
+                <button
+                  mat-icon-button
+                  class="custom-btn"
+                  (click)="toggleFullscreen('incidentVideo2')"
+                  [matTooltip]="isFullscreen ? ('incidentModalExitFullScreen' | translate) : ('incidentModalEnterFullScreen' | translate)"
+                  [matTooltipPosition]="'left'"
+                >
+                  <mat-icon *ngIf="isFullscreen">fullscreen_exit</mat-icon>
+                  <mat-icon *ngIf="!isFullscreen">fullscreen</mat-icon>
+                </button>
+
+                <mat-spinner *ngIf="videoLoader" class="video-loader" color="white" strokeWidth="2" [diameter]="32"></mat-spinner>
+              </div>
+            </div>
+
+            <!-- single video -->
+            <div
+              fxLayout="row"
+              class="single-video video-container incident-media"
+              *ngIf="incidentMedia1 && !incidentMedia2 && mediaType === 'VIDEO'"
+            >
+              <video
+                id="incidentVideo"
+                width="1056px"
+                height="300px"
+                muted
+                [preload]="presentIndex === incident?.positionIndex ? 'auto' : 'metadata'"
+              >
+                <source type="video/mp4" src="{{ incidentMedia1 }}#t=0.1" (error)="onPlaybackError()" />
+              </video>
+              <button
+                mat-icon-button
+                class="custom-btn"
+                (click)="toggleFullscreen('incidentVideo')"
+                [matTooltip]="isFullscreen ? ('incidentModalExitFullScreen' | translate) : ('incidentModalEnterFullScreen' | translate)"
+                [matTooltipPosition]="'left'"
+              >
+                <mat-icon *ngIf="isFullscreen">fullscreen_exit</mat-icon>
+                <mat-icon *ngIf="!isFullscreen">fullscreen</mat-icon>
+              </button>
+
+              <mat-chip-list class="res-chip" *ngIf="videoResolution">
+                <mat-chip>{{ videoResolution }}p</mat-chip>
+              </mat-chip-list>
+
+              <mat-spinner *ngIf="videoLoader" class="video-loader" color="white" strokeWidth="2" [diameter]="32"></mat-spinner>
+            </div>
+
+            <!-- dual image -->
+            <div
+              fxLayout="row"
+              fxLayoutGap="16px"
+              class="dual-image incident-media"
+              *ngIf="incidentMedia1 && incidentMedia2 && mediaType === 'IMAGE' && !isTouchDevice"
+            >
+              <div fxLayout="row" fxLayoutAlign="center center" class="image-container">
+                <img [src]="incidentMedia1" width="520px" height="300px" />
+
+                <mat-chip-list class="res-chip" *ngIf="imageResolution">
+                  <mat-chip>{{ imageResolution }}p</mat-chip>
+                </mat-chip-list>
+              </div>
+
+              <div fxLayout="row" fxLayoutAlign="center center" class="image-container">
+                <img [src]="incidentMedia2" width="520px" height="300px" />
+
+                <mat-chip-list class="res-chip" *ngIf="imageResolution">
+                  <mat-chip>{{ imageResolution }}p</mat-chip>
+                </mat-chip-list>
+              </div>
+            </div>
+
+            <!-- dual image touch device -->
+            <div
+              fxLayout="row"
+              fxLayoutGap="16px"
+              class="dual-image"
+              *ngIf="incidentMedia1 && incidentMedia2 && mediaType === 'IMAGE' && isTouchDevice"
+            >
+              <div
+                fxLayout="row"
+                fxLayoutAlign="center center"
+                class="image-container"
+                [ngStyle]="{ display: isMediaStream1 ? 'block' : 'none' }"
+              >
+                <img [src]="incidentMedia1" width="520px" height="300px" />
+
+                <mat-chip-list class="res-chip" *ngIf="imageResolution">
+                  <mat-chip>{{ imageResolution }}p</mat-chip>
+                </mat-chip-list>
+              </div>
+
+              <div
+                fxLayout="row"
+                fxLayoutAlign="center center"
+                class="image-container"
+                [ngStyle]="{ display: isMediaStream1 ? 'none' : 'block' }"
+              >
+                <img [src]="incidentMedia2" width="520px" height="300px" />
+
+                <mat-chip-list class="res-chip" *ngIf="imageResolution">
+                  <mat-chip>{{ imageResolution }}p</mat-chip>
+                </mat-chip-list>
+              </div>
+            </div>
+
+            <!-- single image -->
+            <div
+              fxLayout="row"
+              fxLayoutAlign="center center"
+              class="single-image image-container"
+              *ngIf="incidentMedia1 && !incidentMedia2 && mediaType === 'IMAGE'"
+            >
+              <img [src]="incidentMedia1" width="1056px" height="300px" />
+
+              <mat-chip-list class="res-chip" *ngIf="imageResolution">
+                <mat-chip>{{ imageResolution }}p</mat-chip>
+              </mat-chip-list>
+            </div>
+          </ng-container>
+
+          <ng-template #noMedia>
+            <div class="no-media-container" fxLayout="row" fxLayoutAlign="center center">
+              <p class="no-media-text" *ngIf="!loader">{{ 'incidentModalMediaNotAvailbale' | translate }}</p>
+              <!-- <mat-spinner *ngIf="loader" class="video-loader"></mat-spinner> -->
+              <mat-spinner *ngIf="loader" class="video-loader" color="white" strokeWidth="2" [diameter]="32"></mat-spinner>
+            </div>
+          </ng-template>
+
+          <div *ngIf="isTouchDevice && this.incidentMedia1 && this.incidentMedia2 && mediaType === 'IMAGE'">
+            <button
+              *ngIf="!incident?.timelapseEnabled"
+              class="btn-icon"
+              mat-icon-button
+              color="accent"
+              [matTooltip]="'incidentModalSwitchView' | translate"
+              matTooltipPosition="left"
+              (click)="switchMedia()"
+            >
+              <mat-icon>cameraswitch</mat-icon>
+            </button>
+          </div>
+          <div class="video-controls" fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center" *ngIf="mediaType === 'VIDEO'">
+            <button
+              *ngIf="!isVideoPlaying"
+              class="btn-icon"
+              mat-icon-button
+              color="accent"
+              matTooltip="{{ 'incidentModalPlayvideo' | translate }}"
+              matTooltipPosition="right"
+              (click)="playAction()"
+            >
+              <mat-icon>play_arrow</mat-icon>
+            </button>
+
+            <button
+              *ngIf="isVideoPlaying"
+              class="btn-icon"
+              mat-icon-button
+              color="accent"
+              matTooltip="{{ 'incidentModalPausevideo' | translate }}"
+              matTooltipPosition="right"
+              (click)="pauseVideo()"
+            >
+              <mat-icon>pause</mat-icon>
+            </button>
+
+            <mat-slider fxFlex (input)="onSliderChange($event)" [value]="videoSeekerTranslateVal"></mat-slider>
+
+            <ng-container *ngIf="isTouchDevice && this.incidentMedia1 && this.incidentMedia2">
+              <button
+                *ngIf="!incident?.timelapseEnabled"
+                class="btn-icon"
+                mat-icon-button
+                color="accent"
+                [matTooltip]="'incidentModalSwitchView' | translate"
+                matTooltipPosition="left"
+                (click)="switchMedia()"
+              >
+                <mat-icon>cameraswitch</mat-icon>
+              </button>
+            </ng-container>
+          </div>
+        </mat-card>
+
+        <div fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="start center">
+          <mat-button-toggle-group [formControl]="mapTypeFormCntrl">
+            <mat-button-toggle value="map">Map</mat-button-toggle>
+            <mat-button-toggle value="accel">Accel</mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+
+        <mat-card *ngIf="mapTypeFormCntrl?.value === 'accel'">
+          <div class="skeleton-loader" *ngIf="accelLoader">
+            <div class="skeleton-card sm"></div>
+          </div>
+          <app-sensor-profile *ngIf="!accelLoader" [incidentDetails]="accelerationDetails" [translateVal]="videoSeekerTranslateVal">
+          </app-sensor-profile>
+        </mat-card>
+
+        <mat-card style="padding: 0 !important" *ngIf="mapTypeFormCntrl?.value === 'map'">
+          <div class="incident-map" *appViewportSize="'LARGE'">
+            <app-map
+              [customMapOptions]="customMapOptions"
+              mapId="incidentMap"
+              [bearing]="incidentDetails?.bearing"
+              [markerList]="incidentMarker"
+              [mapInitialCoordinates]="mapInitialCoordinates"
+              class="map-area"
+              #dvrMap
+            ></app-map>
+          </div>
+
+          <ng-container *ngIf="!incidentMarker">
+            <div class="incident-map" *appViewportSize="'LARGE'" fxLayout="column" fxLayoutAlign="center center">
+              <p class="no-map">{{ 'incidentModalMapNotAvailable' | translate }}</p>
+            </div>
+          </ng-container>
+        </mat-card>
+      </div>
+
+      <mat-card fxFlex="25" style="align-self: flex-start">
+        <app-incident-stats
+          [incidentDetails]="incidentDetails"
+          [loader]="loader"
+          [eventTagList]="eventTagList"
+          [tagListLoader]="tagListLoader"
+          [workflowTags]="workflowTags"
+          [workflowTagLoader]="workflowTagLoader"
+        >
+        </app-incident-stats>
+      </mat-card>
+    </section>
+  </div>
+</app-side-navigation>

@@ -27,9 +27,10 @@ module.exports = {
   },
   plugins: [
     new ModuleFederationPlugin({
+        library: { type: "module" },
 
         // For remotes (please adjust)
-        name: "hostApp",
+        // name: "hostApp",
         // filename: "remoteEntry.js",
         // exposes: {
         //     './Component': './projects/host-app/src/app/app.component.ts',
@@ -37,7 +38,7 @@ module.exports = {
         
         // For hosts (please adjust)
         remotes: {
-            "mfeApp": "mfeApp@http://localhost:4300/remoteEntry.js"
+            "usermfe": "usermfe@http://localhost:4200/remoteEntry.js",
         },
 
         shared: share({

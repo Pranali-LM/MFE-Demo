@@ -1,0 +1,193 @@
+<mat-card fxLayout="column" fxLayoutGap="48px" fxFlex="60">
+  <div fxLayout="column" fxLayoutGap="24px">
+    <h3 class="title">
+      {{ 'CoachingThresholds' | translate }}
+      <button mat-icon-button class="btn-faq" (click)="dataService?.openFaq('CoachingThresholds')">
+        <mat-icon>info_outline</mat-icon>
+      </button>
+    </h3>
+    <div class="skeleton-loader" *ngIf="coachConfigLoader">
+      <div class="skeleton-card md" style="margin-top: 24px"></div>
+    </div>
+    <div fxLayout="column" fxLayoutGap="40px" *ngIf="!coachConfigLoader" [formGroup]="thresholdForm">
+      <div fxLayout="row" fxLayoutAlign="space-between start" fxLayoutGap="24px">
+        <div fxLayout="column" fxLayoutGap="4px">
+          <span
+            ><strong>{{ 'IncidentsPer100Miles' | translate }}</strong></span
+          >
+          <span class="sub-text">{{ 'IncidentsPer100MilesDesc' | translate }}</span>
+        </div>
+
+        <mat-form-field style="width: 108px" appearance="outline">
+          <input
+            matInput
+            type="number"
+            min="1"
+            max="1000"
+            oninput="this.value = Math.abs(this.value)"
+            formControlName="incidentsPer100Miles"
+          />
+          <mat-hint>{{ 'CoachingThresholdRangeHint' | translate }}: 1-1000</mat-hint>
+          <mat-error>{{ 'CoachingThresholdRangeHint' | translate }}: 1-1000</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div fxLayout="row" fxLayoutAlign="space-between start" fxLayoutGap="24px">
+        <div fxLayout="column" fxLayoutGap="4px">
+          <span
+            ><strong>{{ 'CoachingInterval' | translate }}</strong></span
+          >
+          <span class="sub-text">{{ 'CoachingIntervalDesc' | translate }}</span>
+          <span class="sub-text">
+            <strong>{{ 'Note:' | translate }} </strong>{{ 'CoachingIntervalNote' | translate }}
+          </span>
+        </div>
+
+        <mat-form-field style="width: 108px" appearance="outline">
+          <input
+            matInput
+            type="number"
+            min="1"
+            max="180"
+            oninput="this.value = Math.abs(this.value)"
+            placeholder="Days to skip"
+            formControlName="coachingInterval"
+          />
+          <mat-hint>{{ 'CoachingThresholdRangeHint' | translate }}: 1-180</mat-hint>
+          <mat-error>{{ 'CoachingThresholdRangeHint' | translate }}: 1-180</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div fxLayout="row" fxLayoutAlign="space-between start" fxLayoutGap="24px">
+        <div fxLayout="column" fxLayoutGap="4px">
+          <span
+            ><strong>{{ 'MinimumEventThreshold' | translate }}</strong></span
+          >
+          <span class="sub-text">{{ 'MinimumEventThresholdDesc' | translate }}</span>
+          <span class="sub-text">
+            <strong>{{ 'Note:' | translate }} </strong>{{ 'MinimumEventThresholdNote' | translate }}
+          </span>
+        </div>
+
+        <mat-form-field style="width: 108px" appearance="outline">
+          <input
+            matInput
+            type="number"
+            min="1"
+            max="1000"
+            oninput="this.value = Math.abs(this.value)"
+            placeholder="Coaching Thresholds"
+            formControlName="minimumEventThreshold"
+          />
+          <mat-hint>{{ 'CoachingThresholdRangeHint' | translate }}: 1-1000</mat-hint>
+          <mat-error>{{ 'CoachingThresholdRangeHint' | translate }}: 1-1000</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div fxLayout="column" fxLayoutGap="16px">
+        <span
+          ><strong>{{ 'EventsAccountableForCoaching' | translate }}</strong></span
+        >
+
+        <div fxLayout="row" fxLayoutGap="24px" *ngIf="eventsConfig.length">
+          <div fxFlex="50" fxLayout="column" fxLayoutGap="24px" class="coaching-config">
+            <span class="sub-heading">{{ 'RoadFacingEvents' | translate }}</span>
+            <div class="skeleton-loader" *ngIf="coachConfigLoader">
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line"></div>
+            </div>
+
+            <div class="skeleton-loader" *ngIf="coachConfigLoader">
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line"></div>
+            </div>
+
+            <div class="skeleton-loader" *ngIf="coachConfigLoader">
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line"></div>
+            </div>
+            <section *ngIf="!coachConfigLoader" fxLayout="column" fxLayoutGap="8px">
+              <ng-container *ngFor="let event of eventsConfig">
+                <mat-checkbox [checked]="event?.checked" (change)="checkEvent($event, event?.key)" *ngIf="!event?.isDriverFacing">
+                  {{ event?.label | translate }}
+                </mat-checkbox>
+              </ng-container>
+            </section>
+          </div>
+
+          <div fxFlex="50" fxLayout="column" fxLayoutGap="24px" class="coaching-config" *ngIf="driverFacingEvents?.length">
+            <span class="sub-heading">{{ 'DriverFacingEvents' | translate }}</span>
+            <div class="skeleton-loader" *ngIf="coachConfigLoader">
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line"></div>
+            </div>
+
+            <section *ngIf="!coachConfigLoader" fxLayout="column" fxLayoutGap="8px">
+              <ng-container *ngFor="let event of driverFacingEvents">
+                <mat-checkbox [checked]="event?.checked" (change)="checkEvent($event, event?.key)" *ngIf="event?.isDriverFacing">
+                  {{ event?.label | translate }}
+                </mat-checkbox>
+              </ng-container>
+            </section>
+          </div>
+        </div>
+        <div fxLayout="row" fxLayoutGap="24px">
+          <div fxFlex="50" fxLayout="column" fxLayoutGap="24px" class="coaching-config" *ngIf="customEvents?.length">
+            <span class="sub-heading">{{ 'Custom Events' | translate }}</span>
+            <div class="skeleton-loader" *ngIf="coachConfigLoader">
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line"></div>
+            </div>
+
+            <div class="skeleton-loader" *ngIf="coachConfigLoader">
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line"></div>
+            </div>
+
+            <div class="skeleton-loader" *ngIf="coachConfigLoader">
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line"></div>
+            </div>
+            <section *ngIf="!coachConfigLoader" fxLayout="column" fxLayoutGap="8px">
+              <ng-container *ngFor="let event of customEvents">
+                <mat-checkbox [checked]="event?.checked" (change)="checkEvent($event, event?.key)">
+                  {{ event?.label | translate }}
+                </mat-checkbox>
+              </ng-container>
+            </section>
+          </div>
+
+          <div fxFlex="50" fxLayout="column" fxLayoutGap="24px" class="coaching-config">
+            <span class="sub-heading">{{ 'Others' | translate }}</span>
+            <div class="skeleton-loader" *ngIf="coachConfigLoader">
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line"></div>
+            </div>
+
+            <section *ngIf="!coachConfigLoader" fxLayout="column" fxLayoutGap="8px">
+              <ng-container *ngFor="let event of othersConfig">
+                <mat-checkbox [checked]="event?.checked" (change)="checkEvent($event, event?.key)">
+                  {{ event?.label | translate }}
+                </mat-checkbox>
+              </ng-container>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div fxFlexAlign="end" fxLayout="row" fxLayoutAlign="start center" *appCheckPermissions="['update:fleet_config']">
+    <button
+      type="button"
+      mat-flat-button
+      color="accent"
+      [disabled]="coachConfigLoader || thresholdForm.invalid"
+      (click)="onSubmit()"
+      class="submit-btn"
+      [loading]="loader"
+    >
+      {{ 'Submit' | translate }}
+    </button>
+  </div>
+</mat-card>

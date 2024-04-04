@@ -1,0 +1,143 @@
+<div fxLayout="row" fxLayout.sm="column" fxLayoutAlign="space-between start" fxLayoutGap="96px" fxLayoutGap.sm="24px">
+  <div fxLayout="column" fxLayoutGap="8px" fxFlex="35">
+    <h3>{{ 'EditAssetMdvrInformation' | translate }}</h3>
+    <span class="sub-text">
+      <div>{{ 'EditAssetMdvrDescription' | translate }}</div>
+      <div>
+        <strong>{{ 'EditAssetMdvrDescriptionNote' | translate }}&nbsp;</strong>
+        <span>{{ 'EditAssetMdvrDescriptionNoteContent' | translate }}</span>
+      </div>
+    </span>
+  </div>
+
+  <div [formGroup]="mdvrConfigForm" *ngIf="mdvrConfigForm; else loadingMdvrConfig" fxFlex="65" fxLayout="column" fxLayoutGap="20px">
+    <div fxFlex fxLayout="column" style="width: 100%" formArrayName="channelMappings" fxLayoutGap="24px">
+      <mat-accordion>
+        <ng-container *ngFor="let channelFg of channelMappings()?.controls; let channelIndex = index">
+          <mat-expansion-panel
+            [formGroupName]="channelIndex"
+            [expanded]="expandedChannelIndex === channelIndex"
+            (opened)="expandedChannelIndex !== channelIndex && setExpandedChannelIndex(channelIndex)"
+          >
+            <mat-expansion-panel-header>
+              <mat-panel-title fxLayoutAlign="start center" (click)="$event.stopPropagation()"
+                ><strong>
+                  {{ (channelFg?.value?.source || 'Select Source') | translate }}
+                </strong>
+              </mat-panel-title>
+              <mat-panel-description fxLayoutAlign="space-between center">
+                <span>
+                  <strong>{{ getChannelViewDisplayName(channelFg?.value?.view)}}</strong>
+                </span>
+                <button fxFlexAlign="end" mat-stroked-button color="warn" (click)="removeChannel(channelIndex)">{{'REMOVE' | translate}}</button>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <div fxLayout="column" fxLayoutGap="24px">
+              <div
+                fxLayout="row wrap"
+                fxLayoutGap="24px grid"
+                fxLayoutAlign="start"
+                fxLayout.xs="column"
+                fxLayoutAlign.xs="space-between start"
+                class="channel-configs"
+              >
+                <!-- MDVR Source -->
+                <mat-form-field appearance="outline" fxFlex="33">
+                  <mat-label>{{'Source' | translate}}</mat-label>
+                  <mat-select
+                    disableOptionCentering
+                    placeholder="Source"
+                    formControlName="source"
+                    (selectionChange)="onChannelSourceChange($event, channelIndex)"
+                  >
+                    <mat-option
+                      *ngFor="let option of availableSources"
+                      [value]="option"
+                      [disabled]="disableChannelConfigOptions('source', option)"
+                    >
+                      {{ option }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <!-- MDVR View -->
+                <mat-form-field appearance="outline" fxFlex="33">
+                  <mat-label>{{'View' | translate}}</mat-label>
+                  <mat-select disableOptionCentering placeholder="View" formControlName="view">
+                    <mat-option
+                      *ngFor="let option of availableViews"
+                      [value]="option.value"
+                      [disabled]="disableChannelConfigOptions('view', option.value)"
+                    >
+                      {{ option.label }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <!-- MDVR Resolution -->
+                <mat-form-field appearance="outline" fxFlex="33" *ngIf="!isConvoyCamera || !showSerialID">
+                  <mat-label>{{'Resolution' | translate}}</mat-label>
+                  <mat-select
+                    disableOptionCentering
+                    placeholder="Resolution"
+                    formControlName="resolution"
+                    (selectionChange)="onChannelResolutionChange($event, channelIndex)"
+                  >
+                    <mat-option *ngFor="let option of channelSupportedResolutions(channelIndex)" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <div fxLayout="column" *ngIf="getCameraConfig(channelFg?.value?.source)?.hflip" fxFlex="20">
+                  <mat-label> {{'Horizontal Flip' | translate}} </mat-label>
+                  <mat-slide-toggle disableRipple formControlName="hflip" class="toggle" aria-label="ON/OFF"></mat-slide-toggle>
+                </div>
+
+                <!-- MDVR Verticle Flip -->
+                <div fxLayout="column" *ngIf="getCameraConfig(channelFg?.value?.source)?.vflip" fxFlex="20">
+                  <mat-label> {{'Verticle Flip' | translate}} </mat-label>
+                  <mat-slide-toggle disableRipple formControlName="vflip" class="toggle" aria-label="ON/OFF"></mat-slide-toggle>
+                </div>
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </ng-container>
+      </mat-accordion>
+
+      <div fxFlex *ngIf="channelMappings()?.length < availableSources.length">
+        <button mat-stroked-button color="accent" (click)="addChannel()" [disabled]="disableAddCameras">{{'ADD MORE CAMERAS' | translate}}</button>
+      </div>
+    </div>
+
+    <div
+      *ngIf="showSerialID"
+      fxLayout="row wrap"
+      fxLayoutGap="24px"
+      fxLayoutAlign="end"
+      fxLayout.xs="column"
+      fxLayoutAlign.xs="space-between start"
+    >
+      <mat-form-field appearance="outline" fxFlex>
+        <mat-label>{{'Serial ID' | translate}}</mat-label>
+        <input matInput formControlName="serialId" />
+        <mat-error *ngIf="mdvrConfigForm.get('serialId').hasError('required')"> {{'Serial ID is required' | translate}} </mat-error>
+        <mat-error *ngIf="mdvrConfigForm.get('serialId').hasError('maxlength')">{{'Maximum length exceeded (8 characters allowed)' | translate}}</mat-error>
+      </mat-form-field>
+    </div>
+
+  </div>
+
+  <ng-template #loadingMdvrConfig>
+    <div fxFlex="column" fxLayoutGap="24px">
+      <div class="skeleton-loader">
+        <div class="skeleton-card xxs"></div>
+      </div>
+
+      <div class="skeleton-loader">
+        <div class="skeleton-card xxs"></div>
+      </div>
+    </div>
+  </ng-template>
+</div>

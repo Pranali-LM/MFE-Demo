@@ -1,0 +1,34 @@
+<div fxLayout="column" fxLayout.xs="column" fxLayoutAlign="space-between start" fxLayoutAlign.xs="start stretch" fxLayoutGap="24px">
+  <app-configurations-expansion-panel
+    [expansionPanelConfig]="assetConfigService.advancedSettingsExpansionPanelConfig"
+    [isBasic]="false"
+    (formChanged)="onFormChanged($event)"
+    class="width-100"
+  ></app-configurations-expansion-panel>
+  <div fxLayout="row" fxLayoutAlign="end" fxLayoutGap="16px" fxFlexAlign="end" *appCheckPermissions="['update:fleet_config']">
+    <button
+      matTooltip="{{ 'advancedConfiguraionSaveAllTooltip' | translate }}"
+      mat-flat-button
+      class="save-btn"
+      color="accent"
+      [disabled]="settingsForm().invalid || (assetConfigService.isAdvancedConfigDirty | async) === false"
+      [loading]="assetConfigService.isUpdatingConfig | async"
+      (click)="onSaveChanges(true)"
+    >
+      {{ 'advancedConfiguraionSaveAll' | translate }}
+    </button>
+    <button
+      matTooltip="{{ 'advancedConfiguraionSaveOneTooltip' | translate }} {{ assetConfigService.currentDutyType | async | translate }} {{
+        'advancedConfiguraionTitleDuty' | translate
+      }}"
+      mat-flat-button
+      class="save-btn"
+      color="accent"
+      [disabled]="settingsForm().invalid || (assetConfigService.isAdvancedConfigDirty | async) === false"
+      [loading]="assetConfigService.isUpdatingConfig | async"
+      (click)="onSaveChanges(false)"
+    >
+      {{ 'advancedConfiguraionSave' | translate }}
+    </button>
+  </div>
+</div>

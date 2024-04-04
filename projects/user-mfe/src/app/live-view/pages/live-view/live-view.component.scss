@@ -1,0 +1,128 @@
+@import './variables';
+
+.live-area {
+  position: relative;
+  overflow: hidden !important;
+  height: calc(100vh - (64px));
+}
+
+.live-asset-map {
+  overflow: hidden;
+  position: relative;
+
+  app-live-view-map {
+    height: calc(100vh - (64px));
+  }
+
+  app-mapbox-liveview {
+    height: calc(100vh - (64px));
+  }
+}
+
+.card-block {
+  position: absolute;
+  display: inline-block;
+  right: 0;
+  top: 0;
+  // z-index: 1000;
+}
+
+.live-details-card {
+  padding: 0 !important;
+  height: 100vh;
+  width: 400px;
+  position: relative;
+  display: block;
+  z-index: 1;
+
+  .asset-search {
+    padding: 8px 0 0 24px;
+    width: 100%;
+  }
+
+  .filter {
+    width: 100%;
+    mat-form-field {
+      width: 100%;
+    }
+  }
+
+  .tagging {
+    padding: 8px 10px 0 10px;
+    margin: 0px;
+    mat-form-field {
+      width: 100%;
+    }
+  }
+
+  .table-wrap {
+    max-height: calc(100vh - 183px - 73px - 56px);
+  }
+}
+
+.asset-list-table {
+  td.mat-column-assetId {
+    min-width: 150px;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    .value {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      &:before {
+        content: '';
+        width: 8px;
+        height: 8px;
+        margin-right: 10px;
+        display: inline-block;
+        border-radius: 50%;
+      }
+      &.ACTIVE:before {
+        background-color: $light-success;
+      }
+      &.INACTIVE:before {
+        background-color: $light-error;
+      }
+      &.AMBER:before {
+        background-color: $amber-color;
+      }
+    }
+  }
+  .asset-table-row:hover {
+    background-color: $light-background;
+    cursor: pointer;
+  }
+  .asset-table-row.disable {
+    pointer-events: none;
+  }
+}
+
+.sticky-paginator {
+  position: sticky;
+  bottom: 0;
+}
+
+.info-tooltip {
+  vertical-align: sub;
+  margin-left: 8px;
+  font-size: 20px;
+  line-height: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.asset-search {
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.dark-theme {
+  .asset-list-table {
+    .asset-table-row:hover {
+      background-color: $dark-background;
+    }
+  }
+}

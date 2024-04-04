@@ -1,0 +1,37 @@
+@import './variables';
+@import './fonts';
+@import './colors';
+
+.faq-list {
+  border: 1px solid $light-border;
+  width: 180px;
+  padding-top: 0 !important;
+  border-radius: 4px;
+}
+
+.custom-accordion {
+  mat-panel-title {
+    font-weight: $bold-font-weight;
+  }
+}
+
+.text-content {
+  line-height: 1.4;
+  font-size: $body-font-size;
+}
+
+.active {
+  color: $black-color !important;
+  background-color: $light-border !important;
+  font-weight: $bold-font-weight !important;
+  cursor: default !important;
+}
+
+.dark-theme .active {
+  color: $white-color !important;
+  background-color: $dark-border !important;
+}
+
+.dark-theme .faq-list {
+  border: 1px solid $dark-border;
+}

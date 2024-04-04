@@ -1,0 +1,12 @@
+@import './fonts';
+
+.faq-heading {
+  font-weight: $medium-font-weight;
+  font-size: $body-font-size;
+}
+
+.faq-list {
+  li {
+    margin-bottom: 4px;
+  }
+}

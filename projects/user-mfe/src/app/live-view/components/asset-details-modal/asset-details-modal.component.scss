@@ -1,0 +1,32 @@
+@import './variables';
+@import './fonts';
+
+.asset-details {
+  margin-top: 24px;
+  margin-bottom: 20px;
+}
+
+.live-events-table {
+  margin-top: 24px;
+}
+
+.card-title {
+  font-size: $caption-font-size;
+}
+
+.card-text {
+  font-size: $heading-font-size;
+  font-weight: $medium-font-weight;
+}
+
+.stats-card {
+  padding: 0;
+}
+
+.mat-tab-group {
+  margin-bottom: 48px;
+}
+
+.live-details-button {
+  gap: 16px;
+}

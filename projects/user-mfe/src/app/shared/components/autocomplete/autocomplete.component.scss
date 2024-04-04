@@ -1,0 +1,20 @@
+@import './fonts';
+
+mat-form-field {
+  width: 100% !important;
+  min-width: 220px;
+}
+
+::ng-deep .mat-option {
+  font-size: $body-font-size !important;
+}
+
+.large-input {
+  width: 300px;
+}
+
+@media (max-width: 1280px) {
+  .large-input {
+    width: 100%;
+  }
+}

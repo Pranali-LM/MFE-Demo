@@ -1,0 +1,23 @@
+<mat-form-field [ngClass]="customOptions?.showLargeInput ? 'large-input' : ''" [appearance]="customOptions?.appearance">
+  <mat-label *ngIf="customOptions?.showLabel">{{ placeholder }}</mat-label>
+  <input matInput [placeholder]="placeholder" [matAutocomplete]="auto" [formControl]="formCtrl" #trigger="matAutocompleteTrigger" />
+  <mat-autocomplete autocompleteDisabled="true" #auto="matAutocomplete" (optionSelected)="valueChanged($event)">
+    <ng-container *ngFor="let state of filteredList">
+      <mat-option [value]="getValue(state)">
+        <span>{{ getValue(state) }}</span
+        ><span
+          *ngIf="customOptions?.showAdditionalDisplayProp"
+          [matTooltip]="state[customOptions?.additionalDisplayPropKey]"
+          matTooltipPosition="left"
+          >&nbsp; <ng-container *ngIf="state[customOptions?.additionalDisplayPropKey]">(</ng-container
+          >{{ state[customOptions?.additionalDisplayPropKey]
+          }}<ng-container *ngIf="state[customOptions?.additionalDisplayPropKey]">)</ng-container>
+        </span>
+      </mat-option>
+      <mat-divider *ngIf="state?.showDivider"></mat-divider>
+    </ng-container>
+  </mat-autocomplete>
+  <button mat-button mat-icon-button matSuffix (click)="clearFormField($event)" *ngIf="formCtrl.value">
+    <mat-icon>close</mat-icon>
+  </button>
+</mat-form-field>

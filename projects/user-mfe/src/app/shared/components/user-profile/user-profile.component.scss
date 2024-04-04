@@ -1,0 +1,51 @@
+@import './variables';
+@import './fonts';
+
+.user-profile-wrap {
+  position: absolute;
+  bottom: 24px;
+  width: 200px;
+}
+.btn-logout {
+  display: block;
+  margin: 16px 24px;
+  border: 1px solid $black-color;
+  border-radius: 4px;
+  background-color: transparent;
+  padding: 12px 16px;
+  font-size: $heading-font-size;
+  font-weight: $normal-font-weight;
+  cursor: pointer;
+  width: 172px;
+  outline: none;
+}
+
+.user-profile {
+  padding: 24px;
+  display: block;
+
+  .text-label {
+    font-size: $body-font-size;
+  }
+
+  .user-name {
+    font-size: $heading-font-size;
+    font-weight: $medium-font-weight;
+    margin: 0.5px 0;
+    max-width: 200px;
+    overflow: hidden;
+    white-space: wrap;
+    text-overflow: ellipsis;
+  }
+}
+
+.logout-icon {
+  vertical-align: bottom;
+  margin-left: 16px;
+}
+
+@media (max-height: 768px) {
+  .user-profile {
+    padding: 0 32px;
+  }
+}

@@ -1,0 +1,25 @@
+<form>
+  <mat-form-field>
+    <input type="text" [placeholder]="placeholder" matInput [formControl]="inputControl" [matAutocomplete]="auto" [required]="isRequired" />
+    <mat-spinner matSuffix *ngIf="showSpinner" mode="indeterminate" diameter="20"></mat-spinner>
+    <mat-autocomplete autocompleteDisabled="true" #auto="matAutocomplete" (optionSelected)="autoCompleteOptionSelected($event)">
+      <mat-option *ngFor="let option of filteredAssets" [value]="option?.assetId">
+        {{ option?.assetId }} &nbsp;<span *ngIf="option?.assetName">({{option?.assetName}})</span>
+      </mat-option>
+      <mat-option *ngIf="!showSpinner && inputControl?.value && !filteredAssets?.length" class="no-events">
+       {{ 'assetListComponentNotFound' | translate }}
+      </mat-option>
+    </mat-autocomplete>
+    <button
+      mat-button
+      *ngIf="inputControl.value && !showSpinner && !disabled"
+      matSuffix
+      mat-icon-button
+      aria-label="Clear"
+      (click)="clearInput()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+    <mat-error *ngIf="inputControl.hasError('required') && requiredErrorMessage">{{ requiredErrorMessage }}</mat-error>
+  </mat-form-field>
+</form>

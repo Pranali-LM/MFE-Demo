@@ -1,0 +1,42 @@
+<div #mapContainer id="map" class="mapbox-map" [ngStyle]="{ width: mapWidth }">
+  <button
+    [matMenuTriggerFor]="menu"
+    class="btn-map btn-layers"
+    mat-icon-button
+    matTooltip="{{ 'mapComponentLayers' | translate }}"
+    [matTooltipPosition]="'right'"
+    [ngStyle]="customMapOptions?.recenterButton"
+  >
+    <mat-icon>layers</mat-icon>
+  </button>
+
+  <button
+    class="btn-map btn-recenter mat-elevation-z2"
+    (click)="onRecenterBtnClick()"
+    mat-icon-button
+    matTooltip="{{ 'mapComponentRecenter' | translate }}"
+    [matTooltipPosition]="'right'"
+  >
+    <mat-icon>gps_fixed</mat-icon>
+  </button>
+
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="switchLayer('streets-v12')" [disabled]="currentLayer === 'streets-v12'">
+      <mat-icon>add_road</mat-icon>
+      <span>{{ 'mapComponentStreetLayer' | translate }}</span>
+    </button>
+    <button mat-menu-item (click)="switchLayer('satellite-streets-v12')" [disabled]="currentLayer === 'satellite-streets-v12'">
+      <mat-icon>satellite_alt</mat-icon>
+      <span>{{ 'mapComponentSatelliteLayer' | translate }}</span>
+    </button>
+    <button mat-menu-item (click)="switchLayer('light-v11')" [disabled]="currentLayer === 'light-v11'">
+      <mat-icon>light_mode</mat-icon>
+      <span>{{ 'mapComponentLightLayer' | translate }}</span>
+    </button>
+    <button mat-menu-item (click)="switchLayer('dark-v11')" [disabled]="currentLayer === 'dark-v11'">
+      <mat-icon>dark_mode</mat-icon>
+      <span>{{ 'mapComponentDarkLayer' | translate }}</span>
+    </button>
+  </mat-menu>
+
+</div>

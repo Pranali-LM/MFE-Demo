@@ -1,0 +1,46 @@
+@import './variables';
+
+.media-player-wrap {
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  background-color: $black-color;
+  border-radius: 4px;
+  box-sizing: border-box;
+  outline: none;
+  video,
+  img {
+    overflow: hidden;
+    background-color: $black-color;
+    height: 360px;
+    width: 640px;
+    display: block;
+    position: relative;
+    object-fit: contain;
+    outline: none;
+  }
+
+  .driver-image {
+    max-height: 360px;
+    max-width: 640px;
+    object-fit: contain;
+    outline: none;
+    overflow: hidden;
+  }
+}
+
+.image-bg {
+  background-color: $black-color;
+  height: 360px;
+}
+
+.not-playable {
+  padding: 0;
+  margin: 0;
+  height: 360px;
+  width: 640px;
+}
+
+.mat-dialog-content {
+  max-height: 85vh;
+}

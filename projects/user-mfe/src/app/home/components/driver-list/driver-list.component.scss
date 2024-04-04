@@ -1,0 +1,11 @@
+// mobile
+@media (min-width: 320px) and (max-width: 767px) {
+  .driver-list-table,
+  .mat-paginator {
+    min-width: 767px !important;
+  }
+}
+
+.driver-list-table th.mat-header-cell {
+  padding-right: 10px;
+}

@@ -1,0 +1,19 @@
+@import './variables';
+
+.drag-line {
+  z-index: 100;
+  width: 4px;
+  background-color: $light-success;
+  height: 180px;
+  position: absolute;
+  border-radius: 4px;
+  left: 80px;
+}
+
+.acc-profile {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}

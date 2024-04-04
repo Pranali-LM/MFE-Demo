@@ -1,0 +1,24 @@
+@import './fonts';
+
+.search-result {
+  text-decoration: none;
+}
+
+.sub-header {
+  font-family: $font-family;
+}
+
+.feature-item {
+  font-weight: $medium-font-weight !important;
+  margin-bottom: 4px !important;
+}
+
+.breadcrumb {
+  font-weight: $light-font-weight !important;
+}
+
+.search-list {
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: 220px;
+}

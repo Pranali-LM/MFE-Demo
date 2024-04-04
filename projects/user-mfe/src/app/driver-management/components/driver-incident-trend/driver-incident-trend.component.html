@@ -1,0 +1,52 @@
+<div fxLayout="column" fxLayoutAlign="start stretch" fxLayoutAlign.xs="start stretch" fxLayoutGap="24px">
+  <div fxLayout="row" fxLayoutGap="24px" fxLayout.xs="column" fxLayoutAlign="space-between center" fxLayoutAlign.xs="start stretch">
+    <h3 class="title card-title">
+      {{ 'driverFleetEventGraphIncidentTrend' | translate }}
+
+      <button
+        mat-icon-button
+        class="btn-faq"
+        (click)="dataService?.openFaq('driverIncidentTrend')"
+        matTooltip="{{ 'viewInformation' | translate }}"
+        matTooltipPosition="right"
+      >
+        <mat-icon>info_outline</mat-icon>
+      </button>
+    </h3>
+
+    <div>
+      <mat-form-field class="select-box">
+        <mat-select
+          disableOptionCentering
+          placeholder="{{ 'driverFleetEventGraphSelectIncident' | translate }}"
+          [formControl]="selectedEventType"
+        >
+          <mat-option *ngFor="let event of eventsList" [value]="event">
+            {{ event | translate }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="skeleton-loader" *ngIf="loader">
+    <div class="skeleton-card md"></div>
+  </div>
+
+  <div class="chart-area" fxLayout="column" fxLayoutGap="16px">
+    <div [ngClass]="!loader && driverEventTrend?.length && fleetEventTrend?.length ? 'chart-container lg' : ''">
+      <canvas
+        id="driverIncidentTrendChart"
+        [ngClass]="!loader && driverEventTrend?.length && fleetEventTrend?.length ? 'd-block' : 'd-none'"
+      ></canvas>
+    </div>
+
+    <mat-checkbox *ngIf="hasInsignificantDistance" [formControl]="isSuppressed" class="single-checkbox">{{
+      'eventGraphShowAllPoints' | translate
+    }}</mat-checkbox>
+  </div>
+
+  <app-alert *ngIf="driverEventTrend?.length === 0 && fleetEventTrend?.length === 0 && !loader" [alertType]="'info'">
+    {{ 'driverFleetEventGraphNoIncidentFound' | translate }}
+  </app-alert>
+</div>

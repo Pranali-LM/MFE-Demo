@@ -1,0 +1,93 @@
+<app-side-navigation>
+  <div class="container" fxLayout="column" fxLayoutGap="24px">
+    <app-alert
+      *ngIf="clientConfig?.showFeatureAnnouncement"
+      [removeMargin]="true"
+      [alertType]="'announcement'"
+      alertActionText="{{ 'coachingAnnBannerImportantAction' | translate }}"
+      (alertAction)="navigateToCoaching()"
+      class="announcement"
+    >
+      <div fxLayout="column" fxLayoutGap="4px">
+        <span style="font-weight: 400">{{ 'coachingAnnBannerImportantSubText1' | translate }}</span>
+        <span style="font-weight: 400">{{ 'coachingAnnBannerImportantSubText2' | translate }}</span>
+      </div>
+    </app-alert>
+
+    <div
+      class="page-header"
+      fxLayout="row"
+      fxLayout.xs="column"
+      fxLayoutAlign="end center"
+      fxLayoutAlign.xs="start stretch"
+      fxLayoutGap="24px"
+    >
+      <app-page-filter (changeDuration)="changeDuration($event)"> </app-page-filter>
+
+      <!-- tagging filter block -->
+      <app-tagging-filter-v2
+        (selectedTags)="selectedTags($event)"
+        [entityType]="'driver'"
+        [dropDownType]="'filter'"
+        [assignedTagList]="coachingTags"
+      ></app-tagging-filter-v2>
+      <!-- tagging filter block -->
+    </div>
+
+    <div
+      fxLayout="row"
+      fxLayout.md="column"
+      fxLayout.sm="column"
+      fxLayout.xs="column"
+      fxLayoutGap="24px"
+      fxLayoutAlign="space-between stretch"
+    >
+      <mat-card fxFlex="50" *appCheckUiConfigs="['coaching_page:coachable_drivers']">
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center" fxLayoutAlign.xs="start start">
+          <h3 class="title card-title">
+            <h3 class="title">
+              {{ 'CoachableDrivers' | translate }}
+              <button
+                mat-icon-button
+                class="btn-faq"
+                (click)="dataService?.openFaq('CoachableDrivers')"
+                matTooltip="{{ 'viewInformation' | translate }}"
+                matTooltipPosition="right"
+              >
+                <mat-icon>info_outline</mat-icon>
+              </button>
+            </h3>
+          </h3>
+        </div>
+        <app-coachable-drivers
+          [startDate]="startDate"
+          [endDate]="endDate"
+          [fleetId]="fleetId"
+          [tagIds]="tagIds"
+          [coachingTags]="coachingTags"
+        >
+        </app-coachable-drivers>
+      </mat-card>
+      <mat-card fxFlex="50" *appCheckUiConfigs="['coaching_page:completed_session_list']">
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center" fxLayoutAlign.xs="start start">
+          <h3 class="title card-title">
+            <h3 class="title">
+              {{ 'CompletedCoachingSessions' | translate }}
+              <button
+                mat-icon-button
+                class="btn-faq"
+                (click)="dataService?.openFaq('CompletedCoachingSessions')"
+                matTooltip="{{ 'viewInformation' | translate }}"
+                matTooltipPosition="right"
+              >
+                <mat-icon>info_outline</mat-icon>
+              </button>
+            </h3>
+          </h3>
+        </div>
+        <app-sessions-lists [startDate]="startDate" [endDate]="endDate" [fleetId]="fleetId" [tagIds]="tagIds" [coachingTags]="coachingTags">
+        </app-sessions-lists>
+      </mat-card>
+    </div>
+  </div>
+</app-side-navigation>

@@ -1,0 +1,91 @@
+<div
+  fxLayout="row"
+  fxLayout.md="column"
+  fxLayout.sm="column"
+  fxLayout.xs="column"
+  fxLayoutGap="24px"
+  fxLayoutAlign="space-between stretch"
+  class="overview-container"
+>
+  <div fxFlex="25" fxLayout="column" fxLayoutGap="24px" class="details-container">
+    <h3 class="title card-title">{{ 'DriverOverview' | translate }}</h3>
+    <div class="stats-card">
+      <div class="skeleton-loader" *ngIf="loader">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+      </div>
+      <ng-container *ngIf="!loader">
+        <div class="card-title">{{ 'DRIVERID' | translate }}</div>
+        <div class="card-text">{{ driverDetails?.driverId || '-' }}</div>
+      </ng-container>
+    </div>
+    <div class="stats-card">
+      <div class="skeleton-loader" *ngIf="loader">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+      </div>
+      <ng-container *ngIf="!loader">
+        <div class="card-title">{{ 'DRIVERNAME' | translate }}</div>
+        <div class="card-text">{{ driverDetails?.driverName || '-' }}</div>
+      </ng-container>
+    </div>
+    <div class="stats-card">
+      <div class="skeleton-loader" *ngIf="loader">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+      </div>
+      <ng-container *ngIf="!loader">
+        <div class="card-title">{{ 'PREVIOUSCOACHEDON' | translate }}</div>
+        <div class="card-text">
+          <ng-container *ngIf="driverDetails?.lastCoachedOn">
+            {{
+              driverDetails?.lastCoachedOn
+                | dateConversion
+                  : (dataService._currentTimeZone | async)
+                  : (dataService._currentDateFormat | async)
+                  : driverDetails?.lastCoachedOn
+            }}
+          </ng-container>
+          <ng-container *ngIf="!driverDetails?.lastCoachedOn"> - </ng-container>
+        </div>
+      </ng-container>
+    </div>
+    <div class="stats-card">
+      <div class="skeleton-loader" *ngIf="loader">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+      </div>
+      <ng-container *ngIf="!loader">
+        <div class="card-title">{{ 'PREVIOUSINCIDENTSCOACHED' | translate }}</div>
+        <div class="card-text">
+          <ng-container *ngIf="driverDetails?.lastCoachedEvents?.length; else noEvents">
+            <span *ngFor="let event of driverDetails?.lastCoachedEvents; let i = index">
+              {{ (eventsConfig[event.eventType] ? eventsConfig[event.eventType]?.label : event.eventType) | translate }}
+              <ng-container *ngIf=" i >= 0 && i !== driverDetails?.lastCoachedEvents?.length - 1">,&nbsp;</ng-container>
+            </span>
+          </ng-container>
+          <ng-template #noEvents>
+            <span>-</span>
+          </ng-template>
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="stats-card">
+      <div class="skeleton-loader" *ngIf="loader">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+      </div>
+      <ng-container *ngIf="!loader">
+        <div class="card-title">{{ 'PREVIOUSCOACHEDINCIDENTSCOUNT' | translate }}</div>
+        <div class="card-text">{{ driverDetails?.lastCoachedEventsCount || '-' }}</div>
+      </ng-container>
+    </div>
+  </div>
+
+  <mat-divider vertical></mat-divider>
+
+  <div fxFlex="75" fxLayout="column" fxLayoutGap="24px">
+    <app-incident-summary [eventDiff]="eventDiff" [loader]="loader" [currentTheme]="currentTheme" [type]="'fleet'"> </app-incident-summary>
+  </div>
+</div>

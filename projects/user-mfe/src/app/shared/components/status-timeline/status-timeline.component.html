@@ -1,0 +1,196 @@
+<div fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="24px"
+[ngClass]="{
+  'dark-theme': (dataService._currentTheme | async) === 'dark'
+}">
+  <div fxLayout="row" fxLayoutAlign="space-between start" fxLayoutGap="16px">
+    <div fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="4px">
+      <h3 class="title card-title">{{ 'dvrStatusTimelineHeader' | translate }}</h3>
+      <span class="sub-text">{{ 'dvrStatusTimelineSubHeader' | translate }} </span>
+    </div>
+    <span tabindex="0"></span>
+    <button
+      mat-icon-button
+      matTooltip="{{ 'driverImageComponentCloseModal' | translate }}"
+      [matTooltipPosition]="'left'"
+      mat-dialog-close=""
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div fxLayout="column" fxLayoutGap="16px" class="dvr-data">
+    <div fxLayout="row" fxLayoutGap="16px">
+      <div fxLayout="column" fxLayoutGap="24px" fxFlex="50">
+        <div fxLayout="row" fxLayoutGap="24px">
+          <mat-icon>local_shipping</mat-icon>
+          <div fxLayout="column" fxLayoutGap="4px">
+            <span class="dvr-title">{{ 'dvrStatusTimelineAssetId' | translate }}</span>
+            <span class="dvr-subtitle">{{ data?.asset?.assetName || data?.assetName || data?.asset?.assetId || data?.assetId || '-' }}</span>
+          </div>
+        </div>
+
+        <div fxLayout="row" fxLayoutGap="24px">
+          <mat-icon>assignment_ind</mat-icon>
+          <div fxLayout="column" fxLayoutGap="4px">
+            <span class="dvr-title">{{ 'dvrStatusTimelineDriverId' | translate }}</span>
+            <span class="dvr-subtitle">{{ data?.driverId?.toUpperCase() === '_UNASSIGNED' ? ('DriverIdUnassigned' | translate) :(data?.driverName || data?.driverId || '-') }}</span>
+          </div>
+        </div>
+      </div>
+      <div fxLayout="column" fxLayoutGap="24px" fxFlex="50">
+        <div fxLayout="row" fxLayoutGap="24px">
+          <mat-icon>smart_display</mat-icon>
+          <div fxLayout="column" fxLayoutGap="4px">
+            <span class="dvr-title">{{ 'dvrStatusTimelineVideoStartTime' | translate }}</span>
+            <span class="dvr-subtitle">
+              {{
+                data?.startTimeUTC
+                  | dateConversion
+                    : (dataService._currentTimeZone | async)
+                    : (dataService._currentDateFormat | async)
+                    : data?.startTime || '-'
+              }}</span
+            >
+          </div>
+        </div>
+
+        <div fxLayout="row" fxLayoutGap="24px">
+          <mat-icon>schedule</mat-icon>
+          <div fxLayout="column" fxLayoutGap="4px">
+            <span class="dvr-title">{{ 'dvrStatusTimelineDuration' | translate }}</span>
+            <span class="dvr-subtitle">{{
+              data?.dvrDuration | durationConversion : 'seconds' : 'HH:MM' : (dataService._currentLanguage | async)
+            }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="data?.enabledTimelapse">
+      <span class="dvr-hint"><sup>*</sup>{{ 'videoRequestHint' | translate }}</span>
+    </div>
+  </div>
+
+  <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
+    <span
+      ><strong>{{ 'dvrStatusTimelineCurrentStatus' | translate }}:</strong></span
+    >
+
+    <mat-chip-list [ngSwitch]="data?.status?.type">
+      <mat-chip
+        *ngSwitchCase="'PROCESSING'"
+        class="chip-warn"
+        matTooltip="{{ dvrStatusList['PROCESSING'].description | translate }}"
+        matTooltipPosition="right"
+        >{{ 'videoRequestProcessing' | translate }}</mat-chip
+      >
+      <mat-chip
+        *ngSwitchCase="'FINISHED'"
+        class="chip-success"
+        matTooltip="{{ dvrStatusList['FINISHED'].description | translate }}"
+        matTooltipPosition="right"
+        >{{ 'videoRequestReady' | translate }}</mat-chip
+      >
+      <mat-chip
+        *ngSwitchCase="'FAILED'"
+        class="chip-error"
+        matTooltip="{{ dvrStatusList['FAILED'].description | translate }}"
+        matTooltipPosition="right"
+        >{{ 'videoRequestFailed' | translate }}</mat-chip
+      >
+      <mat-chip
+        *ngSwitchCase="'UNAVAILABLE'"
+        class="chip-error"
+        matTooltip="{{ dvrStatusList['UNAVAILABLE'].description | translate }}"
+        matTooltipPosition="right"
+        >{{ 'videoRequestUnavailable' | translate }}</mat-chip
+      >
+      <mat-chip
+        *ngSwitchCase="'CANCELED'"
+        class="chip-error"
+        matTooltip="{{ dvrStatusList['CANCELED'].description | translate }}"
+        matTooltipPosition="right"
+        >{{ 'videoRequestCanceled' | translate }}</mat-chip
+      >
+      <mat-chip
+        *ngSwitchDefault
+        class="chip-warn"
+        matTooltip="{{ dvrStatusList['PROCESSING'].description | translate }}"
+        matTooltipPosition="right"
+        >{{ 'videoRequestProcessing' | translate }}</mat-chip
+      >
+    </mat-chip-list>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <span class="dvr-title">{{ 'dvrStatusTimelineSt' | translate }}</span>
+
+  <mat-dialog-content class="status-timeline" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="32px">
+    <ng-container *ngFor="let status of uploadRequestTimeline; let i = index; last as isLast">
+      <div class="status" fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="16px" [ngClass]="{'disabled': status.disabled}">
+        <div class="status-line">
+          <ng-container [ngSwitch]="status?.type">
+            <mat-icon
+              class="status-icon"
+              [ngStyle]="{ 'animation-delay': 0.8 * i + 's' }"
+              [ngClass]="status?.type"
+              *ngSwitchCase="'success'"
+              >check_circle</mat-icon
+            >
+            <mat-icon class="status-icon" [ngStyle]="{ 'animation-delay': 0.8 * i + 's' }" [ngClass]="status?.type" *ngSwitchCase="'warn'"
+              >pending</mat-icon
+            >
+            <mat-icon class="status-icon" [ngStyle]="{ 'animation-delay': 0.8 * i + 's' }" [ngClass]="status?.type" *ngSwitchCase="'error'"
+              >error</mat-icon
+            >
+          </ng-container>
+          <div class="line" *ngIf="!isLast">
+            <div class="inner-line" [ngClass]="{ 'disabled': uploadRequestTimeline[i + 1].disabled }" [ngStyle]="{ 'animation-delay': !uploadRequestTimeline[i + 1].disabled ? (1 * i + 's') : '0s' }"></div>
+          </div>
+        </div>
+
+        <div
+          fxLayout="row"
+          fxFlex
+          fxLayoutAlign="space-between center"
+          fxLayoutGap="16px"
+          class="status-desc"
+          [ngStyle]="{ 'animation-delay': 0.8 * i + 's'}"
+          [class.disabled]="status.disabled"
+        >
+          <div fxLayout="column" fxLayoutGap="4px">
+            <span class="display-text"
+              ><strong>{{ status?.description || 'No status available' | translate }}</strong></span
+            >
+            <span class="display-text sub-text" *ngIf="status?.timestampUTC">{{
+              status?.timestampUTC
+                | dateConversion
+                  : (dataService._currentTimeZone | async)
+                  : (dataService._currentDateFormat | async)
+                  : status?.timestampUTC || '-'
+            }}</span>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </mat-dialog-content>
+
+  <ng-container [ngSwitch]="lastUpdatedStatus?.status">
+    <app-alert *ngSwitchCase="'NotificationCancelled'" [alertType]="'error'" [removeMargin]="true">
+      {{ 'dvrStatusTimelineNotificationCancelled' | translate }}
+    </app-alert>
+
+    <app-alert *ngSwitchCase="'MediaUnavailable'" [alertType]="'error'" [removeMargin]="true">
+      {{ 'dvrStatusTimelineMediaUnavailable' | translate }}
+    </app-alert>
+
+    <app-alert *ngSwitchCase="'MediaGenerationFailed'" [alertType]="'warn'" [removeMargin]="true">
+      {{ 'dvrStatusTimelineMediaGenerationFailed' | translate }}
+    </app-alert>
+
+    <app-alert *ngSwitchCase="'MediaUploadFailed'" [alertType]="'warn'" [removeMargin]="true">
+      {{ 'dvrStatusTimelineMediaUploadFailed' | translate }}
+    </app-alert>
+  </ng-container>
+</div>

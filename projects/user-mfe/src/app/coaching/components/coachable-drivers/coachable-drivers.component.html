@@ -1,0 +1,86 @@
+<div class="table-wrap">
+  <table mat-table [dataSource]="coachableDriverDataSource">
+    <ng-container matColumnDef="driverName">
+      <th mat-header-cell *matHeaderCellDef>{{ 'driverListComponentName' | translate }}</th>
+      <td mat-cell *matCellDef="let element">
+        <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+        <ng-container *ngIf="!loader">
+          <a
+            class="text-link"
+            routerLink="/drivers"
+            (click)="navigateToDrivers()"
+            [queryParams]="{ driverId: element?.driverId }"
+            matTooltip="{{ 'ViewDriverDetails' | translate }}"
+            matTooltipPosition="right"
+            >{{ element?.driverId.toUpperCase() === '_UNASSIGNED' ? ('DriverIdUnassigned' | translate) : (element?.driverName || element?.driverId || '-') }}</a
+          >
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="eventsPer100Units">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ 'driverListComponentIncidentsPer100' | translate }} {{ dataService._currentMetricUnit | async | lowercase | translate }}
+      </th>
+      <td mat-cell *matCellDef="let element">
+        <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+        <ng-container *ngIf="!loader"
+          ><span *ngIf="!loader">{{
+            element?.incidentRatio | incidentRatio : (dataService._currentMetricUnit | async) | number : '1.0-2' | formatNumber : (dataService._currentLanguage | async)
+          }}</span></ng-container
+        >
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="distance">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ 'driverListComponentDistance' | translate }} ({{
+          (dataService._currentMetricUnit | async) === 'Miles' ? ('unitsMiles' | translate) : ('unitsKilometers' | translate)
+        }})
+      </th>
+      <td mat-cell *matCellDef="let element">
+        <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+        <span *ngIf="!loader">{{
+          element?.tripDistance
+            | distance : (dataService._currentMetricUnit | async)
+            | abbreviateNumber
+            | formatNumber : (dataService._currentLanguage | async)
+        }}</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>{{ 'Actions' | translate }}</th>
+      <td mat-cell *matCellDef="let element; let i = index">
+        <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+        <span *ngIf="!loader" fxLayout="row" fxLayoutGap="8px">
+          <button
+            mat-icon-button
+            color="accent"
+            matTooltip="{{ 'driverCompCoachDriverTooltip' | translate }}"
+            matTooltipPosition="left"
+            (click)="navigateToCoachingSession(element)"
+          >
+            <mat-icon>start</mat-icon>
+          </button>
+        </span>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+  <app-alert *ngIf="coachableDriverDataSource?.data?.length === 0 && !loader" [alertType]="'info'" [insideTable]="true">
+    {{ 'NoCoachableDrivers' | translate }}
+  </app-alert>
+
+  <mat-paginator
+    #paginator="matPaginator"
+    class="trip-list-paginator"
+    [length]="totalCount"
+    [pageSize]="tablePageSize"
+    showFirstLastButtons
+  >
+  </mat-paginator>
+</div>

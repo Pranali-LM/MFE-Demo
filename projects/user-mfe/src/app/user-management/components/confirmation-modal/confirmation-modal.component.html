@@ -1,0 +1,60 @@
+<div fxLayout="column" fxLayoutGap="24px">
+  <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="16px">
+    <h3 class="title">{{ 'ConfirmationModelComponentTitle' | translate }}</h3>
+    <button mat-icon-button class="btn-close" (click)="onClose()" matTooltip="{{ 'Close' | translate }}" [matTooltipPosition]="'left'" [disabled]="loader">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <ng-container [ngSwitch]="data?.type">
+    <span *ngSwitchCase="'ROLE'">
+      <div fxLayout="column" fxLayoutGap="8px">
+        <span class="sub-text"
+          >{{ 'ConfirmationModelComponentRoleDescription1' | translate }} {{ data?.action | translate | lowercase }}
+          {{ 'ConfirmationModelComponentRoleDescription2' | translate }}
+        </span>
+        <span class="sub-text" *ngIf="data?.action === 'DELETE'"
+          ><strong>{{ 'NOTE:' | translate }} </strong>{{ 'ConfirmationModelComponentRoleDeletDescription' | translate }}</span
+        >
+        <span class="sub-text" *ngIf="data?.action === 'DEACTIVATE'"
+          ><strong>{{ 'NOTE:' | translate }} </strong>{{ 'ConfirmationModelComponentRoleDeActivateDescription' | translate }}</span
+        >
+      </div>
+    </span>
+    <span *ngSwitchCase="'USER'">
+      <div fxLayout="column" fxLayoutGap="8px">
+        <span class="sub-text"
+          >{{ 'ConfirmationModelComponentUserdescription1' | translate }} {{ data?.action | translate | lowercase }}
+          {{ 'ConfirmationModelComponentUserdescription2' | translate }}
+        </span>
+
+        <span class="sub-text" *ngIf="data?.action === 'ACTIVATE'">{{ 'ConfirmationModelComponentActivateDescription' | translate }}</span>
+
+        <span class="sub-text" *ngIf="data?.action === 'DELETE'">{{ 'ConfirmationModelComponentUserDeleteDescription1' | translate }}</span>
+
+        <span class="sub-text" *ngIf="data?.action === 'DELETE'" style="padding-top: 24px"
+          ><strong>{{ 'NOTE:' | translate }} </strong>{{ 'ConfirmationModelComponentUserDeleteDescription2' | translate }}</span
+        >
+
+        <span class="sub-text" *ngIf="data?.action === 'DEACTIVATE'">
+          <strong>{{ 'NOTE:' | translate }} </strong>{{ 'ConfirmationModelComponentUserDeActivateDescription' | translate }}
+        </span>
+      </div>
+    </span>
+  </ng-container>
+
+  <div fxLayout="row" fxFlexAlign="end" fxLayoutGap="16px">
+    <button mat-stroked-button mat-dialog-close [disabled]="loader" (click)="onClose()">
+      {{ 'ConfirmationModelComponentCancel' | translate }}
+    </button>
+    <button *ngIf="data?.action === 'DELETE'" mat-flat-button color="accent" (click)="submit()" [loading]="loader" [disabled]="isSuccess || (data?.type === 'ROLE' && data?.userCount > 0)">
+      {{ data?.action | translate }} {{ data?.type | translate }}
+    </button>
+    <button *ngIf="data?.action !== 'DELETE'" mat-flat-button color="accent" (click)="submit()" [loading]="loader" [disabled]="isSuccess">
+      {{ data?.action | translate }} {{ data?.type | translate }}
+    </button>
+  </div>
+
+  <app-alert [alertType]="'error'" [removeMargin]="true" *ngIf="isError"> {{ msgText | translate }}</app-alert>
+  <app-alert [alertType]="'success'" [removeMargin]="true" *ngIf="isSuccess"> {{ msgText | translate }} </app-alert>
+</div>

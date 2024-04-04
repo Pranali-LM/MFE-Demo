@@ -1,0 +1,153 @@
+<div
+  fxLayout="column"
+  fxLayoutGap="24px"
+  [ngClass]="{
+    'dark-theme': (dataService._currentTheme | async) === 'dark'
+  }"
+>
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <h3 class="title">{{ 'twoFactorAuthentication' | translate }}</h3>
+    <button
+      mat-icon-button
+      mat-dialog-close
+      matTooltip="{{ 'userSettingsComponentClose' | translate }}"
+      matTooltipPosition="left"
+      *ngIf="!showSuccess"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="skeleton-loader" *ngIf="mfaCheckLoader">
+    <div class="skeleton-card md"></div>
+  </div>
+
+  <ng-container *ngIf="!mfaCheckLoader">
+    <section *ngIf="!setupMFA" fxLayout="column" fxLayoutGap="24px">
+      <span class="sub-text">{{ 'twoFactorAuthenticationDescription' | translate }} </span>
+
+      <span
+        ><strong>{{ 'twoFactorAuthenticationHowItWorks' | translate }}</strong></span
+      >
+
+      <span class="sub-text">{{ 'twoFactorAuthenticationStepsDescription' | translate }}</span>
+
+      <section fxLayout="column" fxLayoutGap="16px">
+        <div class="content-area" fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="space-between center">
+          <div fxFlex="75" fxLayout="column" fxLayoutGap="4px">
+            <span
+              ><strong>{{ 'twoFactorAuthenticationStep1Header' | translate }}</strong></span
+            >
+            <span class="sub-text">{{ 'twoFactorAuthenticationStep1Description' | translate }}</span>
+          </div>
+
+          <div class="icon-area" fxLayoutAlign="center center">
+            <mat-icon class="content-icon">lock</mat-icon>
+          </div>
+        </div>
+
+        <div class="content-area" fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="space-between center">
+          <div fxFlex="75" fxLayout="column" fxLayoutGap="4px">
+            <span
+              ><strong>{{ 'twoFactorAuthenticationStep2Header' | translate }}</strong></span
+            >
+            <span class="sub-text">{{ 'twoFactorAuthenticationStep2Description' | translate }}</span>
+          </div>
+
+          <div class="icon-area" fxLayoutAlign="center center">
+            <img class="content-icon" src="assets/common/google-authenticator-icon.svg" width="96px" height="96px" />
+          </div>
+        </div>
+
+        <div class="content-area" fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="space-between center">
+          <div fxFlex="75" fxLayout="column" fxLayoutGap="4px">
+            <span
+              ><strong>{{ 'twoFactorAuthenticationStep3Header' | translate }}</strong></span
+            >
+            <span class="sub-text">{{ 'twoFactorAuthenticationStep3Description' | translate }}</span>
+          </div>
+
+          <div class="icon-area" fxLayoutAlign="center center">
+            <mat-icon class="content-icon">password</mat-icon>
+          </div>
+        </div>
+      </section>
+
+      <div fxFlexAlign="end">
+        <button mat-flat-button color="accent" *ngIf="!mfaEnabled" [loading]="formLoader" (click)="onSetupMFA()">
+          {{ 'twoFactorAuthenticationSetup2FA' | translate }}
+        </button>
+      </div>
+    </section>
+
+    <section *ngIf="setupMFA" fxLayout="column" fxLayoutGap="24px">
+      <span *ngIf="!mfaEnabled"  class="sub-text"> {{ 'twoFactorAuthenticationQRcodeDescription' | translate }} </span>
+
+      <div class="qrcode-area" fxLayout="row" fxLayoutAlign="center center" *ngIf="!mfaEnabled">
+        <mat-spinner *ngIf="loader" [diameter]="48"></mat-spinner>
+        <img *ngIf="!loader" mat-card-lg-image [src]="qrImage" alt="QR Code" />
+      </div>
+
+      <div *ngIf="mfaEnabled" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="start center">
+        <strong>{{ 'twoFactorAuthenticationStatus' | translate }}</strong
+        ><mat-chip-list
+          ><mat-chip class="chip chip-success" disableRipple>{{
+            'twoFactorAuthenticationStatusActive' | translate
+          }}</mat-chip></mat-chip-list
+        >
+      </div>
+
+      <span class="sub-text"
+        >{{ 'twoFactorAuthenticationInputFieldDescription' | translate }}
+        <span *ngIf="!mfaEnabled">{{ 'twoFactorAuthenticationInputFieldDescriptionActivate' | translate }}</span>
+        <span *ngIf="mfaEnabled">{{ 'twoFactorAuthenticationInputFieldDescriptionDeactivate' | translate }}</span>
+      </span>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'twoFactorAuthenticationInputFieldLabel' | translate }}</mat-label>
+        <input
+          matInput
+          [formControl]="authenticatorAppCode"
+          placeholder="{{ 'twoFactorAuthenticationInputFieldPlaceHolder' | translate }}"
+          maxlength="6"
+        />
+        <mat-hint *ngIf="!authenticatorAppCode?.hasError('pattern')">{{ 'twoFactorAuthenticationInputFieldHint' | translate }}</mat-hint>
+        <mat-error *ngIf="authenticatorAppCode?.hasError('pattern')">{{ 'twoFactorAuthenticationInputFieldHint' | translate }}</mat-error>
+      </mat-form-field>
+
+      <div fxFlexAlign="end">
+        <button
+          mat-flat-button
+          color="accent"
+          *ngIf="!mfaEnabled"
+          [loading]="formLoader"
+          (click)="mfaEnabled ? disableMFA() : enableMFA()"
+          [disabled]="authenticatorAppCode?.invalid || showSuccess"
+        >
+          {{ 'twoFactorAuthenticationActivateButton' | translate }}
+        </button>
+        <button
+          mat-flat-button
+          color="accent"
+          *ngIf="mfaEnabled"
+          [loading]="formLoader"
+          (click)="disableMFA()"
+          [disabled]="authenticatorAppCode?.invalid || showSuccess"
+        >
+          {{ 'twoFactorAuthenticationDeactivateButton' | translate }}
+        </button>
+      </div>
+
+      <app-alert *ngIf="!loader && showError" [alertType]="'error'" [removeMargin]="true">
+        {{ 'twoFactorAuthenticationError' | translate }}
+      </app-alert>
+
+      <app-alert *ngIf="!loader && showSuccess" [alertType]="'success'" [removeMargin]="true">
+        {{ 'twoFactorAuthenticationSuccess1Half' | translate }}
+        {{ mfaEnabled ? ('twoFactorAuthenticationDeactivated' | translate) : ('twoFactorAuthenticationActivated' | translate) }}
+        {{ 'twoFactorAuthenticationSuccess2Half' | translate }} {{ countdownTimer }}
+        {{ 'twoFactorAuthenticationSuccessSeconds' | translate }}
+      </app-alert>
+    </section>
+  </ng-container>
+</div>

@@ -1,0 +1,17 @@
+@import './variables';
+@import './fonts';
+
+.popup-header-title {
+  font-size: $heading-font-size;
+  min-width: 240px;
+}
+
+.popup-title {
+  text-transform: uppercase;
+  font-size: $caption-font-size;
+}
+
+.popup-text {
+  font-weight: $medium-font-weight;
+  font-size: $body-font-size;
+}

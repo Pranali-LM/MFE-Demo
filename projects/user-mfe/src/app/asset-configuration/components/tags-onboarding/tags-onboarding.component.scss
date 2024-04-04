@@ -1,0 +1,25 @@
+@import './variables';
+
+.custom-stepper {
+  ::ng-deep .mat-horizontal-stepper-header-container {
+    border-radius: 4px;
+    border: 1px solid $light-border;
+    pointer-events: none;
+  }
+
+  ::ng-deep .mat-horizontal-content-container {
+    padding: 24px 0 0 0;
+  }
+}
+
+.dark-theme {
+  .custom-stepper {
+    ::ng-deep .mat-horizontal-stepper-header-container {
+      border: 1px solid $dark-border;
+    }
+  }
+}
+
+.text-content {
+  line-height: 1.4;
+}

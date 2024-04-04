@@ -1,0 +1,22 @@
+// tablet
+@media (min-width: 768px) and (max-width: 1279px) {
+  .user-list-table,
+  .mat-paginator {
+    min-width: 1359px !important;
+  }
+}
+
+// mobile
+@media (min-width: 320px) and (max-width: 767px) {
+  .user-list-table,
+  .mat-paginator {
+    min-width: 1359px !important;
+  }
+}
+
+.info-icon {
+  vertical-align: middle;
+  font-size: 20px;
+  margin-left: 4px;
+  position: relative;
+}

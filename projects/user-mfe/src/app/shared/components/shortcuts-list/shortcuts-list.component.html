@@ -1,0 +1,32 @@
+<div fxLayout="column" fxLayoutGap="24px">
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <h3 class="title">{{ 'shortCutsListComponentKeyBoardShortcuts'}}</h3>
+    <button mat-icon-button mat-dialog-close matTooltip="{{ 'shortCutsListComponentClose' | translate }}" matTooltipPosition="left">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="table-wrap">
+    <table mat-table [dataSource]="tableSource">
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef>{{ 'shortCutsListComponentAction' | translate }}</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element?.action | translate }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="shortcutKey">
+        <th mat-header-cell *matHeaderCellDef>{{ 'shortCutsListComponentShortcut' | translate }}</th>
+        <td mat-cell *matCellDef="let element">
+          <ng-container *ngFor="let key of element?.keys; let i = index">
+            <span class="shortcut-key" [ngClass]="currentTheme === 'dark' ? 'dark-theme' : ''">{{ key }}</span
+            ><span *ngIf="i !== element?.keys.length - 1">+</span>
+          </ng-container>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: tableColumns"></tr>
+    </table>
+  </div>
+</div>

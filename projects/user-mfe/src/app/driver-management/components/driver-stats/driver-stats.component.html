@@ -1,0 +1,186 @@
+<div class="stats" fxLayout="column" fxLayoutGap="24px">
+  <div class="stats-card">
+    <div class="skeleton-loader" *ngIf="loader">
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line"></div>
+    </div>
+    <ng-container *ngIf="!loader">
+      <div class="card-title">{{ 'driverStatsDriver' | translate }}</div>
+      <div class="card-text">
+        <span [matTooltip]="driverDetails?.driverId.toUpperCase() === '_UNASSIGNED' ? ('DriverIdUnassigned' | translate) : (driverDetails?.driverName || driverDetails?.driverId || 'NA')">
+          {{ driverDetails?.driverId.toUpperCase() === '_UNASSIGNED' ? ('DriverIdUnassigned' | translate) : (driverDetails?.driverName || driverDetails?.driverId || 'NA') }}
+        </span>
+      </div>
+    </ng-container>
+  </div>
+  <div class="stats-card">
+    <div class="skeleton-loader" *ngIf="loader">
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line"></div>
+    </div>
+    <ng-container *ngIf="!loader">
+      <div class="card-title">
+        {{ 'driverStatsDistance' | translate }}
+        <span *ngIf="currentMetricUnit === 'Miles'">{{ 'unitMiles' | translate }}</span>
+        <span *ngIf="currentMetricUnit === 'Kilometers'">{{ 'unitKilometers' | translate }}</span>
+      </div>
+      <div class="card-text">
+        {{
+          (driverStats?.distance
+            | distance : currentMetricUnit
+            | number : '1.0-2'
+            | abbreviateNumber
+            | formatNumber : (dataService._currentLanguage | async)) || '0'
+        }}
+      </div>
+    </ng-container>
+  </div>
+  <div class="stats-card">
+    <div class="skeleton-loader" *ngIf="loader">
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line"></div>
+    </div>
+    <ng-container *ngIf="!loader">
+      <div class="card-title">{{ 'driverStatsIncidentsPer' | translate }} {{ currentMetricUnit | uppercase | translate }}</div>
+      <div class="card-text">
+        {{ driverStats?.eventsPer100Units | number : '1.0-2' | formatNumber : (dataService._currentLanguage | async) }}
+        <ng-container *ngIf="driverStats?.totalEventsDiff < 0">
+          <mat-icon class="arrow-icon arrow-green">arrow_downward</mat-icon>
+        </ng-container>
+        <ng-container *ngIf="driverStats?.totalEventsDiff > 0">
+          <mat-icon class="arrow-icon arrow-red">arrow_upward</mat-icon>
+        </ng-container>
+        <span *ngIf="driverStats?.totalEventsDiff !== 0" class="event-value-percentage">
+          {{ driverStats?.totalEventsDiff | formatNumber : (dataService._currentLanguage | async) }} %
+        </span>
+      </div>
+    </ng-container>
+  </div>
+  <div class="stats-card">
+    <div class="skeleton-loader" *ngIf="loader">
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line"></div>
+    </div>
+    <ng-container *ngIf="!loader">
+      <div class="card-title">{{ 'driverStatsDuration' | translate }}</div>
+      <div class="card-text">
+        {{ driverStats?.tripDuration | duration2 : 'seconds' : 'h' | abbreviateNumber }}
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- tagging block -->
+  <div class="stats-card">
+    <div class="skeleton-loader" *ngIf="loader || getDriverTagsLoader">
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line"></div>
+    </div>
+    <ng-container *ngIf="!loader && !getDriverTagsLoader">
+      <div class="card-title">{{ 'AssignTags' | translate }}</div>
+      <div class="card-text">
+        <app-tagging-filter-v2
+          (selectedTags)="selectedTags($event)"
+          [entityType]="'driver'"
+          [dropDownType]="'assign'"
+          [numOfTagsToDisplay]="1"
+          [assignedTagList]="assignedTags"
+        ></app-tagging-filter-v2>
+      </div>
+      <button mat-flat-button color="accent" (click)="assignTags()" [loading]="assignTagsLoader" [disabled]="!tagSelected">{{ 'saveDetails' | translate }}</button>
+    </ng-container>
+  </div>
+  <!-- tagging block -->
+</div>
+
+<div
+  class="stats"
+  fxLayout="row"
+  fxLayout.md="column"
+  fxLayout.sm="column"
+  fxLayout.xs="column"
+  fxLayoutAlign="space-between stretch"
+  fxLayoutAlign.xs="start stretch"
+  fxLayoutGap="24px"
+  *ngIf="0"
+>
+  <div fxFlex="50">
+    <div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="start stretch" fxLayoutAlign.xs="start stretch" fxLayoutGap="24px">
+      <mat-card class="stats-card" fxFlex="50">
+        <div class="skeleton-loader" *ngIf="loader">
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line"></div>
+        </div>
+        <ng-container *ngIf="!loader">
+          <div class="card-title">{{ 'driverStatsDriver' | translate }}</div>
+          <div class="card-text">
+            <span [matTooltip]="driverStats?.driverName || driverStats?.driverId || 'NA'">
+              {{ driverStats?.driverName || driverStats?.driverId || 'NA' }}
+            </span>
+          </div>
+        </ng-container>
+      </mat-card>
+
+      <mat-card class="stats-card" fxFlex="50">
+        <div class="skeleton-loader" *ngIf="loader">
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line"></div>
+        </div>
+        <ng-container *ngIf="!loader">
+          <div class="card-title">
+            {{ 'driverStatsDistance' | translate }}
+            <span *ngIf="currentMetricUnit === 'Miles'">{{ 'unitMiles' | translate }}</span>
+            <span *ngIf="currentMetricUnit === 'Kilometers'">{{ 'unitKilometers' | translate }}</span>
+          </div>
+          <div class="card-text">
+            {{
+              (driverStats?.distance
+                | distance : currentMetricUnit
+                | number : '1.0-2'
+                | abbreviateNumber
+                | formatNumber : (dataService._currentLanguage | async)) || '0'
+            }}
+          </div>
+        </ng-container>
+      </mat-card>
+    </div>
+  </div>
+
+  <div fxFlex="50">
+    <div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="start stretch" fxLayoutAlign.xs="start stretch" fxLayoutGap="24px">
+      <mat-card class="stats-card" fxFlex="50">
+        <div class="skeleton-loader" *ngIf="loader">
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line"></div>
+        </div>
+        <ng-container *ngIf="!loader">
+          <div class="card-title">{{ 'driverStatsIncidentsPer' | translate }} {{ currentMetricUnit | uppercase | translate }}</div>
+          <div class="card-text">
+            {{ driverStats?.eventsPer100Units | number : '1.0-2' | formatNumber : (dataService._currentLanguage | async) }}
+            <ng-container *ngIf="driverStats?.totalEventsDiff < 0">
+              <mat-icon class="arrow-icon arrow-green">arrow_downward</mat-icon>
+            </ng-container>
+            <ng-container *ngIf="driverStats?.totalEventsDiff > 0">
+              <mat-icon class="arrow-icon arrow-red">arrow_upward</mat-icon>
+            </ng-container>
+            <span *ngIf="driverStats?.totalEventsDiff !== 0" class="event-value-percentage">
+              {{ driverStats?.totalEventsDiff | formatNumber : (dataService._currentLanguage | async) }} %
+            </span>
+          </div>
+        </ng-container>
+      </mat-card>
+
+      <mat-card class="stats-card" fxFlex="50">
+        <div class="skeleton-loader" *ngIf="loader">
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line"></div>
+        </div>
+        <ng-container *ngIf="!loader">
+          <div class="card-title">{{ 'driverStatsDuration' | translate }}</div>
+          <div class="card-text">
+            {{ driverStats?.tripDuration | duration2 : 'seconds' : 'h' | abbreviateNumber }}
+          </div>
+        </ng-container>
+      </mat-card>
+    </div>
+  </div>
+</div>

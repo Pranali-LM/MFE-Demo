@@ -1,0 +1,33 @@
+<div fxLayout="column" fxLayoutGap="24px">
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <h3 class="card-title">{{ 'driverConfigConsentRequired' | translate }}</h3>
+
+    <button
+      mat-icon-button
+      class="btn-close"
+      matTooltip="{{ 'driverImagesCloseModal' | translate }}"
+      [matTooltipPosition]="'left'"
+      mat-dialog-close
+      (click)="closeDialog()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <span class="sub-text" style="line-height: 1.4">{{ 'driverConfigConsentDetail' | translate }}</span>
+
+  <mat-checkbox [formControl]="consentInput">{{ 'driverConfigAgreeTerms' | translate }}</mat-checkbox>
+
+  <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="end center">
+    <button mat-stroked-button mat-dialog-close [disabled]="showSuccess">{{ 'driverConfigDeny' | translate }}</button>
+    <button mat-flat-button color="accent" [loading]="loader" (click)="onSubmit()" [disabled]="!consentInput?.value || showSuccess">
+      {{ 'driverConfigAgree' | translate }}
+    </button>
+  </div>
+
+  <app-alert *ngIf="!loader && showError" [alertType]="'error'" [removeMargin]="true">{{ 'driverConfigWentWrong' | translate }}</app-alert>
+
+  <app-alert *ngIf="!loader && showSuccess" [alertType]="'success'" [removeMargin]="true">{{
+    'driverConfigSavedSuccess' | translate
+  }}</app-alert>
+</div>

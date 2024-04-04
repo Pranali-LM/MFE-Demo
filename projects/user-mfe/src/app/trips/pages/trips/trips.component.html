@@ -1,0 +1,199 @@
+<app-side-navigation
+  ><mat-tab-group
+    class="page-tabs"
+    #tabGroup
+    (selectedTabChange)="onPageTabChange($event)"
+    [@.disabled]="true"
+    [selectedIndex]="currentTabIndex"
+    *ngIf="!isMobile"
+  >
+    <mat-tab *appCheckUiConfigs="['trips_page:trips_tab']">
+      <ng-template mat-tab-label>
+        <label
+          matTooltip="{{ 'tripsComponentTripsToolTip' | translate }} &#013;&#010;[{{
+            currentOS === 'mac' ? 'Command' : 'Ctrl'
+          }} + Shift + <]"
+          matTooltipClass="multiline-tooltip"
+          >{{ 'tripsComponentTrips' | translate }}</label
+        >
+      </ng-template>
+
+      <div class="container" fxLayout="column" fxLayoutGap="24px">
+        <mat-card fxLayout="column" fxLayoutGap="12px">
+          <div
+            class="device-id-filter"
+            fxLayout="row"
+            fxLayout.xs="column"
+            fxLayoutAlign.xs="start start"
+            fxLayoutAlign="space-between center"
+            fxLayoutGap="16px"
+          >
+            <h3 class="title card-title">
+              {{ 'tripsComponentTripsFilter' | translate }}
+            </h3>
+          </div>
+          <app-duration (tripFilterChange)="onTripFilterChange($event)" [currentTabIndex]="currentTabIndex" [entityType]="entityType">
+          </app-duration>
+        </mat-card>
+
+        <div
+          fxLayout="column"
+          fxLayout.sm="column"
+          fxLayout.xs="column"
+          fxLayout.md="column"
+          fxLayout.lg="column"
+          fxLayoutGap="24px"
+          fxLayoutAlign="space-between stretch"
+        >
+          <mat-card fxLayout="column" fxLayoutGap="24px">
+            <div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center" fxLayoutAlign.xs="start start">
+              <div fxLayout="row" fxLayoutAlign="flex-start center" fxLayoutGap="8px">
+                <h3 class="title card-title">
+                  {{ 'tripsComponentTripList' | translate }}
+                </h3>
+                <div *ngIf="loader" class="skeleton-line" style="width: 80px"></div>
+                <p *ngIf="!loader">
+                  ({{ tripsCount }}
+                  <span *ngIf="tripsCount === 1">{{ 'tripListHeaderTrip' | translate }}</span>
+                  <span *ngIf="tripsCount !== 1">{{ 'tripListHeaderTrips' | translate }}</span
+                  >)
+                </p>
+                <button
+                  mat-icon-button
+                  class="btn-faq"
+                  (click)="dataService?.openFaq('tripList')"
+                  matTooltip="{{ 'viewInformation' | translate }}"
+                  matTooltipPosition="right"
+                >
+                  <mat-icon>info_outline</mat-icon>
+                </button>
+              </div>
+              <div fxLayout="row" fxLayoutAlign="end center">
+                <div class="refreshButton">
+              <button
+              mat-icon-button
+              color="accent"
+              class="btn-icon"
+              (click)="onRefresh()"
+              [loading]="loader"
+              matTooltip="{{ 'driverQueryResultRefresh' | translate }}"
+              [matTooltipPosition]="'left'"
+            >
+              <mat-icon>refresh</mat-icon>
+              </button>
+            </div>
+              <button
+                mat-stroked-button
+                (click)="exportTrips()"
+                [loading]="csvLoader || loader"
+                matTooltip="{{ 'exportTripsTooltip' | translate }}"
+              >
+                {{ 'exportTrips' | translate }}
+              </button>
+              </div>
+            </div>
+
+            <app-trip-list
+              [fleetId]="fleetId"
+              [driverId]="tripsFilterState?.driverId"
+              [startDate]="tripsFilterState?.paramStartDate"
+              [endDate]="tripsFilterState?.paramEndDate"
+              [assetId]="tripsFilterState?.assetId"
+              [tagIds]="tripsFilterState?.tagIds"
+              [includeInsignificantTrips]="tripsFilterState?.includeInsignificantTrips"
+              [tripsCount]="tripsCount"
+              [tripsTableState]="tripsTableState"
+              [filterType]="tripsFilterState?.filterType"
+              (sortChange)="onTripsTableSortChange($event)"
+              (pageChange)="onTripsTablePageChange($event)"
+              (tripLinkClick)="pushTripDetailsEvent($event)"
+              (tripCountEmit)="tripCountEmit($event)"
+            >
+            </app-trip-list>
+          </mat-card>
+        </div>
+      </div>
+    </mat-tab>
+
+    <mat-tab *appCheckUiConfigs="['trips_page:active_drivers_tab']">
+      <ng-template mat-tab-label>
+        <label
+          matTooltip="{{ 'tripsComponentActiveDriversToolTip' | translate }} &#013;&#010;[{{
+            currentOS === 'mac' ? 'Command' : 'Ctrl'
+          }} + Shift + >]"
+          matTooltipClass="multiline-tooltip"
+          >{{ 'tripsComponentActiveDrivers' | translate }}</label
+        >
+      </ng-template>
+
+      <div class="container" fxLayout="column" fxLayoutGap="24px">
+        <app-active-drivers [currentTabIndex]="currentTabIndex" [fleetId]="fleetId"> </app-active-drivers>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+
+  <div class="container" fxLayout="column" fxLayoutGap="24px" *ngIf="isMobile">
+    <app-duration (tripFilterChange)="onTripFilterChange($event)"> </app-duration>
+
+    <div
+      fxLayout="column"
+      fxLayout.sm="column"
+      fxLayout.xs="column"
+      fxLayout.md="column"
+      fxLayout.lg="column"
+      fxLayoutGap="24px"
+      fxLayoutAlign="space-between stretch"
+    >
+      <mat-card fxLayout="column" fxLayoutGap="24px">
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center" fxLayoutAlign.xs="start start">
+          <div fxLayout="row" fxLayoutAlign="flex-start center" fxLayoutGap="8px">
+            <h3 class="title card-title">
+              {{ 'tripsComponentTripList' | translate }}
+            </h3>
+            <div *ngIf="loader" class="skeleton-line" style="width: 80px"></div>
+            <p *ngIf="!loader">
+              ({{ tripsCount }}
+              <span *ngIf="tripsCount === 1">{{ 'tripListHeaderTrip' | translate }}</span>
+              <span *ngIf="tripsCount !== 1">{{ 'tripListHeaderTrips' | translate }}</span
+              >)
+            </p>
+            <button
+              mat-icon-button
+              class="btn-faq"
+              (click)="dataService?.openFaq('tripList')"
+              matTooltip="{{ 'viewInformation' | translate }}"
+              matTooltipPosition="right"
+            >
+              <mat-icon>info_outline</mat-icon>
+            </button>
+          </div>
+
+          <button
+            mat-stroked-button
+            (click)="exportTrips()"
+            [loading]="csvLoader || loader"
+            matTooltip="{{ 'exportTripsTooltip' | translate }}"
+          >
+            {{ 'exportTrips' | translate }}
+          </button>
+        </div>
+
+        <app-trip-list
+          [fleetId]="fleetId"
+          [driverId]="tripsFilterState?.driverId"
+          [startDate]="tripsFilterState?.paramStartDate"
+          [endDate]="tripsFilterState?.paramEndDate"
+          [assetId]="tripsFilterState?.assetId"
+          [tripsCount]="tripsCount"
+          [tripsTableState]="tripsTableState"
+          [filterType]="tripsFilterState?.filterType"
+          (sortChange)="onTripsTableSortChange($event)"
+          (pageChange)="onTripsTablePageChange($event)"
+          (tripLinkClick)="pushTripDetailsEvent($event)"
+          (tripCountEmit)="tripCountEmit($event)"
+        >
+        </app-trip-list>
+      </mat-card>
+    </div>
+  </div>
+</app-side-navigation>

@@ -1,0 +1,56 @@
+@import './variables';
+@import './fonts';
+
+.map::ng-deep {
+  height: 100%;
+  width: 100%;
+}
+
+.btn-map {
+  position: absolute;
+  z-index: 1000;
+  background: $white-color;
+  width: 32px;
+  height: 32px;
+  border-radius: 2px;
+  left: 10px;
+
+  &:hover {
+    background-color: #f4f4f4;
+  }
+
+  mat-icon {
+    font-size: 20px;
+  }
+}
+
+.btn-fullscreen {
+  display: inline-block;
+  top: 84px;
+}
+
+.btn-recenter {
+  display: inline-block;
+  top: 124px;
+}
+
+.direction-info {
+  position: absolute;
+  top: 170px;
+  left: 10px;
+  cursor: default;
+  z-index: 1000;
+  background-color: $orange-color;
+}
+
+.speed {
+  position: absolute;
+  top: 225px;
+  left: 10px;
+  background: $white-color;
+  cursor: default;
+  z-index: 1000;
+  font-size: $body-font-size;
+  padding: 8px;
+  border-radius: 2px;
+}

@@ -1,0 +1,26 @@
+<section
+  fxLayout="column"
+  fxLayoutGap="64px"
+  [ngClass]="{
+    'dark-theme': (dataService._currentTheme | async) === 'dark'
+  }"
+>
+  <div fxLayout="column" fxLayoutGap="24px">
+    <div fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="start center">
+        <mat-icon class="icon-success">check_circle</mat-icon>
+        <h3 class="card-title"> {{ 'CoachingCompleted' | translate }}</h3>
+      </div>
+    
+      <div fxLayout="column" fxLayoutGap="16px">
+        <span class="sub-text">{{ 'coachingSuccess' | translate }}</span>
+        <span class="sub-text"
+          > {{ 'coachingSuccessDesc' | translate }}</span
+        >
+      </div>    
+  </div>
+
+  <div fxFlexAlign="end" fxLayout="row" fxLayoutGap="16px">
+    <button mat-stroked-button (click)="navigateToCoachingPage()">{{ 'VIEWCOMPLETEDSESSIONS' | translate }}</button>
+    <button mat-flat-button color="accent" (click)="navigateToCoachingPage()">{{ 'COACHANOTHERDRIVER' | translate }}</button>
+  </div>
+</section>

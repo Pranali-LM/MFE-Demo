@@ -1,0 +1,78 @@
+@import './variables';
+@import './fonts';
+
+.dvr-title {
+  font-size: $caption-font-size;
+}
+
+.dvr-subtitle {
+  font-weight: $medium-font-weight;
+}
+
+.dvr-data {
+  padding: 24px;
+  border-radius: 4px;
+  background-color: $light-background;
+}
+
+.icon-success {
+  color: $light-success;
+}
+
+.map-area {
+  position: relative;
+  height: 220px;
+  border: 1px solid $light-border;
+  border-radius: 4px;
+
+  .map-image {
+    position: relative;
+    width: 100%;
+  }
+}
+
+.tip-container {
+  padding: 16px;
+  background-color: $light-background;
+  border-radius: 4px;
+
+  .tip-list {
+    padding-left: 16px;
+    margin: 0;
+    line-height: 1.4;
+  }
+}
+
+.request-timeline {
+  padding: 24px;
+
+  .mat-icon {
+    width: 48px;
+    height: 48px;
+    line-height: 48px;
+    font-size: 48px;
+  }
+
+  .timeline-description {
+    text-align: center;
+  }
+
+  .timeline-arrow {
+    color: $light-border;
+  }
+}
+
+.dvr-hint {
+  font-size: $caption-font-size;
+  font-style: italic;
+}
+
+.dark-theme {
+  .dvr-data {
+    background-color: $dark-background;
+  }
+
+  .tip-container {
+    background-color: $dark-background !important;
+  }
+}

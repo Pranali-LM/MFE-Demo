@@ -1,0 +1,115 @@
+<div fxLayout="column" fxLayoutGap="24px">
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <h3 class="card-title">{{ 'CoachingSessionDetails' | translate }}</h3>
+
+    <button
+      mat-icon-button
+      class="btn-close"
+      matTooltip="{{ 'driverImagesCloseModal' | translate }}"
+      [matTooltipPosition]="'left'"
+      (click)="dailogClose()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div fxLayout="column" fxLayoutAlign="start" class="session-details" fxLayoutGap="16px">
+    <div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="start center" fxLayoutAlign.xs="start start" fxLayoutGap="16px">
+      <div class="stats-card" fxFlex>
+        <div class="card-title sub-text">{{ 'DRIVERNAME' | translate }}</div>
+        <div class="card-text">
+          <span>
+            {{ sessionDetails?.driverId.toUpperCase() === '_UNASSIGNED' ? ('DriverIdUnassigned' | translate) : (sessionDetails?.driverName || sessionDetails?.driverId || 'NA') }}
+          </span>
+        </div>
+      </div>
+      <div class="stats-card" fxFlex>
+        <div class="card-title sub-text">{{ 'COACHEDBY' | translate }}</div>
+        <div class="card-text">
+          <span>
+            {{ sessionDetails?.coachedBy?.name || '-' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="start center" fxLayoutAlign.xs="start start" fxLayoutGap="16px">
+      <div class="stats-card" fxFlex>
+        <div class="card-title sub-text">{{ 'COACHINGSESSIONID' | translate }}</div>
+        <div class="card-text">
+          <span>
+            {{ sessionDetails?.coachingSessionId || '-' }}
+          </span>
+        </div>
+      </div>
+      <div class="stats-card" fxFlex>
+        <div class="card-title sub-text">{{ 'COACHEDON' | translate }}</div>
+        <div class="card-text">
+          <span>
+            {{
+              sessionDetails?.createdAt
+                | dateConversion: (dataService._currentTimeZone | async):(dataService._currentDateFormat | async):sessionDetails?.createdAt
+            }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div fxLayout="row" fxLayout.sm="column" fxLayoutAlign="start center" fxLayoutAlign.xs="start start" fxLayoutGap="16px">
+      <div class="stats-card" fxFlex>
+        <div class="card-title sub-text">{{ 'DURATION' | translate }}</div>
+        <div class="card-text">
+          <span>
+            {{ (sessionDetails?.duration  | duration2: 'seconds': 'HH:MM:SS' ) || '-'}}
+          </span>
+        </div>
+      </div>
+
+      <div class="stats-card" fxFlex>
+        <div class="card-title sub-text">{{ 'COACHEDINCIDENTSCOUNT' | translate }}</div>
+        <div class="card-text">
+          <span>
+            {{ totalCoachedIncidents }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="start center" fxLayoutAlign.xs="start start" fxLayoutGap="16px">
+      <div class="stats-card" fxFlex>
+        <div class="card-title sub-text">{{ 'SKIPPEDINCIDENTCOUNT' | translate }}</div>
+        <div class="card-text">
+          <span>
+            {{ totalSkippedIncidents }}
+          </span>
+        </div>
+      </div>
+
+      <div class="stats-card" fxFlex>
+        <div class="card-title sub-text">{{ 'INCIDENTSCOACHED' | translate }}</div>
+        <div class="card-text">
+          <ng-container *ngIf="totalCoachedIncidents > 0; else noEvents">
+            <span *ngFor="let event of coachedIncidents; let i = index">
+              {{ eventsConfig[event]?.label || event }}
+              <ng-container *ngIf="i >= 0 && i !== coachedIncidents.length - 1">,</ng-container>
+            </span>
+          </ng-container>
+          <ng-template #noEvents>
+            <span>-</span>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="stats-card">
+      <div class="card-title sub-text">{{ 'SESSIONNOTE' | translate }}</div>
+      <div class="card-text">
+        <span>
+          {{ sessionDetails?.sessionNote || '-' }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

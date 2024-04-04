@@ -1,0 +1,36 @@
+<div class="map" [id]="mapId" class="leaflet-map">
+  <button
+    class="btn-map btn-fullscreen mat-elevation-z2"
+    (click)="toggleFullscreen()"
+    mat-icon-button
+    [matTooltip]="isFullscreen ? ('mapComponentExitFullScreen' | translate) : ('mapComponentEnterFullScreen' | translate)"
+    [matTooltipPosition]="'right'"
+    [ngStyle]="customMapOptions?.fullscreenButton"
+  >
+    <mat-icon *ngIf="isFullscreen">fullscreen_exit</mat-icon>
+    <mat-icon *ngIf="!isFullscreen">fullscreen</mat-icon>
+  </button>
+
+  <button
+    *ngIf="markerList?.length"
+    class="btn-map mat-elevation-z2"
+    (click)="recenterMarkers()"
+    mat-icon-button
+    matTooltip="{{ 'mapComponentRecenter' | translate }}"
+    [matTooltipPosition]="'right'"
+    [ngStyle]="customMapOptions?.recenterButton"
+  >
+    <mat-icon>gps_fixed</mat-icon>
+  </button>
+
+  <button *ngIf="bearing >= 0" mat-icon-button class="direction-info" [matTooltip]="bearing + bearingSuffix" matTooltipPosition="right">
+    <mat-icon [ngStyle]="{ transform: 'rotate(' + bearing + 'deg)' }">north</mat-icon>
+  </button>
+
+  <div class="mat-elevation-z2 speed" *ngIf="speed !== null && speed !== undefined" [ngStyle]="customMapOptions?.speedText">
+    <ng-container *ngIf="(dataService?._currentMetricUnit | async) === 'Miles'; else speedInKmph">
+      {{ speed * 2.237 | number: '1.0-0' }} mph
+    </ng-container>
+    <ng-template #speedInKmph> {{ speed * 3.6 | number: '1.0-0' }} kmph</ng-template>
+  </div>
+</div>

@@ -1,0 +1,11 @@
+<app-side-navigation>
+  <ng-container *ngIf="fleetId; else noFleetId">
+    <app-duty-type-configuration (formChanged)="onFormChanged($event)"> </app-duty-type-configuration>
+  </ng-container>
+
+  <ng-template #noFleetId>
+    <app-alert [alertType]="'info'">
+      {{ 'assetConfiguraionFleetIdNotavailable' | translate }}
+    </app-alert>
+  </ng-template>
+</app-side-navigation>

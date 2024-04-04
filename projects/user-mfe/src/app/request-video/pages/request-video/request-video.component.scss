@@ -1,0 +1,268 @@
+@import './variables';
+@import './colors';
+@import './fonts';
+
+#dvrMap {
+  position: relative;
+  display: block;
+  height: calc(100vh - 148px);
+  width: 100%;
+}
+
+.dvr-loader {
+  top: 64px !important;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.btn-mapbox {
+  position: absolute;
+  background-color: $white-color;
+  border: 0;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: block;
+  height: 29px;
+  outline: none;
+  overflow: hidden;
+  padding: 0;
+  width: 29px;
+  border-radius: 4px;
+  box-shadow: 0 0 0 2px rgb(0 0 0 / 10%);
+  z-index: 1000;
+  .mat-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+    line-height: 16px;
+  }
+}
+
+.form {
+  position: absolute;
+  bottom: 0;
+  margin: 0 32px;
+  z-index: 100;
+  left: 48%;
+  transform: translateX(-50%);
+}
+
+.speed-area,
+.incidents-area {
+  position: relative;
+  height: 32px;
+  background-color: $light-border;
+
+  .stopped-zone {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 32px;
+    background-color: $dark-background;
+  }
+
+  .incident-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 32px;
+    background-color: $dark-background;
+
+    &:hover {
+      height: 48px;
+      top: -4px;
+      transition: 0.5s ease;
+    }
+  }
+
+  .bar-text {
+    position: absolute;
+    font-size: $caption-font-size;
+    font-weight: $medium-font-weight;
+    text-align: center;
+    left: 50%;
+    padding: 8px;
+    opacity: 0.5;
+    transform: translate(-50%);
+    color: $black-color;
+  }
+}
+
+.speed-area {
+  overflow: hidden;
+}
+
+.select-group {
+  ::ng-deep.mat-optgroup-label {
+    font-size: $caption-font-size;
+    text-transform: uppercase;
+    font-family: $font-family;
+    font-weight: $medium-font-weight;
+  }
+}
+
+.legends {
+  .legend-icon {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: $dark-background;
+  }
+  .legend-label {
+    font-size: $caption-font-size;
+  }
+}
+
+.text-caption {
+  font-size: $caption-font-size;
+}
+
+.dvr-graph {
+  position: relative;
+  margin-left: 8px;
+  margin-right: 8px;
+
+  .drag-line {
+    position: absolute;
+    left: 0;
+    top: -4px;
+    height: 80px;
+    width: 4px;
+    border-radius: 16px;
+    background-color: $light-success;
+    z-index: 50;
+  }
+}
+
+.timeline {
+  height: 4px;
+  background-color: $light-border;
+
+  .tick {
+    position: absolute;
+    height: 16px;
+    width: 2px;
+    background-color: $light-border;
+    bottom: -16px;
+  }
+
+  .tick-label {
+    position: absolute;
+    bottom: -16px;
+    left: -16px;
+    font-size: $caption-font-size;
+    text-align: center;
+  }
+}
+
+.timeline-axis-label {
+  font-size: $caption-font-size;
+}
+
+.timeline-axis-time {
+  font-size: $caption-font-size;
+  font-weight: $medium-font-weight;
+}
+
+.subheader-divider {
+  border-top-color: $light-border;
+  width: 64px;
+}
+
+.timeline-slider {
+  margin-top: 16px;
+}
+
+.dvr-summary {
+  position: relative;
+  width: 100%;
+  padding: 8px 24px;
+  height: 80px;
+  max-height: 80px;
+  overflow: hidden;
+
+  .summary-title {
+    font-weight: $normal-font-weight;
+    font-size: $caption-font-size;
+    margin-bottom: 4px !important;
+    text-transform: uppercase;
+    color: $white-color;
+  }
+
+  .summary-value {
+    font-weight: $medium-font-weight;
+    max-width: 240px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: $heading-font-size;
+    z-index: 100;
+    color: $white-color;
+  }
+}
+
+.location {
+  position: relative;
+}
+
+.location-icon {
+  width: 12px;
+  height: 12px;
+  line-height: 12px;
+  font-size: 12px;
+  margin-right: 8px;
+  vertical-align: baseline;
+}
+
+.start-icon {
+  color: $dark-success-background;
+}
+
+.end-icon {
+  color: $dark-error-background;
+}
+
+.connector-line {
+  position: absolute;
+  width: 1px;
+  height: 24px;
+  background-color: $light-border;
+  top: 12px;
+  left: 5.25px;
+  z-index: 1;
+}
+
+.location-info {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.no-btn {
+  background: none;
+  border: none;
+}
+
+.driver-thumbnail {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: 50%;
+  vertical-align: middle;
+  border: 2px solid $white-color;
+  cursor: pointer;
+  background: transparent;
+
+  &:hover {
+    border: 2px solid $light-accent;
+  }
+}
+
+.dark-theme {
+  .speed-area,
+  .incidents-area {
+    background-color: $dark-border;
+  }
+}

@@ -1,0 +1,281 @@
+<div class="table-wrap">
+  <table
+    mat-table
+    class="trip-list-table"
+    [dataSource]="tableSource"
+    #sort="matSort"
+    matSort
+    [matSortActive]="tripsTableState?.sortKey"
+    matSortDisableClear
+    [matSortDirection]="tripsTableState?.sortDirection"
+    multiTemplateDataRows
+  >
+    <ng-container matColumnDef="uploadStatus">
+      <th mat-header-cell *matHeaderCellDef>{{ 'tripListComponentStatus' | translate }}</th>
+      <td mat-cell *matCellDef="let trip">
+        <div *ngIf="isLoadingTrips" class="skeleton-line" style="max-width: 240px"></div>
+        <ng-container *ngIf="!isLoadingTrips">
+          <span
+            *ngIf="trip?.cameraMountingStatus?.isBadMounting"
+            class="mounting-error"
+            matTooltip="{{ 'tripListComponentCameraMountingIssue' | translate }}"
+            matTooltipPosition="right"
+          >
+          </span>
+          <mat-icon
+            matTooltip="{{ 'tripListComponentTripDataUploaded' | translate }}"
+            [matTooltipPosition]="'right'"
+            class="arrow upload-complete"
+            *ngIf="trip?.tripDataUploaded"
+            >upload</mat-icon
+          >
+          <mat-icon
+            matTooltip="{{ 'tripListComponentUploadPending' | translate }}"
+            [matTooltipPosition]="'right'"
+            class="arrow upload-pending"
+            *ngIf="!trip?.ongoing && !trip?.tripDataUploaded"
+            >upload</mat-icon
+          >
+          <mat-icon
+            matTooltip="{{ 'tripListComponentLiveTrip' | translate }}"
+            [matTooltipPosition]="'right'"
+            class="arrow upload-complete live"
+            *ngIf="trip?.ongoing && !trip?.tripDataUploaded"
+            >upload</mat-icon
+          >
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="driverImage">
+      <th mat-header-cell *matHeaderCellDef>{{ 'tripListComponentFaceId' | translate }}</th>
+      <td mat-cell *matCellDef="let trip">
+        <div *ngIf="isLoadingTrips" class="skeleton-line" style="max-width: 240px"></div>
+        <ng-container *ngIf="!isLoadingTrips">
+          <button
+            *ngIf="trip?.isFaceIdAvailable; else noThumbnail"
+            class="no-btn"
+            [matTooltip]="
+              trip?.isRecognizedDriverMismatch && trip?.driverId !== '_UNASSIGNED'
+                ? ('tripListComponentDriverMismatch' | translate)
+                : ('tripListComponentViewDriverImage' | translate)
+            "
+            [matTooltipPosition]="'right'"
+            (click)="showDriverImage(trip)"
+            [ngClass]="trip?.isRecognizedDriverMismatch && trip?.driverId !== '_UNASSIGNED' ? 'driver-error' : ''"
+          >
+            <img
+              *ngIf="!trip?.isRecognizedDriverMismatch"
+              [src]="trip?.faceIdImageUrl || 'assets/common/no-avatar.svg'"
+              class="thumbnail-sm"
+            />
+            <mat-icon *ngIf="trip?.isRecognizedDriverMismatch && trip?.driverId !== '_UNASSIGNED'" class="error-icon">error</mat-icon>
+          </button>
+          <ng-template #noThumbnail>
+            <span class="no-thumbnail">-</span>
+          </ng-template>
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="startTime">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ 'tripListComponentStartDateTime' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let trip">
+        <div *ngIf="isLoadingTrips" class="skeleton-line" style="max-width: 240px"></div>
+        <ng-container *ngIf="!isLoadingTrips">
+          {{
+            trip.startTimeUTC
+              | dateConversion : (dataService._currentTimeZone | async) : (dataService._currentDateFormat | async) : trip.startTime
+          }}
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="startLocation">
+      <th mat-header-cell *matHeaderCellDef>{{ 'tripListComponentStartLocation' | translate }}</th>
+      <td mat-cell *matCellDef="let trip">
+        <div *ngIf="isLoadingTrips || locationLoader" class="skeleton-line" style="max-width: 240px"></div>
+        <ng-container *ngIf="!isLoadingTrips && !locationLoader">
+          <span [matTooltip]="trip?.startLocationFullAddress" matTooltipPosition="right">{{ trip?.startLocation || '-' }}</span>
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="endLocation">
+      <th mat-header-cell *matHeaderCellDef>{{ 'tripListComponentEndLocation' | translate }}</th>
+      <td mat-cell *matCellDef="let trip">
+        <div *ngIf="isLoadingTrips || locationLoader" class="skeleton-line" style="max-width: 240px"></div>
+        <ng-container *ngIf="!isLoadingTrips && !locationLoader">
+          <span [matTooltip]="trip?.endLocationFullAddress" matTooltipPosition="right">{{ trip?.endLocation || '-' }}</span></ng-container
+        >
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="driverName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="filterType === 'assetFilter'">
+        {{ 'tripListComponentDriver' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let trip">
+        <div *ngIf="isLoadingTrips" class="skeleton-line" style="max-width: 240px"></div>
+        <ng-container *ngIf="!isLoadingTrips"> {{ trip.driverName || trip.driverId || '-' }}</ng-container>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="eventCount">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="filterType === 'assetFilter'">
+        {{ 'tripListComponentIncidents' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let trip" style="text-align: left">
+        <div *ngIf="isLoadingTrips" class="skeleton-line" style="max-width: 240px"></div>
+        <ng-container *ngIf="!isLoadingTrips">
+          {{ trip.eventCount?.total }}
+          <mat-icon
+            *ngIf="trip?.eventCount?.total > 0"
+            class="info-icon event-info"
+            appCustomTooltip
+            customTooltipPosition="right"
+            [customTooltipTemplate]="eventInfo"
+            [customTooltipContext]="{
+              $implicit: {
+                eventCount: trip?.eventCount
+              }
+            }"
+          >
+            info_outline
+          </mat-icon>
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="tripDistance">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="filterType === 'assetFilter'">
+        {{ 'tripListComponentDistance' | translate }} ({{
+          (dataService._currentMetricUnit | async) === 'Miles' ? ('unitsMiles' | translate) : ('unitsKilometres' | translate)
+        }})
+      </th>
+      <td mat-cell *matCellDef="let trip">
+        <div *ngIf="isLoadingTrips" class="skeleton-line" style="max-width: 240px"></div>
+        <ng-container *ngIf="!isLoadingTrips">
+          {{
+            trip.tripDistance
+              | distance : (dataService._currentMetricUnit | async)
+              | number : '1.0-2'
+              | formatNumber : (dataService._currentLanguage | async)
+          }}
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="tripDuration">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="filterType === 'assetFilter'">
+        {{ 'tripListComponentDuration' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let trip">
+        <div *ngIf="isLoadingTrips" class="skeleton-line" style="max-width: 240px"></div>
+        <ng-container *ngIf="!isLoadingTrips">
+          {{ trip.duration | duration2 : 'seconds' : 'h:m' }}
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="assetId">
+      <th mat-header-cell *matHeaderCellDef>{{ 'tripListComponentAsset' | translate }}</th>
+      <td [attr.title]="trip.asset && trip.asset.assetId ? trip.asset.assetId : null" mat-cell *matCellDef="let trip">
+        <div *ngIf="isLoadingTrips" class="skeleton-line" style="max-width: 240px"></div>
+        <ng-container *ngIf="!isLoadingTrips">
+          {{ (trip.asset && trip.asset.assetId) || '-' }}
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <!-- For calamp assetId is vehicle ID -->
+    <ng-container matColumnDef="vehicleId">
+      <th mat-header-cell *matHeaderCellDef>{{ 'tripListComponentVehicle' | translate }}</th>
+      <td [attr.title]="trip?.asset?.assetId || null" mat-cell *matCellDef="let trip">
+        <div *ngIf="isLoadingTrips" class="skeleton-line" style="max-width: 240px"></div>
+        <ng-container *ngIf="!isLoadingTrips">{{ trip?.asset?.assetId || '-' }}</ng-container>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>{{ 'tripListComponentActions' | translate }}</th>
+      <td mat-cell *matCellDef="let trip">
+        <div *ngIf="isLoadingTrips" class="skeleton-line" style="max-width: 240px"></div>
+        <span fxLayout="row" fxLayoutGap="8px" *ngIf="!isLoadingTrips" fxLayoutAlign="start center">
+          <ng-container>
+            <div *ngIf="dvrAvailableLoader" class="skeleton-line" style="max-width: 30px"></div>
+            <ng-container *ngIf="!dvrAvailableLoader">
+              <div
+                *ngIf="!isMobile"
+                [matTooltip]="!trip?.isDvrAvailable ? ('videoRequestNotAvailable' | translate) : ''"
+                matTooltipPosition="left"
+              >
+                <button
+                  mat-icon-button
+                  (click)="navigateToVideoRequest(trip)"
+                  [disabled]="!trip?.isDvrAvailable"
+                  [matTooltip]="trip?.isDvrAvailable ? ('videoRequestRequestVideo' | translate) : ''"
+                  matTooltipPosition="left"
+                  color="accent"
+                  *appCheckPermissions="['request:dvr']"
+                  [loading]="dvrAvailableLoader"
+                >
+                  <mat-icon>switch_video</mat-icon>
+                </button>
+              </div>
+            </ng-container>
+          </ng-container>
+
+          <button
+            mat-icon-button
+            color="accent"
+            (click)="navigateToTripDetails(trip)"
+            matTooltip="{{ 'tripListComponentViewTripdetails' | translate }}"
+            matTooltipPosition="left"
+          >
+            <mat-icon>pin_drop</mat-icon>
+          </button>
+
+          <button
+            mat-icon-button
+            color="accent"
+            (click)="navigateToEditTrip(trip)"
+            matTooltip="{{ 'tripListComponentEditTripdetails' | translate }}"
+            matTooltipPosition="right"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+        </span>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+    <tr mat-row class="table-row" *matRowDef="let row; columns: tableColumns"></tr>
+  </table>
+
+  <app-alert *ngIf="!isLoadingTrips && !tableSource.data.length" [alertType]="'info'" [insideTable]="true">
+    {{ 'tripListComponentNoTripsFound' | translate }}
+  </app-alert>
+
+  <mat-paginator
+    #paginator="matPaginator"
+    class="trip-list-paginator"
+    [length]="tripsCount"
+    [pageSize]="tablePageSize"
+    [pageIndex]="tripsTableState?.pageIndex"
+    showFirstLastButtons
+  >
+  </mat-paginator>
+</div>
+
+<ng-template #eventInfo let-info>
+  <div class="tooltip-container" fxLayout="column" fxLayoutAlign="flex-start flex-start" fxLayoutGap="4px">
+    <ng-container *ngFor="let event of eventsConfig | keyvalue">
+      <div *ngIf="(info?.eventCount)[event.key] > 0">
+        {{ event?.value?.label | translate }}: <strong>{{ (info?.eventCount)[event.key] }}</strong>
+      </div>
+    </ng-container>
+  </div>
+</ng-template>

@@ -1,0 +1,71 @@
+<div class="severity-video-content" fxLayout="row" #incidentHighlights>
+  <app-alert *ngIf="!loader && !videoList.length" [alertType]="'info'">
+    {{ 'driverHighlightsNotFound' | translate }}
+  </app-alert>
+</div>
+
+<div *ngIf="loader" fxLayout="row" fxLayoutGap="24px">
+  <div class="skeleton-loader" [style.width.px]="carouselCardWidth" *ngFor="let event of dummyVideoList">
+    <div class="skeleton-card xs" style="margin-top: 0"></div>
+    <div class="skeleton-line"></div>
+    <div class="skeleton-line"></div>
+    <div class="skeleton-line" style="max-width: 80px"></div>
+  </div>
+</div>
+
+<div class="incident-carousel" *ngIf="!loader" fxLayout="row" fxLayoutGap="24px">
+  <ng-container *ngFor="let incident of videoListObservable | async; let i = index; let isFirst = first; let isLast = last">
+    <div class="carousel-card " [style.width.px]="carouselCardWidth">
+      <div class="incident-highlight" [ngClass]="selectedCoachableEvent === i ? 'selected-event' : ''">
+        <video
+          class="incident-video-thumbnail"
+          [class.row-first-item]="isFirst"
+          [class.row-last-item]="isLast"
+          [ngClass]="incident?.isVideo ? 'd-inline-block' : 'd-none'"
+          preload="metadata"
+          #incidentVideo
+          playsinline
+          [muted]="'muted'"
+          (click)="onPlayIncident(incident, incident.positionIndex)"
+        >
+          <source
+          [src]="
+          ((incident?.mediaFiles && incident?.mediaFiles?.length && incident?.mediaFiles[0]?.mediaFile) || incident?.eventVideoFile) +
+          '#t=0.1'
+        "
+            type="video/mp4"
+          />
+          {{ 'driverHighlightsBrowserNotSupported' | translate }}
+        </video>
+
+        <img
+          class="incident-video-thumbnail"
+          [class.row-first-item]="isFirst"
+          [class.row-last-item]="isLast"
+          (click)="onPlayIncident(incident, incident.positionIndex)"
+          [ngClass]="incident?.isVideo ? 'd-none' : 'd-inline-block'"
+          [src]="(incident?.mediaFiles && incident?.mediaFiles?.length && incident?.mediaFiles[0]?.mediaFile) || incident?.eventVideoFile"
+        />
+        <mat-chip-list class="media-chip" *ngIf="!incident?.isVideo">
+          <mat-chip>{{ 'commonIncidentViewImage' | translate }}</mat-chip>
+        </mat-chip-list>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="space-between start">
+        <div class="details" fxLayout="column" fxLayoutGap="4px">
+          <span class="timestamp text" *ngIf="incident?.timestampUTC">
+            {{ incident?.timestampUTC | dateConversion : timezone : dateFormat : incident?.timestamp }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<mat-paginator
+  fxShow="videoListObservable?.length > pageSize"
+  hidePageSize
+  (page)="pageEvent($event)"
+  [showFirstLastButtons]="false"
+  #paginator
+  [pageSize]="pageSize"
+></mat-paginator>

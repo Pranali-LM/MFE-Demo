@@ -2,31 +2,94 @@
   "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": "./",
+    "downlevelIteration": true,
+    "importHelpers": true,
+    "module": "esnext",
     "outDir": "./dist/out-tsc",
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "declaration": false,
-    "downlevelIteration": true,
-    "experimentalDecorators": true,
     "moduleResolution": "node",
-    "importHelpers": true,
-    "target": "ES2021",
-    "module": "ES2022",
-    "useDefineForClassFields": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "target": "es2020",
+    "typeRoots": [
+      "projects/user-mfe/src/typings.d.ts",
+      "node_modules/@types"
+    ],
     "lib": [
-      "ES2021",
+      "es2017",
       "dom"
-    ]
-  },
-  "angularCompilerOptions": {
-    "enableI18nLegacyMessageIdFormat": false,
-    "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictTemplates": true
+    ],
+    "skipLibCheck": true,
+    "paths": {
+      "@env/*": [
+        "projects/user-mfe/src/environments/*"
+      ],
+      "@app-core/*": [
+        "projects/user-mfe/src/app/core/*"
+      ],
+      "@app-auth/*": [
+        "projects/user-mfe/src/app/authentication/*"
+      ],
+      "@app-shared/*": [
+        "projects/user-mfe/src/app/shared/*"
+      ],
+      "@app-home/*": [
+        "projects/user-mfe/src/app/home/*"
+      ],
+      "@app-trips/*": [
+        "projects/user-mfe/src/app/trips/*"
+      ],
+      "@app-incidents/*": [
+        "projects/user-mfe/src/app/incidents/*"
+      ],
+      "@app-live-view/*": [
+        "projects/user-mfe/src/app/live-view/*"
+      ],
+      "@app-coaching/*": [
+        "projects/user-mfe/src/app/coaching/*"
+      ],
+      "@app-dvr/*": [
+        "projects/user-mfe/src/app/dvr/*"
+      ],
+      "@app-challenged/*": [
+        "projects/user-mfe/src/app/challenged/*"
+      ],
+      "@app-reports/*": [
+        "projects/user-mfe/src/app/reports/*"
+      ],
+      "@app-user-management/*": [
+        "projects/user-mfe/src/app/user-management/*"
+      ],
+      "@app-assets/*": [
+        "projects/user-mfe/src/app/assets/*"
+      ],
+      "@app-asset-config/*": [
+        "projects/user-mfe/src/app/asset-configuration/*"
+      ],
+      "@app-user-config/*": [
+        "projects/user-mfe/src/app/user-configuration/*"
+      ],
+      "@app-driver-management/*": [
+        "projects/user-mfe/src/app/driver-management/*"
+      ],
+      "@app-diagnostics/*": [
+        "projects/user-mfe/src/app/diagnostics/*"
+      ],
+      "@app-trip-details/*": [
+        "projects/user-mfe/src/app/trip-details/*"
+      ],
+      "@app-incident-details/*": [
+        "projects/user-mfe/src/app/incident-details/*"
+      ],
+      "@app-request-video/*": [
+        "projects/user-mfe/src/app/request-video/*"
+      ],
+      "@config/*": [
+        "projects/user-mfe/src/config/*"
+      ]
+    }
   }
 }

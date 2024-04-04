@@ -1,0 +1,52 @@
+<div fxLayout="column" fxLayoutGap="24px" class="tagging-examples">
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <h3 class="card-title">{{ 'TaggingExampleComponentTitle' | translate }}</h3>
+
+    <button mat-icon-button class="btn-close" matTooltip="{{'TaggingComponentCloseTooltip'| translate}}" mat-dialog-close matTooltipPosition="left">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-tab-group mat-align-tabs="start" [@.disabled]="true">
+    <mat-tab label="{{ 'TaggingExampleComponentEXAMPLE1' | translate }}">
+      <div fxLayout="column" fxLayoutGap="24px">
+        <h4>{{ 'TaggingExampleComponentEXAMPLE1Title' | translate }}</h4>
+
+        <span class="text-content"
+          >{{ 'TaggingExampleComponentEXAMPLE1Description1' | translate }}
+          <strong>{{ 'TaggingExampleComponentEXAMPLE1Description2' | translate }}</strong>
+          {{ 'TaggingExampleComponentEXAMPLE1Description3' | translate }}
+          <strong>{{ 'TaggingExampleComponentEXAMPLE1Description4' | translate }}</strong
+          >{{ 'TaggingExampleComponentEXAMPLE1Description5' | translate }}
+          <strong>{{ 'TaggingExampleComponentEXAMPLE1Description6' | translate }}</strong>
+          {{ 'TaggingExampleComponentEXAMPLE1Description7' | translate }}
+          {{ 'TaggingExampleComponentEXAMPLE1Description8' | translate }}
+        </span>
+      </div>
+    </mat-tab>
+    <mat-tab label="{{ 'TaggingExampleComponentEXAMPLE2' | translate }}">
+      <div fxLayout="column" fxLayoutGap="24px">
+        <h4>{{ 'TaggingExampleComponentEXAMPLE2Title' | translate }}</h4>
+
+        <span class="text-content">
+          {{ 'TaggingExampleComponentEXAMPLE2Description1' | translate }}
+          <strong>{{ 'TaggingExampleComponentEXAMPLE2Description2' | translate }}</strong>
+          {{ 'TaggingExampleComponentEXAMPLE2Description3' | translate }}
+          <strong>{{ 'TaggingExampleComponentEXAMPLE2Description4' | translate }}</strong>
+          {{ 'TaggingExampleComponentEXAMPLE2Description5' | translate }}
+        </span>
+      </div>
+    </mat-tab>
+    <mat-tab label="{{ 'TaggingExampleComponentEXAMPLE3' | translate }}">
+      <div fxLayout="column" fxLayoutGap="24px">
+        <h4>{{ 'TaggingExampleComponentEXAMPLE3Title' | translate }}</h4>
+
+        <span class="text-content">
+          {{ 'TaggingExampleComponentEXAMPLE3Description1' | translate }}
+          <strong>{{ 'TaggingExampleComponentEXAMPLE3Description2' | translate }}</strong>
+          {{ 'TaggingExampleComponentEXAMPLE3Description3' | translate }}
+        </span>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

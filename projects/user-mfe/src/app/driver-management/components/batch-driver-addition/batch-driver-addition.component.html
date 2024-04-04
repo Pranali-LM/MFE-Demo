@@ -1,0 +1,58 @@
+<mat-card fxLayout="column" fxLayoutGap="24px" fxFlex.xl="50" fxFlex.lg="50">
+  <h3 class="card title">{{ 'batchDriverAdditionBatchAdditionTitle' | translate }}</h3>
+  <div class="card-body" fxLayout="column" fxLayoutAlign="space-between" fxLayoutGap="48px" *appCheckPermissions="['update:drivers']">
+    <div>
+      <p class="sub-text">
+        {{ 'batchDriverAdditionBatchAdditionContent' | translate }}
+      </p>
+
+      <p class="sub-text">{{ 'batchUpdateNote' | translate }}</p>
+
+      <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
+        <div class="btn-link text-link-underlined" (click)="downloadDriverAdditionSample()">
+          {{ 'batchDriverAdditionDownloadLink' | translate }}
+        </div>
+        <mat-spinner *ngIf="driverSampleLoader" [diameter]="20"></mat-spinner>
+      </div>
+
+      <app-alert *ngIf="sampleDownloadError" [alertType]="'error'">{{ 'batchDriverAdditionUnabletoDownload' | translate }} </app-alert>
+
+      <app-alert
+        *ngIf="driverAdditionStatus"
+        [alertType]="driverAdditionStatus === 'partialSuccess' ? 'info' : driverAdditionStatus"
+        [alertActionText]="driverAdditionStatus === 'partialSuccess' ? ('manageAssetsComponentDownload' | translate) : ''"
+        (alertAction)="downloadFailedDriverList()"
+      >
+        <ng-container [ngSwitch]="driverAdditionStatus">
+          <span *ngSwitchCase="'success'">{{ 'batchDriverAdditionSuccess' | translate }}</span>
+          <span *ngSwitchCase="'error'">{{ 'batchDriverAdditionFailed' | translate }}</span>
+          <div *ngSwitchCase="'partialSuccess'" fxLayout="column" fxLayoutGap="4px" fxLayoutAlign="start start">
+            <span>{{ 'batchDriverAdditionSomeFailed' | translate }}</span>
+            <span>{{ 'batchDriverAdditionDowloadFailedList' | translate }}</span>
+          </div>
+        </ng-container>
+      </app-alert>
+
+      <app-alert *ngIf="showFileError" [alertType]="'error'">{{ 'batchDriverAdditionUploadOnlyCsvFile' | translate }}</app-alert>
+    </div>
+
+    <div fxLayout="row" fxLayoutGap="16px" fxLayout.xs="column" fxLayoutAlign.xs="start start" fxLayoutGap.xs="8px">
+      <button mat-stroked-button class="btn-action">
+        <input class="input-upload" id="input-file-id" type="file" accept=".csv" (change)="selectCsvFile($event)" #fileInputRef />
+        <mat-icon *ngIf="!csvFileSelected" class="file-attach">attach_file</mat-icon>
+        <mat-icon *ngIf="csvFileSelected" class="file-attach">done</mat-icon>
+        <label for="input-file-id" class="input-upload-label">
+          <span *ngIf="csvFileSelected">{{ driverAdditionCsvFile?.name }}</span>
+          <span *ngIf="!csvFileSelected">{{ 'batchDriverAdditionSelectCsvFile' | translate }}</span>
+        </label>
+      </button>
+      <button mat-flat-button [loading]="loader" color="accent" (click)="batchDriverAddition()" [disabled]="!csvFileSelected">
+        {{ 'batchDriverAdditionSubmit' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <app-alert *appCheckPermissions="['update:drivers']; showError: true" [alertType]="'info'" [removeMargin]="true">
+    <span>{{ 'noPermissionToView' | translate }}</span>
+  </app-alert>
+</mat-card>

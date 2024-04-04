@@ -1,0 +1,37 @@
+@import './variables';
+@import './fonts';
+
+.btn-map {
+  position: absolute;
+  z-index: 1000;
+  top: 146px !important;
+  background: $white-color;
+  width: 29px;
+  height: 29px;
+  border-radius: 4px;
+  left: 10px;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background-color: #f4f4f4;
+  }
+
+  mat-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+    line-height: 16px;
+  }
+}
+
+.btn-layers {
+  top: 146px !important;
+}
+
+.btn-recenter {
+  top: 184px !important;
+}
+
+.mapbox-map {
+  height: 100%;
+}

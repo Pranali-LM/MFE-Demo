@@ -1,0 +1,40 @@
+<div [id]="mapId" class="map" #mapContainer>
+  <button
+    class="btn-map btn-fullscreen mat-elevation-z2"
+    mat-icon-button
+    [matTooltip]="isFullscreen ? ('mapComponentExitFullScreen' | translate) : ('mapComponentEnterFullScreen' | translate)"
+    [matTooltipPosition]="'right'"
+    [appFullScreen]="mapContainer"
+    (changeFullscreenState)="isFullscreen = $event"
+  >
+    <mat-icon *ngIf="isFullscreen">fullscreen_exit</mat-icon>
+    <mat-icon *ngIf="!isFullscreen">fullscreen</mat-icon>
+  </button>
+
+  <button
+    class="btn-map btn-recenter mat-elevation-z2"
+    (click)="onRecenterBtnClick()"
+    mat-icon-button
+    matTooltip="{{ 'mapComponentRecenter' | translate }}"
+    [matTooltipPosition]="'right'"
+  >
+    <mat-icon>gps_fixed</mat-icon>
+  </button>
+
+  <button
+    *ngIf="selectedDevice?.gpsData?.bearing !== null && selectedDevice?.gpsData?.bearing !== undefined"
+    mat-icon-button
+    class="mat-elevation-z2 direction-info"
+    matTooltip="{{ (selectedDevice?.gpsData?.bearing | number: '1.0-0') + ('mapComponentdegrees' | translate) }}"
+    matTooltipPosition="right"
+  >
+    <mat-icon [ngStyle]="{ transform: 'rotate(' + selectedDevice?.gpsData?.bearing + 'deg)' }">north</mat-icon>
+  </button>
+
+  <div class="mat-elevation-z2 speed" *ngIf="selectedDevice?.gpsData?.speed !== null && selectedDevice?.gpsData?.speed !== undefined">
+    <ng-container *ngIf="(dataService?._currentMetricUnit | async) === 'Miles'; else speedInKmph">
+      {{ selectedDevice?.gpsData?.speed * 2.237 | number: '1.0-0' }} mph
+    </ng-container>
+    <ng-template #speedInKmph> {{ selectedDevice?.gpsData?.speed * 3.6 | number: '1.0-0' }} kmph</ng-template>
+  </div>
+</div>

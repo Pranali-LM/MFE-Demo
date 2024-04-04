@@ -1,0 +1,20 @@
+<div [formGroup]="form">
+  <mat-form-field>
+    <mat-label>{{ config?.placeholder | translate }}</mat-label>
+    <mat-select disableOptionCentering appFixToggleDisableFormControl [formControlName]="config?.key" [multiple]="config?.multiple">
+      <mat-option *ngFor="let option of config?.options" [value]="option.key" [disabled]="option?.disabled">
+        <ng-container *ngIf="config?.isUnitConversionRequired; else noUnitConversionRequired">
+          <ng-container *ngIf="currentMetricUnit === 'Miles'; else valueInKm">
+            {{ option.value | translate }}
+          </ng-container>
+          <ng-template #valueInKm>
+            {{ option.metricValue | translate }}
+          </ng-template>
+        </ng-container>
+        <ng-template #noUnitConversionRequired>
+          {{ option.value | translate }}
+        </ng-template>
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

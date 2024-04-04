@@ -1,0 +1,206 @@
+<div fxLayout="column" fxLayoutGap="24px" fxLayoutGap.xs="16px" fxLayoutAlign="start stretch" class="tag-header">
+  <div
+    fxLayout="row"
+    fxLayout.md="column"
+    fxLayout.sm="column"
+    fxLayout.xs="column"
+    fxLayoutGap="24px"
+    fxLayoutAlign="space-between center"
+  >
+    <h3 class="title card-title">
+      {{ 'tagTableHeader' | translate }}
+      <button
+        mat-icon-button
+        class="btn-faq"
+        (click)="dataService?.openFaq('TagsList')"
+        matTooltip="{{ 'viewInformation' | translate }}"
+        matTooltipPosition="right"
+      >
+        <mat-icon>info_outline</mat-icon>
+      </button>
+    </h3>
+
+    <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="end center">
+      <!-- <mat-form-field appearance="standard">
+        <mat-label>{{ 'TagsTableComponentSearchTags' | translate }}</mat-label>
+        <input type="text" placeholder="Enter tag name" matInput [formControl]="tagSearchCtrl" />
+      </mat-form-field> -->
+      <button
+        mat-icon-button
+        color="accent"
+        class="btn-icon"
+        [loading]="loader"
+        (click)="onRefreshTags()"
+        matTooltip="{{'TagsTableComponentRefreshTooltip'| translate}}"
+        [matTooltipPosition]="'left'"
+      >
+        <mat-icon>refresh</mat-icon>
+      </button>
+      <button mat-flat-button color="accent" (click)="addTags(ManageTagAction.Add)" 
+      *appCheckPermissions="['update:fleet_config']">
+        {{ 'TagsTableComponentAddNewTags' | translate }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="table-wrap">
+  <table mat-table [dataSource]="attributeListDataSource">
+    <ng-container matColumnDef="tagName">
+      <th mat-header-cell *matHeaderCellDef>{{ 'TagsTableComponentTagName' | translate }}</th>
+      <td mat-cell *matCellDef="let element">
+        <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+        <ng-container *ngIf="!loader">
+          {{ element?.tagName }}
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="attributeName">
+      <th mat-header-cell *matHeaderCellDef>{{ 'TagsTableComponentAttributeName' | translate }}</th>
+      <td mat-cell *matCellDef="let element">
+        <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+        <ng-container *ngIf="!loader">
+          {{ element?.attributeName }}
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="entity">
+      <th mat-header-cell *matHeaderCellDef>{{ 'OverviewTableComponentEntities' | translate }}</th>
+      <td mat-cell *matCellDef="let element">
+        <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+        <ng-container *ngIf="!loader">
+          {{ (element?.entityName  || '-') | titlecase }}
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ 'TagsTableComponentStatus' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let element">
+        <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+        <ng-container *ngIf="!loader">
+          <ng-container *ngIf="element?.status; else noStatus">
+            <mat-chip class="chip-success" *ngIf="element?.status === 'ACTIVE'">ACTIVE</mat-chip>
+            <mat-chip class="chip-error" *ngIf="element?.status === 'INACTIVE'">INACTIVE</mat-chip>
+          </ng-container>
+          <ng-template #noStatus>
+            <span>-</span>
+          </ng-template>
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="createdOn">
+      <th mat-header-cell *matHeaderCellDef>{{ 'TagsTableComponentCreatedOn' | translate }}</th>
+      <td mat-cell *matCellDef="let element">
+        <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+        <ng-container *ngIf="!loader">
+          {{
+            element?.createdAt
+              ? (element?.createdAt | dateConversion : (dataService._currentTimeZone | async) : (dataService._currentDateFormat | async))
+              : '-'
+          }}
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="createdBy">
+      <th mat-header-cell *matHeaderCellDef>{{ 'TagsTableComponentCreatedBy' | translate }}</th>
+      <td mat-cell *matCellDef="let element">
+        <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+        <ng-container *ngIf="!loader">
+          {{ element?.createdBy?.name || element?.createdBy?.email || '-' }}
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="lastUpdated">
+      <th mat-header-cell *matHeaderCellDef>{{ 'TagsTableComponentUpdatedOn' | translate }}</th>
+      <td mat-cell *matCellDef="let element">
+        <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+        <ng-container *ngIf="!loader">
+          {{
+            element?.updatedAt
+              ? (element?.updatedAt | dateConversion : (dataService._currentTimeZone | async) : (dataService._currentDateFormat | async))
+              : '-'
+          }}
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>{{ 'TagsTableComponentActions' | translate }}</th>
+      <td mat-cell *matCellDef="let element; let i = index">
+        <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+        <ng-container *ngIf="!loader">
+          <span fxLayout="row" fxLayoutGap="8px">
+            <button
+              *appCheckPermissions="['update:fleet_config']"
+              mat-icon-button
+              color="accent"
+              matTooltip="{{ 'TagsTableComponentRenameTagToolTip' | translate }}"
+              matTooltipPosition="left"
+              (click)="addTags(ManageTagAction.Edit, element)"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button [matMenuTriggerFor]="menu" color="accent" [disabled]="!hasUpdatePermission">
+              <mat-icon>more_horiz</mat-icon>
+            </button>
+
+            <mat-menu #menu="matMenu" xPosition="before">
+              <ng-container>
+                <button
+                  *ngIf="element?.status === 'INACTIVE'; else deactivateTag"
+                  mat-menu-item
+                  matTooltip="{{ 'TagsTableComponentActivateTag' | translate }}"
+                  (click)="openConfirmationDialog(element, 'ACTIVE')"
+                  [disabled]="element?.attributeStatus === 'INACTIVE'"
+                >
+                  <mat-icon>check_circle</mat-icon>
+                  <span>{{ 'TagsTableComponentActivateTag' | translate }}</span>
+                </button>
+              </ng-container>
+
+              <ng-template #deactivateTag>
+                <button mat-menu-item [disabled]="element?.status === 'INACTIVE'" (click)="openConfirmationDialog(element, 'INACTIVE')">
+                  <mat-icon>block</mat-icon>
+                  <span>{{ 'TagsTableComponentDeActivateTag' | translate }}</span>
+                </button>
+              </ng-template>
+
+              <button
+                mat-menu-item
+                matTooltip="{{ 'TagsTableComponentDeleteTagToolTip' | translate }}"
+                (click)="openConfirmationDialog(element, 'DELETE')"
+              >
+                <mat-icon>delete</mat-icon>
+                <span>{{ 'TagsTableComponentDeleteTagToolTip' | translate }}</span>
+              </button>
+            </mat-menu>
+          </span>
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+  <app-alert *ngIf="attributeListDataSource?.data?.length === 0 && !loader" [alertType]="'info'" [insideTable]="true">
+    {{ 'TagsTableComponentNoTagsFound' | translate }}
+  </app-alert>
+
+  <mat-paginator
+    #paginator="matPaginator"
+    class="trip-list-paginator"
+    [length]="totalTagCount"
+    [pageSize]="tablePageSize"
+    showFirstLastButtons
+  >
+  </mat-paginator>
+</div>

@@ -1,0 +1,226 @@
+<mat-tab-group mat-stretch-tabs [(selectedIndex)]="defaultTabIndex">
+  <mat-tab label="{{ 'liveViewAssetDetailsTabHeader' | translate }}">
+    <ng-template matTabContent>
+      <div fxLayout="column" class="asset-details" fxLayoutGap="16px">
+        <div fxLayout="row">
+          <div class="stats-card">
+            <div class="card-title">{{ 'liveViewAssetDetailsSTATUS' | translate }}</div>
+            <div class="card-text">
+              <mat-chip class="chip-success" *ngIf="assetDetails?.state?._value === 'ACTIVE'">{{
+                'liveViewAssetDetailsACTIVE' | translate
+              }}</mat-chip>
+              <mat-chip class="chip-error" *ngIf="assetDetails?.state?._value === 'INACTIVE'">{{
+                'liveViewAssetDetailsPARKED' | translate
+              }}</mat-chip>
+              <mat-chip class="chip-warn" *ngIf="assetDetails?.state?._value === 'AMBER'">{{
+                'liveViewAssetDetailsWEAKSIGNAL' | translate
+              }}</mat-chip>
+            </div>
+          </div>
+        </div>
+
+        <app-alert *ngIf="assetDetails?.state?._value === 'AMBER'" [alertType]="'warn'" [removeMargin]="true">
+          {{ 'liveViewAssetDetailsweakSignal' | translate }}
+        </app-alert>
+
+        <div fxLayout="row">
+          <div class="stats-card">
+            <div class="card-title">{{ 'liveViewAssetDetailsASSETID' | translate }}</div>
+            <div class="card-text">
+              <span>
+                {{ assetDetails?.asset?.assetName ||assetDetails?.assetName || assetDetails?.assetId || 'NA' }}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div fxLayout="row">
+          <div class="stats-card">
+            <div class="card-title">{{ 'liveViewAssetDetailsDRIVER' | translate }}</div>
+            <div class="card-text">
+              <span>
+                {{ assetDetails?.driverId.toUpperCase() === '_UNASSIGNED' ? ('DriverIdUnassigned' | translate) : (assetDetails?.driverName || assetDetails?.driverId  || 'N/A') }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div fxLayout="row">
+          <div class="stats-card">
+            <div class="card-title">{{ 'liveViewAssetDetailsLASTUPDATED' | translate }}</div>
+            <div class="card-text">
+              <span *ngIf="assetDetails?.timestampUTC">
+                {{
+                  assetDetails?.timestampUTC
+                    | dateConversion
+                      : (dataService._currentTimeZone | async)
+                      : (dataService._currentDateFormat | async)
+                      : assetDetails?.timestamp
+                }}
+              </span>
+              <span *ngIf="!assetDetails?.timestampUTC">-</span>
+            </div>
+          </div>
+        </div>
+
+        <ng-container *ngIf="assetDetails?.state?._value === 'ACTIVE'">
+          <div fxLayout="row">
+            <div class="stats-card">
+              <div class="card-title">{{ 'liveViewAssetDetailsTRIPSTARTLOCATION' | translate }}</div>
+              <div class="card-text">
+                <span>
+                  {{ (assetDetails?.firstLocationGeocodeData | async)?.location?.address?.LongLabel || 'NA' }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div fxLayout="row">
+            <div class="stats-card">
+              <div class="card-title">{{ 'liveViewAssetDetailsCURRENTLOCATION' | translate }}</div>
+              <div class="card-text">
+                <span>
+                  {{ (assetDetails?.currentLocationGeocodeData | async)?.location?.address?.LongLabel || 'NA' }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div fxLayout="row">
+            <div class="stats-card">
+              <div class="card-title">{{ 'liveViewAssetDetailsCURRENTSPEED' | translate }}</div>
+              <div class="card-text">
+                <span>
+                  <ng-container *ngIf="assetDetails?.gpsData?.speed >= 0; else notAvailable">
+                    <ng-container *ngIf="(dataService?._currentMetricUnit | async) === 'Miles'; else speedInKmph">
+                      {{ assetDetails?.gpsData?.speed * 2.237 | number : '1.0-0' }} mph
+                    </ng-container>
+                    <ng-template #speedInKmph> {{ assetDetails?.gpsData?.speed * 3.6 | number : '1.0-0' }} kmph</ng-template>
+                  </ng-container>
+                  <ng-template #notAvailable> N/A </ng-template>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div fxLayout="row">
+            <div class="stats-card">
+              <div class="card-title">{{ 'liveViewAssetDetailsINCIDENTCOUNT' | translate }}</div>
+              <div class="card-text">
+                <span>
+                  {{ assetDetails?.totalEventCount || 0 }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div fxLayout="row">
+            <div class="stats-card">
+              <div class="card-title">{{ 'liveViewAssetDetailsDIRECTION' | translate }}</div>
+              <div class="card-text">
+                <span>
+                  {{ direction }}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div fxLayout="row">
+            <button mat-flat-button color="accent" (click)="navigateToLiveStream()">
+              {{ 'liveViewAssetDetailsSTARTLIVESTREAM' | translate }}
+            </button>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="assetDetails?.state?._value === 'AMBER'">
+          <div fxLayout="row">
+            <div class="stats-card">
+              <div class="card-title">{{ 'liveViewAssetDetailsLASTKNOWNSPEED' | translate }}</div>
+              <div class="card-text">
+                <span>
+                  <span>
+                    <ng-container *ngIf="assetDetails?.gpsData?.speed >= 0; else notAvailable">
+                      <ng-container *ngIf="(dataService?._currentMetricUnit | async) === 'Miles'; else speedInKmph">
+                        {{ assetDetails?.gpsData?.speed * 2.237 | number : '1.0-0' }} mph
+                      </ng-container>
+                      <ng-template #speedInKmph> {{ assetDetails?.gpsData?.speed * 3.6 | number : '1.0-0' }} kmph</ng-template>
+                    </ng-container>
+                    <ng-template #notAvailable> N/A </ng-template>
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="assetDetails?.state?._value !== 'ACTIVE'">
+          <div fxLayout="row">
+            <div class="stats-card">
+              <div class="card-title">{{ 'liveViewAssetDetailsLASTKNOWNLOCATION' | translate }}</div>
+              <div class="card-text">
+                <span>
+                  {{ (assetDetails?.currentLocationGeocodeData | async)?.location?.address?.LongLabel || 'NA' }}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div fxLayout="row warp" fxLayoutAlign="start center" class="live-details-button">
+            <button fxFlex="1 0 auto" mat-flat-button color="accent" (click)="navigateToLiveStream()" *ngIf="assetDetails?.isAlwaysOnlineEnabled">
+              {{ 'liveViewAssetDetailsSTARTLIVESTREAM' | translate }}
+            </button>
+            <button fxFlex="1 0 auto" mat-stroked-button [disabled]="!(assetDetails?.deviceId && assetDetails?.tripId)" (click)="navigateToTripDetails()">
+              {{ 'liveViewAssetDetailsTRIPDETAILSButton' | translate }}
+            </button>
+          </div>
+        </ng-container>
+      </div>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab label="{{ 'eventDetailsTabHeader' | translate }}">
+    <div class="table-wrap live-events-table">
+      <table mat-table [dataSource]="eventListDataSource">
+        <ng-container matColumnDef="eventName">
+          <th mat-header-cell *matHeaderCellDef>{{ 'liveViewAssetDetailsEvent' | translate }}</th>
+          <td mat-cell *matCellDef="let element">
+            <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+            <ng-container *ngIf="!loader">
+              <span>
+                {{ eventsConfig[element?.eventType]?.label || element?.eventTypeLabel || element?.eventType | translate }}
+              </span>
+              <span> - </span>
+              <span *ngIf="element?.timestampUTC">
+                {{ element?.timestampUTC | dateConversion : currentTimeZone : 'HH:mm' : element?.timestamp }}
+              </span>
+            </ng-container>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>{{ 'liveViewAssetDetailsActions' | translate }}</th>
+          <td mat-cell *matCellDef="let element; let i = index">
+            <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+            <ng-container *ngIf="!loader">
+              <button
+                mat-icon-button
+                color="accent"
+                matTooltip="{{ 'incidentModalPlayvideo' | translate }}"
+                matTooltipPosition="left"
+                (click)="openIncidentModal(i)"
+              >
+                <mat-icon>play_circle_outline</mat-icon>
+              </button>
+            </ng-container>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+
+      <app-alert *ngIf="eventListDataSource?.data?.length === 0 && !loader" [alertType]="'info'" [insideTable]="true">
+        {{ 'liveViewAssetDetailsNoEvents' | translate }}
+      </app-alert>
+
+      <mat-paginator #paginator="matPaginator" [pageSize]="tablePageSize" showFirstLastButtons> </mat-paginator>
+    </div>
+  </mat-tab>
+</mat-tab-group>

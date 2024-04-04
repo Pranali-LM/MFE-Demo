@@ -1,0 +1,20 @@
+<div fxLayout="column" fxLayout.xs="column" fxLayoutAlign="space-between start" fxLayoutAlign.xs="start stretch" fxLayoutGap="24px">
+  <app-configurations-expansion-panel
+    [expansionPanelConfig]="assetConfigService.basicSettingsExpansionPanelConfig"
+    [isBasic]="true"
+    (formChanged)="onFormChanged($event)"
+    class="width-100"
+  ></app-configurations-expansion-panel>
+  <button
+    *appCheckPermissions="['update:fleet_config']"
+    mat-flat-button
+    class="save-btn"
+    color="accent"
+    fxFlexAlign="end"
+    (click)="onSaveChanges()"
+    [disabled]="settingsForm().invalid || (assetConfigService.isBasicConfigDirty | async) === false"
+    [loading]="assetConfigService.isUpdatingConfig | async"
+  >
+    {{ 'basicConfiguratonSave' | translate }}
+  </button>
+</div>

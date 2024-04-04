@@ -1,0 +1,54 @@
+<app-header></app-header>
+<mat-sidenav-container
+  class="sidenav-container"
+  [ngClass]="currentTheme === 'dark' ? 'dark-theme' : ''"
+  [class.is-mobile]="mobileQuery.matches"
+  [hasBackdrop]="false"
+>
+  <mat-sidenav
+    class="sidenav mat-elevation-z1"
+    #sidenav
+    [mode]="mobileQuery.matches ? 'over' : 'side'"
+    [opened]="isSideNavOpen"
+    [fixedInViewport]="true"
+    fixedTopGap="64"
+    [style.background-color]="backgroundColor"
+    *ngIf="config?.showSideNav"
+  >
+    <mat-nav-list class="side-menu">
+      <ng-container color="primary" mat-list-item *ngFor="let route of navigationRoutes">
+        <a
+          class="nav-item"
+          color="primary"
+          mat-list-item
+          routerLinkActive="active"
+          [routerLink]="route?.routerLink"
+          *appCheckUiConfigs="[route?.uiConfigKey]"
+          [style.color]="color"
+        >
+          <mat-icon class="nav-icons">{{ route?.icon }}</mat-icon> <span>{{ route?.label | translate }}</span>
+        </a>
+      </ng-container>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav position="end" *ngIf="isFaqOpened" [opened]="isFaqOpened" style="width: 300px" [autoFocus]="false">
+    <div class="faq-action">
+      <button mat-icon-button (click)="closeFaq()"><mat-icon>close</mat-icon></button>
+    </div>
+
+    <app-portal-faq [featureId]="featureId" [currentLanguage]="currentLanguage"></app-portal-faq>
+  </mat-sidenav>
+
+  <mat-sidenav position="end" *ngIf="isFaqConfigOpened" [opened]="isFaqConfigOpened" style="width: 300px" [autoFocus]="false">
+    <div class="faq-action">
+      <button mat-icon-button (click)="closeConfigFaq()"><mat-icon>close</mat-icon></button>
+    </div>
+    <app-configuartion-faq [configurationId]="configurationId" [currentLanguage]="currentLanguage"></app-configuartion-faq>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <ng-content></ng-content>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+<app-network-status></app-network-status>

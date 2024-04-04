@@ -1,0 +1,220 @@
+@import './variables';
+@import './fonts';
+
+.table-side-panel {
+  position: relative;
+}
+
+.table-wrap {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  background-color: $white-color;
+  height: calc(100vh - 80px);
+
+  .events-table {
+    margin-top: 50px;
+    width: 400px;
+    .event-type {
+      padding-right: 12px !important;
+      min-width: 165px;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .event-value {
+      padding-right: 12px !important;
+    }
+  }
+}
+
+.paginator {
+  border-bottom: 1px solid $light-border;
+}
+
+.externalEvent {
+  font-style: italic;
+}
+
+.no-events-found {
+  margin: 0;
+  padding: 40px 0;
+  background: $white-color;
+  font-size: $heading-font-size;
+  font-weight: $normal-font-weight;
+  text-align: center;
+}
+
+.status-tag {
+  pointer-events: none !important;
+}
+
+.pending {
+  cursor: default;
+}
+
+.failed {
+  color: $light-error;
+  cursor: default;
+}
+
+.finished {
+  color: $light-success;
+  cursor: default;
+}
+
+.info-icon {
+  margin-left: 4px;
+  margin-right: 4px;
+  vertical-align: middle;
+  line-height: 20px;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.btn-group {
+  width: 400px;
+  border-radius: 0;
+  position: fixed;
+  z-index: 1000;
+  border: none;
+  position: fixed;
+  height: 56px;
+  line-height: 48px;
+  font-size: $body-font-size;
+  border-bottom: 1px solid $light-border;
+
+  .btn-group-item {
+    width: 25%;
+    font-size: $body-font-size;
+    border: none;
+    cursor: pointer !important;
+    border-right: 1px solid $light-border;
+  }
+}
+
+::ng-deep .mat-button-toggle-button {
+  height: 56px;
+}
+
+.no-shadow {
+  box-shadow: none !important;
+}
+
+.edvr-icon {
+  vertical-align: middle !important;
+  font-size: 16px;
+  height: 16px;
+  width: 16px;
+  line-height: 16px;
+}
+
+.dot-icon {
+  width: 8px;
+  height: 8px;
+  position: relative;
+  margin-right: 4px;
+  background-color: $light-border;
+  display: inline-block;
+  border-radius: 50%;
+
+  &.high {
+    background-color: $light-error;
+  }
+
+  &.medium {
+    background-color: $light-warn;
+  }
+
+  &.low {
+    background-color: $light-success;
+  }
+
+  &.nil {
+    background-color: $light-border;
+  }
+}
+
+.dark-theme {
+  .btn-group {
+    border-bottom: 1px solid $dark-border;
+  }
+
+  .dot-icon {
+    &.high {
+      background-color: $dark-error-background;
+    }
+
+    &.medium {
+      background-color: $dark-warn-background;
+    }
+
+    &.low {
+      background-color: $dark-success-background;
+    }
+
+    &.nil {
+      background-color: $light-border;
+    }
+  }
+
+  .btn-group-item {
+    border-right: 1px solid $dark-border;
+  }
+
+  .table-wrap {
+    background-color: $dark-background-contrast;
+  }
+
+  .paginator {
+    border-bottom: 1px solid $dark-border;
+  }
+}
+
+// tablets
+@media (min-width: 768px) and (max-width: 1806px) {
+  .paginator {
+    position: relative;
+    bottom: 64px;
+  }
+  .table-wrap {
+    overflow: auto !important;
+
+    .events-table {
+      margin-top: 0%;
+      margin-bottom: 64px;
+      overflow-y: auto !important;
+    }
+  }
+}
+
+// Mobiles
+@media (min-width: 653px) and (max-width: 915px) {
+  .paginator {
+    position: relative;
+    bottom: 64px;
+  }
+  .table-wrap {
+    overflow: auto !important;
+
+    .events-table {
+      margin-top: 0%;
+      margin-bottom: 64px;
+      overflow-y: auto !important;
+    }
+  }
+
+  .no-events-found {
+    margin: 0;
+    padding: 40px 0;
+    background: $white-color;
+    font-size: $heading-font-size;
+    font-weight: $normal-font-weight;
+    text-align: center;
+  }
+  .btn-group {
+    display: none;
+  }
+}

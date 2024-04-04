@@ -1,0 +1,51 @@
+<div
+  class="page-header"
+  fxLayout="row"
+  fxLayout.xs="column"
+  fxLayout.sm="column"
+  fxLayout.sm="column"
+  fxLayoutAlign="end center"
+  fxLayoutAlign.sm="start start"
+  fxLayoutAlign.md="start start"
+  fxLayoutAlign.xs="stretch stretch"
+  fxLayoutGap="24px"
+>
+  <form [formGroup]="form" novalidate>
+    <div
+      fxLayout="row"
+      fxLayout.xs="column"
+      fxLayoutAlign.xs="start stretch"
+      fxLayout.sm="row"
+      fxLayout.md="row"
+      fxLayoutGap="24px"
+      fxLayoutAlign="start center"
+      fxLayoutAlign.sm="end center"
+      fxLayoutAlign.md="end center"
+    >
+      <mat-form-field>
+        <mat-label>{{ 'durationComponentSelectDateRange' | translate }}</mat-label>
+        <mat-date-range-input [rangePicker]="picker" [min]="minStartDate" [max]="maxEndDate">
+          <input
+            matStartDate
+            placeholder="{{ 'durationComponentStartDate' | translate }}"
+            readonly
+            formControlName="startDate"
+            [appRefreshDatepicker]="form.get('startDate')"
+            (dateChange)="onStartDateChange()"
+          />
+          <input
+            matEndDate
+            placeholder="{{ 'durationComponentEndDate' | translate }}"
+            readonly
+            formControlName="endDate"
+            [appRefreshDatepicker]="form.get('endDate')"
+            (dateChange)="onEndDateChange()"
+          />
+        </mat-date-range-input>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker [touchUi]="isTouchDevice" #picker> </mat-date-range-picker>
+      </mat-form-field>
+
+    </div>
+  </form>
+</div>

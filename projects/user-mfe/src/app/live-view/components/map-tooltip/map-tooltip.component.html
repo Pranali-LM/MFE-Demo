@@ -1,0 +1,32 @@
+<div fxLayout="column" fxLayoutGap="24px">
+  <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="120px">
+    <h2>{{ 'liveDetails' | translate }}</h2>
+    <mat-chip-list [ngSwitch]="data?.state?._value">
+      <mat-chip class="chip-success" *ngSwitchCase="DeviceState.Active">{{ 'liveViewAssetDetailsACTIVE' | translate }}</mat-chip>
+      <mat-chip class="chip-warn" *ngSwitchCase="DeviceState.Amber">{{ 'liveViewAssetDetailsWEAKSIGNAL' | translate }}</mat-chip>
+      <mat-chip class="chip-error" *ngSwitchCase="DeviceState.Inactive">{{ 'liveViewAssetDetailsPARKED' | translate }}</mat-chip>
+    </mat-chip-list>
+  </div>
+  <div fxLayout="column" fxLayoutGap="16px">
+    <div fxLayout="column">
+      <div class="card-title">{{ 'liveViewAssetDetailsASSETID' | translate }}</div>
+      <div class="card-text">
+        {{ data?.asset?.assetName ||data?.assetName || data?.assetId || 'NA' }}
+      </div>
+    </div>
+    <div fxLayout="column">
+      <div class="card-title">{{ 'liveViewAssetDetailsDRIVER' | translate }}</div>
+      <div class="card-text">
+        {{ data?.driverId || 'NA' }}
+      </div>
+    </div>
+    <div fxLayout="column">
+      <div class="card-title">{{ 'liveViewAssetDetailsLASTUPDATED' | translate }}</div>
+      <div class="card-text">
+        <span>
+          {{ data?.timestampUTC | dateConversion : currentTimeZone : currentDateFormat : data?.timestamp || '-' }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

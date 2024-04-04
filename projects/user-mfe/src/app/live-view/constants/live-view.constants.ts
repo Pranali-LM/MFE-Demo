@@ -1,0 +1,3 @@
+export const MIN_LATEST_TRIPS_DAYS = 30;
+export const DEVICE_GPS_UPDATE_TIMER_MIN = 3;
+export const TRIP_STATUS_UPDATE_TIMER_MIN = 3;

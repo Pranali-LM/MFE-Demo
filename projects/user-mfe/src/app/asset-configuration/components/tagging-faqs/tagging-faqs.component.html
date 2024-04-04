@@ -1,0 +1,39 @@
+<div
+  fxLayout="column"
+  fxLayoutGap="24px"
+  [ngClass]="{
+    'dark-theme': (dataService._currentTheme | async) === 'dark'
+  }"
+>
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <h3 class="card-title">{{"TaggingFAQComponentTitle"|translate}}</h3>
+
+    <button mat-icon-button class="btn-close" matTooltip="{{'TaggingComponentCloseTooltip'| translate}}" [matTooltipPosition]="'left'" mat-dialog-close>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start">
+    <div>
+      <mat-selection-list class="faq-list" [multiple]="false" (selectionChange)="onSelect($event)">
+        <ng-container *ngFor="let faq of taggingFaqList">
+          <mat-list-option [ngClass]="selectedFaq === faq?.faqCategory ? 'active' : ''" [value]="faq?.faqCategory">
+            {{ faq?.catgeoryTitle |translate }}
+          </mat-list-option>
+        </ng-container>
+      </mat-selection-list>
+    </div>
+
+    <mat-accordion fxFlex class="custom-accordion">
+      <ng-container *ngFor="let faq of selectedFaqList; first as isFirst">
+        <mat-expansion-panel [expanded]="isFirst" style="border-radius: 4px !important; margin-bottom: 16px">
+          <mat-expansion-panel-header>
+            <mat-panel-title> {{ faq?.question |translate }}</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <span class="text-content">{{ faq?.answer | translate }}</span>
+        </mat-expansion-panel>
+      </ng-container>
+    </mat-accordion>
+  </div>
+</div>

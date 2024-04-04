@@ -1,0 +1,58 @@
+<div fxLayout="column" fxLayoutGap="16px">
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <div class="card-title">{{ 'faqSectonHeader' | translate }}</div>
+    <span tabindex="0"></span>
+    <button
+      mat-icon-button
+      class="btn-close"
+      (click)="onClose()"
+      matTooltip="{{ 'faqSectonCloseModal' | translate }}"
+      [matTooltipPosition]="'left'"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <p>{{ 'faqSectonDescribe' | translate }}:</p>
+
+  <p class="faq-heading">{{ 'faqSectonImagesReuirements' | translate }}:</p>
+  <ul class="faq-list">
+    <li>
+      {{ 'faqSectonFrontalView' | translate }}
+    </li>
+    <li>
+      {{ 'faqSectonImagesUploaded' | translate }}
+    </li>
+    <li>
+      {{ 'faqSectonImagesNoOtherPerson' | translate }}
+    </li>
+    <li>{{ 'faqSectonGlassesUsed' | translate }}</li>
+    <li>
+      {{ 'faqSectonIncorrectImages' | translate }}:<br />
+
+      <div class="preview-section">
+        <div *ngFor="let img of imageList; let i = index" class="preview-container">
+          <img [src]="img?.imageUrl" class="preview-image" />
+          <mat-icon *ngIf="img?.isValid" class="image-check right-icon">check_circle</mat-icon>
+          <mat-icon *ngIf="!img?.isValid" class="image-check wrong-icon">cancel</mat-icon>
+        </div>
+      </div>
+    </li>
+  </ul>
+
+  <p class="faq-heading">{{ 'faqSectonTechnologyWorks' | translate }}:</p>
+
+  <ul class="faq-list">
+    <li>
+      {{ 'faqSectonImageUpload' | translate }}
+    </li>
+  </ul>
+
+  <p class="faq-heading">{{ 'faqSectonDisclaimer' | translate }}:</p>
+  <p>
+    {{ 'faqSectonExample' | translate }}
+    <a class="faq-link" href="https://thispersondoesnotexist.com/" title="thispersondoesnotexist.com website" target="_blank">
+      thispersondoesnotexist.com
+    </a>
+  </p>
+</div>

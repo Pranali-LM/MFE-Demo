@@ -1,0 +1,119 @@
+<div fxLayout="column" fxLayoutGap="24px" fxLayoutAlign="start stretch">
+  <div class="title" fxLayout="row" fxLayoutAlign="space-between center" mat-dialog-title>
+    <span>{{ 'addDriverComponentAddDriver' | translate }}</span>
+    <button
+      mat-icon-button
+      mat-dialog-close
+      class="btn-close"
+      matTooltip="{{ 'addDriverComponentClose' | translate }}"
+      [matTooltipPosition]="'left'"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <app-alert *ngIf="data?.infoMessage" [alertType]="'info'" removeMargin="true">
+    {{ data?.infoMessage | translate }}
+  </app-alert>
+
+  <form autocomplete="off" novalidate [formGroup]="addDriverForm" fxLayout="column" fxLayoutGap="24px" #formDirective="ngForm">
+    <mat-form-field *ngIf="clientConfig.showUserTypeEmail">
+      <mat-label>{{ 'driverManagementUserType' | translate }}</mat-label>
+      <mat-select disableOptionCentering formControlName="userType">
+        <mat-option value="DRIVER">{{ 'driverManagementUserTypeDriver' | translate }}</mat-option>
+        <mat-option value="INSTALLER">{{ 'driverManagementUserTypeInstaller' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="clientConfig.showUserTypeEmail">
+      <mat-label>{{ 'driverManagementEmailAddress' | translate }}</mat-label>
+      <input matInput type="email" name="email" formControlName="driverEmail" [errorStateMatcher]="matcher" />
+      <mat-hint
+        *ngIf="
+          !addDriverForm.get('driverEmail').invalid &&
+          addDriverForm.get('driverEmail').value?.length < 1 &&
+          addDriverForm.get('userType').value === 'DRIVER'
+        "
+        >Optional</mat-hint
+      >
+      <mat-error *ngIf="addDriverForm.get('driverEmail').invalid && !addDriverForm.get('driverEmail').hasError('required')">
+        {{ 'driverManagementValidEmailAddress' | translate }}
+      </mat-error>
+      <mat-error *ngIf="addDriverForm.get('driverEmail').hasError('required')">
+        {{ 'driverManagementEmailrequired' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>{{ 'driverManagementOverviewDriverName' | translate }}</mat-label>
+      <input
+        matInput
+        type="text"
+        name="driverName"
+        type="text"
+        formControlName="driverName"
+        [errorStateMatcher]="matcher"
+        minlength="4"
+        maxlength="32"
+      />
+      <mat-error *ngIf="addDriverForm.get('driverName').hasError('required')">
+        {{ 'driverManagementDriverNameRequired' | translate }}
+      </mat-error>
+      <mat-error *ngIf="!addDriverForm.get('driverName').hasError('required') && addDriverForm.get('driverName').invalid">
+        {{ 'driverManagementDriverNameCharacterRange' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>{{ 'driverManagementDriverID' | translate }}</mat-label>
+      <input matInput type="text" name="driverId" formControlName="driverId" [errorStateMatcher]="matcher"/>
+      <mat-error *ngIf="addDriverForm.get('driverId').hasError('required')">
+        {{ 'driverManagementDriverIDRequired' | translate }}
+      </mat-error>
+      <mat-error *ngIf="addDriverForm.get('driverId').hasError('maxlength')">
+        {{ 'driverManagementDriverIDRange' | translate }}
+      </mat-error>
+      <mat-error *ngIf="addDriverForm.get('driverId').hasError('pattern')">
+        <span>{{ 'driverManagementDriverIDPattern' | translate }}</span>
+      </mat-error>
+    </mat-form-field>
+  </form>
+
+  <app-alert *ngIf="isAddDriverSuccessful" [alertType]="'success'" [removeMargin]="true">
+    <span *ngIf="addDriverForm.get('userType').value === 'DRIVER'">{{ 'driverManagementSignUpCompleted' | translate }}</span>
+    <span *ngIf="addDriverForm.get('userType').value === 'INSTALLER'">{{ 'driverManagementInstallerSignUpComplete' | translate }}</span>
+  </app-alert>
+
+  <app-alert *ngIf="errorMessage" [alertType]="'error'" [removeMargin]="true">
+    {{ errorMessage }}
+  </app-alert>
+
+  <div fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="16px">
+    <button
+      *ngIf="!isAddDriverSuccessful"
+      mat-flat-button
+      [loading]="loader"
+      [disabled]="addDriverForm.invalid"
+      (click)="onSubmit()"
+      color="accent"
+    >
+      {{ 'addDriverComponentAddDriverButton' | translate }}
+    </button>
+    <button
+      *ngIf="isAddDriverSuccessful && addDriverForm.get('userType').value === 'DRIVER'"
+      mat-stroked-button
+      color="accent"
+      (click)="onClose()"
+    >
+      {{ 'addDriverComponentCancel' | translate }}
+    </button>
+    <button
+      *ngIf="isAddDriverSuccessful && addDriverForm.get('userType').value === 'DRIVER'"
+      mat-flat-button
+      color="accent"
+      (click)="openDriverEnrollmentDialog()"
+    >
+      {{ 'addDriverComponentUploadImages' | translate }}
+    </button>
+  </div>
+</div>

@@ -1,0 +1,48 @@
+.info-icon {
+  vertical-align: middle;
+  font-size: 20px;
+  margin-left: 4px;
+  position: relative;
+}
+
+tr.webhook-detail-row {
+  height: 0;
+}
+
+.expanded-row {
+  padding: 24px 24px 0 16px;
+}
+
+.custom-grey-button-dark {
+  background-color: #616161 !important;
+  color: white !important;
+}
+
+.custom-grey-button {
+  background-color: #e0e0e0;
+  color: black;
+  height: 30px;
+  width: 30px;
+  box-shadow: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.custom-grey-button span {
+  line-height: 15px !important;
+}
+// tablet
+@media (min-width: 768px) and (max-width: 1279px) {
+  .asset-list-table,
+  .mat-paginator {
+    min-width: 1279px !important;
+  }
+}
+
+// mobile
+@media (min-width: 320px) and (max-width: 767px) {
+  .asset-list-table,
+  .mat-paginator {
+    min-width: 1279px !important;
+  }
+}

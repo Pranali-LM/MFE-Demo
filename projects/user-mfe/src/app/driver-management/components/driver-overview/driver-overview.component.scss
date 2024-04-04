@@ -1,0 +1,10 @@
+@import './fonts';
+@import './variables';
+
+.stats-card {
+  padding: 0 !important;
+
+  .card-text {
+    font-size: 18px;
+  }
+}

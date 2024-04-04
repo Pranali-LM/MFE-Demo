@@ -1,0 +1,108 @@
+<div fxLayout="column" fxLayoutGap="24px" fxLayoutGap.xs="16px" fxLayoutAlign="start stretch">
+  <div fxLayout="column" fxLayoutGap="24px" fxLayoutGap.xs="16px" fxLayoutAlign="start stretch">
+    <div
+      fxLayout="row"
+      fxLayout.md="column"
+      fxLayout.sm="column"
+      fxLayout.xs="column"
+      fxLayoutGap="24px"
+      fxLayoutAlign="space-between center"
+    >
+      <h3 class="title card-title"> 
+        {{'Entity' | translate}} 
+        <button
+          mat-icon-button
+          class="btn-faq"
+          (click)="dataService?.openFaq('EntityList')"
+          matTooltip="{{ 'viewInformation' | translate }}"
+          matTooltipPosition="right"
+        >
+          <mat-icon>info_outline</mat-icon>
+        </button>
+      </h3>
+
+      <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="end center">
+        <button
+          mat-icon-button
+          color="accent"
+          class="btn-icon"
+          [loading]="loader"
+          (click)="onRefreshEntity()"
+          matTooltip="{{'EntityTableRefreshTooltip'| translate}}"
+          [matTooltipPosition]="'left'"
+        >
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table mat-table [dataSource]="entityListDataSource">
+      <ng-container matColumnDef="entityName">
+        <th mat-header-cell *matHeaderCellDef>{{ 'EntityTableComonentEntityName' | translate }}</th>
+        <td mat-cell *matCellDef="let element">
+          <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+          <ng-container *ngIf="!loader">{{ (element?.entityName | titlecase) || '-' }}</ng-container>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="attributeNames">
+        <th mat-header-cell *matHeaderCellDef>{{ 'EntityTableComonentAttributes' | translate }}</th>
+        <td mat-cell *matCellDef="let element">
+          <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+          <ng-container *ngIf="!loader">
+            <div fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="start center" *ngIf="!!element?.attributes?.length; else noAttributes">
+              <span *ngIf="element?.attributes[0]">{{ element?.attributes[0].attributeName }}<span *ngIf="element?.attributes[1]">,</span></span>
+              <span *ngIf="element?.attributes[1]">{{ element?.attributes[1].attributeName }}</span>
+              <span *ngIf="element?.attributes?.length > 2" class="additional-tags">
+                (+{{ element?.attributes?.length - 2 }} {{ element?.attributes?.length === 1 ? 'other' : 'others' }})
+                <button mat-icon-button matTooltip="{{ 'OverviewTableComponentShowDetailsToolTip' | translate }}" [matMenuTriggerFor]="menu">
+                  <mat-icon>arrow_drop_down</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu" class="custom-menu" xPosition="before">
+                  <ng-container *ngFor="let attribute of element?.attributes; let i = index">
+                    <button *ngIf="i > 1" mat-menu-item>
+                      {{ attribute.attributeName }}
+                    </button>
+                  </ng-container>
+                </mat-menu>
+              </span>
+            </div>
+            <ng-template #noAttributes>
+              <span>-</span>
+            </ng-template>
+          </ng-container>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>{{ 'EntityTableComonentActions' | translate }}</th>
+        <td mat-cell *matCellDef="let element">
+          <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+          <ng-container *ngIf="!loader">
+            <button
+              [disabled]="!hasUpdatePermission"
+              mat-icon-button
+              color="accent"
+              matTooltip="{{ 'EntityTableComonentEditToolTip' | translate }}"
+              matTooltipPosition="left"
+              (click)="assignAttributes(element, ManageAction.Edit)"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+          </ng-container>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <app-alert *ngIf="entityListDataSource?.data?.length === 0 && !loader" [alertType]="'info'" [insideTable]="true">
+      {{ 'EntityTableComonentNoEntitiesFound' | translate }}
+    </app-alert>
+
+    <mat-paginator #paginator="matPaginator" [pageSize]="tablePageSize" [length]="totalCount" showFirstLastButtons> </mat-paginator>
+  </div>
+</div>

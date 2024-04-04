@@ -1,0 +1,9 @@
+.chart-area {
+  overflow: hidden;
+}
+
+@media (max-width: 767px) {
+  .chart-area {
+    min-width: 640px;
+  }
+}

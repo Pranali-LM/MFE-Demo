@@ -1,0 +1,410 @@
+<app-side-navigation>
+  <div *ngIf="loader" class="loading-shade dvr-loader" [ngStyle]="{ left: isSideNavOpen ? '220px' : '0' }">
+    <app-spinner></app-spinner>
+  </div>
+
+  <section style="overflow: hidden">
+    <div class="page-subheader" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="16px">
+      <ng-container *appViewportSize="'LARGE'">
+        <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center" *ngIf="loader" class="dark-theme">
+          <div class="skeleton-circle"></div>
+          <div class="skeleton-loader">
+            <div class="skeleton-line" style="width: 80px"></div>
+            <div class="skeleton-line" style="width: 120px"></div>
+          </div>
+        </div>
+
+        <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center" *ngIf="loader" class="dark-theme">
+          <div class="skeleton-loader">
+            <div class="skeleton-line" style="width: 80px"></div>
+            <div class="skeleton-line" style="width: 120px"></div>
+          </div>
+          <div class="skeleton-loader">
+            <div class="skeleton-line" style="width: 80px"></div>
+            <div class="skeleton-line" style="width: 120px"></div>
+          </div>
+          <div class="skeleton-loader">
+            <div class="skeleton-line" style="width: 80px"></div>
+            <div class="skeleton-line" style="width: 120px"></div>
+          </div>
+          <div class="skeleton-loader">
+            <div class="skeleton-line" style="width: 80px"></div>
+            <div class="skeleton-line" style="width: 120px"></div>
+          </div>
+        </div>
+      </ng-container>
+
+      <div class="driver-info" *ngIf="!loader" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
+        <button
+          style="color: #ffffff"
+          matTooltip="{{ 'tripDetailsPreviousPageTooltip' | translate }}"
+          mat-icon-button
+          (click)="navigateBack()"
+        >
+          <mat-icon>keyboard_backspace</mat-icon>
+        </button>
+        <h3 class="card-title" style="white-space: nowrap">{{ 'videoRequestRequestVideoCaps' | translate | titlecase }}</h3>
+      </div>
+
+      <div class="dvr-summary" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="24px" fxHide.sm fxHide.xs *ngIf="!loader && !isError">
+        <button
+          *ngIf="driverThumbnail && tripDetails?.sampleDriverImage"
+          class="no-btn"
+          (click)="showDriverImage()"
+          title="{{ 'tripDetailsDriverImage' | translate }}"
+        >
+          <img [src]="driverThumbnail" class="driver-thumbnail" />
+        </button>
+
+        <div class="location" fxLayout="column" *ngIf="driverThumbnail || (startLocation && endLocation)">
+          <div class="connector-line"></div>
+          <span
+            class="summary-value location-info"
+            style="margin-bottom: 4px"
+            [matTooltip]="startLocation?.startLocationFullAddress"
+            matTooltipPosition="right"
+            ><mat-icon class="location-icon start-icon">circle</mat-icon>{{ startLocation?.startLocationCity }}
+          </span>
+          <span class="summary-value location-info" matTooltip="{{ 'tripDetailsEndLocation' | translate }}" matTooltipPosition="right"
+            ><mat-icon class="location-icon end-icon">circle</mat-icon>
+            <ng-container *ngIf="tripDetails?.ongoing">-</ng-container>
+            <ng-container *ngIf="!tripDetails?.ongoing">
+              <span [matTooltip]="endLocation?.endLocationFullAddress" matTooltipPosition="right">{{ endLocation?.endLocationCity }}</span>
+            </ng-container>
+          </span>
+        </div>
+
+        <div class="driver-name" fxLayout="column">
+          <span class="summary-title">{{ 'tripDetailsDriverTitle' | translate }}</span>
+          <span class="summary-value">{{ tripDetails?.driverId.toUpperCase() === '_UNASSIGNED' ? ('DriverIdUnassigned' | translate) : (tripDetails?.driverName || tripDetails?.driverId) }}</span>
+        </div>
+
+        <div class="time" fxLayout="column">
+          <span class="summary-title">{{ 'tripDetailsAssetId' | translate }}</span>
+          <span class="summary-value" [matTooltip]="tripDetails?.asset?.assetName || tripDetails?.asset?.assetId">
+            {{ tripDetails?.asset?.assetName || tripDetails?.asset?.assetId || '-' }}
+          </span>
+        </div>
+
+        <div class="duration" fxLayout="column">
+          <span class="summary-title">{{ 'tripDetailsDuration' | translate }}</span>
+          <span class="summary-value">
+            {{ tripDetails?.duration | duration2 : 'seconds' : 'h:m' }}
+          </span>
+        </div>
+
+        <div class="distance" fxLayout="column">
+          <span class="summary-title">{{ 'tripDetailsDistance' | translate }}</span>
+          <span class="summary-value">
+            {{ tripDetails?.tripDistance | distance : (dataService._currentMetricUnit | async) | number : '1.0-2' }}
+            {{ (dataService._currentMetricUnit | async) === 'Miles' ? ('unitsMiles' | translate) : ('unitsKilometers' | translate) }}
+          </span>
+        </div>
+
+        <div class="incidents" fxLayout="column">
+          <span class="summary-title">{{ 'tripDetailsIncidents' | translate }}</span>
+          <span class="summary-value">
+            {{ tripDetails?.eventCount?.total }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <section fxLayout="column" style="position: relative" [ngStyle]="{ display: isError ? 'none' : '' }">
+      <div style="position: relative">
+        <div id="dvrMap"></div>
+        <!-- custom map controls -->
+        <button
+          *ngIf="map"
+          class="btn-mapbox"
+          (click)="recenterMap()"
+          mat-icon-button
+          matTooltip="{{ 'mapComponentRecenter' | translate }}"
+          [matTooltipPosition]="'right'"
+          [ngStyle]="customMapOptions?.recenterButton"
+        >
+          <mat-icon>gps_fixed</mat-icon>
+        </button>
+
+        <button
+          *ngIf="map"
+          class="btn-mapbox"
+          (click)="toggleMarkers()"
+          mat-icon-button
+          matTooltip="{{ 'videoRequestToggleMarker' | translate }}"
+          [matTooltipPosition]="'right'"
+          [ngStyle]="customMapOptions?.toggleMarker"
+        >
+          <mat-icon *ngIf="!showMapMarkers">location_on</mat-icon>
+          <mat-icon *ngIf="showMapMarkers">location_off</mat-icon>
+        </button>
+
+        <button
+          *ngIf="map"
+          [matMenuTriggerFor]="menu"
+          class="btn-mapbox"
+          mat-icon-button
+          matTooltip="{{ 'mapComponentLayers' | translate }}"
+          [matTooltipPosition]="'right'"
+          [ngStyle]="customMapOptions?.layersButton"
+        >
+          <mat-icon>layers</mat-icon>
+        </button>
+
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="switchLayer('streets-v12')" [disabled]="currentLayer === 'streets-v12'">
+            <mat-icon>add_road</mat-icon>
+            <span>Streets</span>
+          </button>
+          <button mat-menu-item (click)="switchLayer('satellite-streets-v12')" [disabled]="currentLayer === 'satellite-streets-v12'">
+            <mat-icon>satellite_alt</mat-icon>
+            <span>Satellite</span>
+          </button>
+          <button mat-menu-item (click)="switchLayer('light-v11')" [disabled]="currentLayer === 'light-v11'">
+            <mat-icon>light_mode</mat-icon>
+            <span>Light</span>
+          </button>
+          <button mat-menu-item (click)="switchLayer('dark-v11')" [disabled]="currentLayer === 'dark-v11'">
+            <mat-icon>dark_mode</mat-icon>
+            <span>Dark</span>
+          </button>
+        </mat-menu>
+      </div>
+      <mat-card
+        class="form"
+        fxLayout="column"
+        fxLayoutGap="16px"
+        [ngStyle]="{ width: isSideNavOpen ? 'calc(100vw - 284px)' : 'calc(100vw - 64px)' }"
+      >
+        <div fxLayout="row" fxLayoutAlign="space-between center">
+          <div fxLayout="column" fxLayoutGap="4px">
+            <span
+              ><strong>{{ 'videoRequestTripTimeline' | translate }}</strong></span
+            >
+            <span class="sub-text">{{ 'videoRequestMoveSlider' | translate }}</span>
+          </div>
+
+          <div fxLayout="row" fxLayoutGap="16px" class="legends">
+            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="4px" *ngFor="let legend of dvrRequestLegends">
+              <span class="legend-icon" [ngStyle]="{ 'background-color': legend?.color }"></span>
+              <span class="legend-label">{{ legend?.label | translate }}</span>
+            </div>
+          </div>
+        </div>
+        <div fxLayout="column" fxLayoutGap="4px" class="dvr-graph" #dvrGraph>
+          <div class="drag-line" [ngStyle]="{ transform: 'translateX(' + updatedTranslateVal + 'px)' }"></div>
+
+          <div class="incidents-area">
+            <ng-container *ngFor="let event of safetyEventList">
+              <div
+                *ngIf="event?.showEvent"
+                class="incident-indicator"
+                matTooltip="{{ (event?.eventTypeLabel | translate) || (incidentModalEventType | translate) + ': -' }}&#010;&#013; {{
+                  event?.timestampUTC
+                    | dateConversion
+                      : (dataService._currentTimeZone | async)
+                      : (dataService._currentDateFormat | async)
+                      : event?.timestamp || 'Time: -'
+                }}"
+                matTooltipClass="multiline-tooltip"
+                [matTooltipPosition]="event?.position < 20 ? 'right' : 'left'"
+                [ngStyle]="{ left: event?.position + 'px', 'background-color': event?.eventColor }"
+                (click)="showMedia(event)"
+              ></div>
+            </ng-container>
+            <span class="bar-text">{{ 'videoRequestSafetyEvents' | translate }}</span>
+          </div>
+
+          <div class="speed-area">
+            <ng-container *ngFor="let zone of stoppedZones; let i = index">
+              <div
+                class="stopped-zone"
+                *ngIf="zone?.showLabel"
+                [ngStyle]="{
+                  left: zone?.position + 'px',
+                  width: zone?.width + 'px'
+                }"
+              ></div>
+            </ng-container>
+            <span class="bar-text">{{ 'videoRequestStoppedZone' | translate }}</span>
+          </div>
+
+          <div class="timeline">
+            <ng-container *ngFor="let tick of timelineTicks">
+              <div
+                class="tick"
+                *ngIf="tick?.showTick"
+                [ngStyle]="{
+                  left: tick?.position + 'px',
+                  height: tick?.showLabel ? '16px' : '8px',
+                  bottom: tick?.showLabel ? '-16px' : '-8px'
+                }"
+              >
+                <div class="tick-label" *ngIf="tick?.showLabel">
+                  {{
+                    tick?.label
+                      | dateConversion
+                        : (dataService._currentTimeZone | async)
+                        : (dataService._currentDateFormat | async)
+                        : tick?.labelLocal
+                      | date : 'HH:mm'
+                  }}
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+
+        <div fxLayout="column" [ngStyle]="{ display: !loader && tripDetails?.duration > 180 ? 'flex' : 'none' }">
+          <mat-slider
+            class="timeline-slider"
+            min="0"
+            [max]="numberOfMinutes"
+            step="1"
+            [value]="currentSliderValue"
+            (input)="getSliderValue($event)"
+          >
+            <input matSliderThumb />
+          </mat-slider>
+
+          <div fxLayout="row" fxLayoutAlign="space-between center">
+            <div fxLayout="column" fxLayoutGap="4px">
+              <span class="timeline-axis-label">{{ 'videoRequestTripStartTime' | translate }}</span>
+              <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+              <span class="timeline-axis-time" *ngIf="!loader">{{
+                tripDetails?.startTimeUTC
+                  | dateConversion
+                    : (dataService._currentTimeZone | async)
+                    : (dataService._currentDateFormat | async)
+                    : tripDetails?.startTime
+              }}</span>
+            </div>
+
+            <div fxLayout="column" fxLayoutGap="4px" fxLayoutAlign="end">
+              <span class="timeline-axis-label" style="text-align: right">{{ 'videoRequestTripEndTime' | translate }}</span>
+              <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+              <span class="timeline-axis-time" *ngIf="!loader">{{
+                tripDetails?.endTimeUTC
+                  | dateConversion
+                    : (dataService._currentTimeZone | async)
+                    : (dataService._currentDateFormat | async)
+                    : tripDetails?.endTime
+              }}</span>
+            </div>
+          </div>
+        </div>
+
+        <app-alert *ngIf="!loader && tripDetails?.duration < 180" [alertType]="'info'">
+          Please select the duration dropdown as the slider is not available for trip with less than 3 minute duration.
+        </app-alert>
+
+        <div>
+          <mat-divider></mat-divider>
+        </div>
+
+        <div fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="space-between center">
+          <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="center center">
+            <div fxLayout="column" fxLayoutGap="4px">
+              <span class="text-caption">{{ 'videoRequestSELECTEDTIME' | translate }}</span>
+              <div *ngIf="loader" class="skeleton-line" style="max-width: 240px"></div>
+              <span *ngIf="!loader" style="width: 160px"
+                ><strong>{{
+                  selectedTimeUTC
+                    | dateConversion : (dataService._currentTimeZone | async) : (dataService._currentDateFormat | async) : selectedTimeLocal
+                }}</strong></span
+              >
+            </div>
+
+            <mat-divider vertical style="height: 48px"></mat-divider>
+            <form [formGroup]="form" fxLayout="row" fxLayoutGap="16px">
+              <mat-form-field>
+                <mat-select
+                  disableOptionCentering
+                  placeholder="{{ 'rangeSliderVideoFormat' | translate }}"
+                  name="dvrVideoFormat"
+                  formControlName="videoFormat"
+                  (selectionChange)="onVideoFormatChange($event)"
+                >
+                  <ng-container *ngFor="let format of dvrVideoFormats">
+                    <mat-option [value]="format?.value">
+                      {{ format?.text | translate }}
+                    </mat-option>
+                    <mat-divider *ngIf="format?.showDivider"></mat-divider>
+                  </ng-container>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field>
+                <mat-label>{{ 'videoRequestAvailableDuration' | translate }}</mat-label>
+                <mat-select formControlName="dvrDuration">
+                  <ng-container *ngFor="let duration of dvrDurations">
+                    <mat-optgroup class="select-group" [label]="duration?.groupName | translate">
+                      <mat-option
+                        *ngFor="let option of duration?.options"
+                        [disabled]="option?.value > remainingDurationInTimelineInSeconds || option?.disabled"
+                        [value]="option?.value"
+                      >
+                        {{ option?.text | translate }} {{ option?.unit | translate }}
+                      </mat-option>
+                    </mat-optgroup>
+                    <mat-divider *ngIf="duration?.showDivider"></mat-divider>
+                  </ng-container>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field *ngIf="form?.value?.videoFormat === 'MDVR'">
+                <mat-select
+                  disableOptionCentering
+                  placeholder="{{ 'rangeSliderMdvrViews' | translate }}"
+                  name="mdvrViews"
+                  formControlName="mdvrViews"
+                  [multiple]="isEvoCamera"
+                  (selectionChange)="onMdvrViewsSelection($event)"
+                >
+                  <mat-select-trigger *ngIf="isEvoCamera">
+                    {{ getMdvrViewLabel(form?.value?.mdvrViews?.[0]) }}
+                    <span *ngIf="(form?.value?.mdvrViews?.length || 0) > 1" class="example-additional-selection">
+                      (+{{ (form?.value?.mdvrViews?.length || 0) - 1 }} {{ form?.value?.mdvrViews?.length === 2 ? 'other' : 'others' }})
+                    </span>
+                  </mat-select-trigger>
+
+                  <ng-container *ngFor="let format of availableMdvrViews">
+                    <mat-option [value]="format?.view">
+                      {{ format?.viewLabel | translate }}
+                    </mat-option>
+                    <mat-divider *ngIf="format?.showDivider"></mat-divider>
+                  </ng-container>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field>
+                <mat-select
+                  disableOptionCentering
+                  placeholder="{{ 'rangeSliderVideoResolution' | translate }}"
+                  name="dvrResolution"
+                  formControlName="videoResolution"
+                >
+                  <mat-option *ngFor="let resolution of dvrResolutions" [value]="resolution.value">
+                    {{ resolution?.text | translate }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </form>
+          </div>
+          <div fxLayout="row" fxLayoutGap="16px">
+            <button mat-stroked-button (click)="navigateBack()">{{ 'videoRequestCANCEL' | translate }}</button>
+            <button mat-flat-button color="accent" *appCheckPermissions="['request:dvr']" [disabled]="form?.invalid" (click)="onSubmit()">
+              {{ 'videoRequestRequestVideoCaps' | translate }}
+            </button>
+          </div>
+        </div>
+      </mat-card>
+    </section>
+
+    <div class="container" *ngIf="!loader && isError">
+      <mat-card>
+        <app-alert [alertType]="'info'" [removeMargin]="true"> {{ 'videoRequestNoTripFound' | translate }} </app-alert>
+      </mat-card>
+    </div>
+  </section>
+</app-side-navigation>

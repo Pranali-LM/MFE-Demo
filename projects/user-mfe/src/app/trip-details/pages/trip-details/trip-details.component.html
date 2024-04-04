@@ -1,0 +1,270 @@
+<app-side-navigation>
+  <div *ngIf="show === 'spinner'" class="loading-shade trip-loader" style="left: 220px">
+    <app-spinner></app-spinner>
+  </div>
+
+  <div fxLayout="column" [ngClass]="show === 'noContent' ? 'd-none' : ''">
+    <div class="trip-detail-wrap" fxLayout="column">
+      <div class="trip-summary dark-theme" fxLayout="row" fxLayoutAlign="space-between center">
+        <ng-container *appViewportSize="'LARGE'">
+          <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center" *ngIf="show === 'spinner'">
+            <div class="skeleton-circle"></div>
+            <div class="skeleton-loader">
+              <div class="skeleton-line" style="width: 80px"></div>
+              <div class="skeleton-line" style="width: 120px"></div>
+            </div>
+          </div>
+
+          <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center" *ngIf="show === 'spinner'">
+            <div class="skeleton-loader">
+              <div class="skeleton-line" style="width: 80px"></div>
+              <div class="skeleton-line" style="width: 120px"></div>
+            </div>
+            <div class="skeleton-loader">
+              <div class="skeleton-line" style="width: 80px"></div>
+              <div class="skeleton-line" style="width: 120px"></div>
+            </div>
+            <div class="skeleton-loader">
+              <div class="skeleton-line" style="width: 80px"></div>
+              <div class="skeleton-line" style="width: 120px"></div>
+            </div>
+            <div class="skeleton-loader">
+              <div class="skeleton-line" style="width: 80px"></div>
+              <div class="skeleton-line" style="width: 120px"></div>
+            </div>
+          </div>
+        </ng-container>
+
+        <div class="driver-info" *ngIf="show !== 'spinner'" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
+          <button
+            style="color: #ffffff"
+            matTooltip="{{ 'tripDetailsPreviousPageTooltip' | translate }}"
+            mat-icon-button
+            (click)="navigateBack()"
+          >
+            <mat-icon>keyboard_backspace</mat-icon>
+          </button>
+          <div class="location" fxLayout="column" *ngIf="startLocation && endLocation">
+            <div class="connector-line"></div>
+            <span
+              class="summary-value location-info"
+              style="margin-bottom: 4px"
+              [matTooltip]="startLocation?.startLocationFullAddress"
+              matTooltipPosition="right"
+              ><mat-icon class="location-icon start-icon">circle</mat-icon>{{ startLocation?.startLocationCity }}
+            </span>
+            <span class="summary-value location-info" matTooltip="{{ 'tripDetailsEndLocation' | translate }}" matTooltipPosition="right"
+              ><mat-icon class="location-icon end-icon">circle</mat-icon>
+              <ng-container *ngIf="tripDetails?.ongoing">-</ng-container>
+              <ng-container *ngIf="!tripDetails?.ongoing">
+                <span [matTooltip]="endLocation?.endLocationFullAddress" matTooltipPosition="right">{{
+                  endLocation?.endLocationCity
+                }}</span>
+              </ng-container>
+            </span>
+          </div>
+
+          <ng-container *ngIf="clientConfig?.isAssetCentric; else driverTemplate">
+            <ng-container *ngTemplateOutlet="assetTemplate"></ng-container>
+          </ng-container>
+
+          <mat-chip-list *ngIf="tripDetails?.ongoing">
+            <mat-chip class="ongoing-chip" [class]="tripDetails?.deviceState | async | lowercase">{{
+              'tripDetailsLiveTrip' | translate
+            }}</mat-chip>
+          </mat-chip-list>
+          <ng-container *appCheckPermissions="['request:live_stream']">
+            <button
+              mat-stroked-button
+              color="accent"
+              *ngIf="liveTelematicsEnabled && tripDetails?.ongoing && tripDetails?.device?.deviceId"
+              [disabled]="(tripDetails?.deviceState | async) !== deviceState.Active"
+              (click)="requestLivestreamAction()"
+            >
+              <span>{{ 'tripDetailsLiveStream' | translate }}</span>
+            </button>
+          </ng-container>
+        </div>
+
+        <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="24px" fxHide.sm fxHide.xs *ngIf="show !== 'spinner'">
+          <ng-container *ngIf="!clientConfig?.isAssetCentric; else driverTemplate">
+            <ng-container *ngTemplateOutlet="assetTemplate"></ng-container>
+          </ng-container>
+
+          <div class="time" fxLayout="column">
+            <span class="summary-title">{{ 'tripDetailsStartDateTime' | translate }}</span>
+            <span class="summary-value">
+              {{ tripDetails?.startTimeUTC | dateConversion : currentTimeZone : currentDateFormat : tripDetails?.startTime }}
+            </span>
+          </div>
+
+          <div class="duration" fxLayout="column">
+            <span class="summary-title">{{ 'tripDetailsDuration' | translate }}</span>
+            <span class="summary-value">
+              {{ tripDetails?.duration | duration2 : 'seconds' : 'h:m' }}
+            </span>
+          </div>
+
+          <div class="distance" fxLayout="column">
+            <span class="summary-title">{{ 'tripDetailsDistance' | translate }}</span>
+            <span class="summary-value">
+              {{ tripDetails?.tripDistance | distance : (dataService._currentMetricUnit | async) | number : '1.0-2' }}
+              {{ (dataService._currentMetricUnit | async) === 'Miles' ? ('unitsMiles' | translate) : ('unitsKilometers' | translate) }}
+            </span>
+          </div>
+
+          <div class="incidents" fxLayout="column">
+            <span class="summary-title">{{ 'tripDetailsIncidents' | translate }}</span>
+            <span class="summary-value">
+              {{ tripDetails?.eventCount?.total }}
+            </span>
+          </div>
+
+          <ng-container *ngIf="tripDetails?.dvrEnabled && !tripDetails?.ongoing && isDvrAvailable">
+            <button *appCheckPermissions="['request:dvr']" mat-raised-button class="btn-request" (click)="requestVideo()">
+              {{ 'videoRequestRequestVideoCaps' | translate }}
+            </button>
+          </ng-container>
+
+          <div class="toggle-view">
+            <app-trip-settings (eventListChange)="onEventSelection($event)"> </app-trip-settings>
+          </div>
+        </div>
+
+        <ng-template #assetTemplate>
+          <div class="time" fxLayout="column" *ngIf="tripDetails?.asset?.assetId || tripDetails?.assetId || tripDetails?.assetName || tripDetails?.asset?.assetName">
+            <span class="summary-title">{{ 'tripDetailsAssetId' | translate }}</span>
+            <span class="summary-value" [matTooltip]="tripDetails?.asset?.assetName ||tripDetails?.asset?.assetId">
+              {{ tripDetails?.asset?.assetName || tripDetails?.asset?.assetId || '-' }}
+            </span>
+          </div>
+        </ng-template>
+        <ng-template #driverTemplate>
+          <button
+            *ngIf="driverThumbnail && tripDetails?.sampleDriverImage"
+            class="no-btn"
+            (click)="showDriverImage()"
+            title="{{ 'tripDetailsDriverImage' | translate }}"
+          >
+            <img [src]="driverThumbnail" class="driver-thumbnail" />
+          </button>
+          <div class="driver-name" fxLayout="column">
+            <span class="summary-title">{{ 'tripDetailsDriverTitle' | translate }}</span>
+            <span class="summary-value">{{ tripDetails?.driverId.toUpperCase() === '_UNASSIGNED' ? ('DriverIdUnassigned' | translate) :  (tripDetails?.driverName || tripDetails?.driverId) }}</span>
+          </div>
+        </ng-template>
+
+        <div
+          fxLayout="row"
+          fxLayoutGap="24px"
+          fxLayoutGap.xs="0"
+          fxLayoutAlign="flex-end center"
+          fxLayoutGap.sm="0"
+          fxShow.xs
+          fxHide
+          fxShow.sm
+          *ngIf="show !== 'spinner'"
+        >
+
+        <button mat-icon-button 
+        matTooltip="{{ 'videoRequestRequestVideo' | translate }}"
+        matTooltipPosition="left"
+        (click)="requestVideo()"
+        style="color: #ffffff"
+        >
+          <mat-icon>switch_video</mat-icon>
+        </button>
+
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>info_outline</mat-icon>
+          </button>
+
+          <mat-menu #menu="matMenu">
+            <div class="menu-item mobile-driver-name" fxLayout="row" fxLayoutGap="16px">
+              <mat-icon>person</mat-icon>
+              <span class="summary-value">
+                {{ tripDetails?.driverName || tripDetails?.driverId }}
+              </span>
+            </div>
+
+            <div class="menu-item" fxLayout="row" fxLayoutGap="16px">
+              <mat-icon> local_shipping</mat-icon>
+              <span class="summary-value">
+                {{ tripDetails?.asset?.assetId || '-' }}
+              </span>
+            </div>
+
+            <div class="menu-item" fxLayout="row" fxLayoutGap="16px">
+              <mat-icon>access_time</mat-icon>
+              <span class="summary-value">
+                {{ tripDetails?.startTimeUTC | dateConversion : currentTimeZone : currentDateFormat : tripDetails?.startTime }}
+              </span>
+            </div>
+
+            <div class="menu-item" fxLayout="row" fxLayoutGap="16px">
+              <mat-icon>location_on</mat-icon>
+              <span class="summary-value">
+                {{ tripDetails?.duration | duration2 : 'seconds' : 'h:m' }}
+              </span>
+            </div>
+
+            <div class="menu-item" fxLayout="row" fxLayoutGap="16px">
+              <mat-icon>pin_drop</mat-icon>
+              <span class="summary-value">
+                {{ tripDetails?.tripDistance | distance : 'miles' | number : '1.0-2' }}
+                mi
+              </span>
+            </div>
+
+            <div class="menu-item" fxLayout="row" fxLayoutGap="16px">
+              <mat-icon>warning</mat-icon>
+              <span class="summary-value"> {{ tripDetails?.eventCount?.total }} incidents </span>
+            </div>
+          </mat-menu>
+
+          <div class="toggle-view" fxShow.xs fxHide fxShow.sm fxShow.md>
+            <app-trip-settings (eventListChange)="onEventSelection($event)"> </app-trip-settings>
+          </div>
+        </div>
+      </div>
+
+      <app-alert [alertType]="'warn'" [removeMargin]="true" *ngIf="!loader && !isDvrAvailable">
+        {{ 'videoRequestNotAvailable' | translate }}
+      </app-alert>
+
+      <div class="trip-map" fxLayoutAlign="stretch" fxLayout="coulmn">
+        <app-map-box-map
+          fxFlex="100"
+          [ngClass]="!loader && !isDvrAvailable ? 'map-with-alert' : 'map'"
+          mapId="map"
+          [markerList]="markerList"
+          [latlonList]="pathList"
+          [mapInitialCoordinates]="mapInitialCoordinates"
+          [customMapOptions]="customMapOptions"
+          [speed]="(liveTelematicsMessage$ | async)?.gpsData?.speed"
+          (markerClick)="showMediaMarker($event)"
+          #map
+        ></app-map-box-map>
+        <app-events-table
+          class="trip-events-table"
+          *ngIf="show !== 'spinner'"
+          [eventsList]="eventsList"
+          [currentTimeZone]="currentTimeZone"
+          (incidentButtonClick)="onIncidentButtonClick($event)"
+          [dvrEnabled]="tripDetails?.dvrEnabled"
+          (requestEdvrClick)="requestEDVR($event)"
+          (changeSeverityCategory)="onSeverityCategoryChange($event)"
+        >
+        </app-events-table>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" *ngIf="show === 'noContent'">
+    <mat-card>
+      <app-alert [alertType]="'info'" [removeMargin]="true">
+        {{ 'tripDetailsNotFound' | translate }}
+      </app-alert>
+    </mat-card>
+  </div>
+</app-side-navigation>

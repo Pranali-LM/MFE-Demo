@@ -1,0 +1,17 @@
+@import './variables';
+@import './fonts';
+
+.custom-tooltip {
+  margin: 10px;
+  padding: 10px;
+  background-color: $tooltip-background-color;
+  color: $white-color;
+  border-radius: 4px;
+  box-shadow: 0 2px 1px 0 rgba(0, 0, 0, 0.12), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.2);
+  font-family: $font-family;
+  font-size: $caption-font-size;
+  line-height: 1.4;
+  font-weight: $normal-font-weight;
+  word-break: normal;
+  word-wrap: normal;
+}

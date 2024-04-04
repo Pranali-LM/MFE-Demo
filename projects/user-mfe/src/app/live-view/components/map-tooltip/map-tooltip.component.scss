@@ -1,0 +1,10 @@
+@import './fonts';
+
+.card-title {
+  font-size: $caption-font-size;
+}
+
+.card-text {
+  font-size: $heading-font-size;
+  font-weight: $medium-font-weight;
+}

@@ -1,0 +1,63 @@
+<div fxLayout="column" fxLayoutGap="24px">
+  <h3 class="card title">{{ 'batchProvision' | translate }}</h3>
+  <div class="card-body" fxLayout="column" fxLayoutAlign="space-between">
+    <div>
+      <p class="sub-text">
+        {{ 'batchProvisionUploadCsv' | translate }}
+      </p>
+
+      <p class="sub-text">{{ 'batchProvisionEnsure' | translate }}</p>
+
+      <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
+        <div class="btn-link text-link-underlined" (click)="downloadProvisionSample()">
+          {{ 'batchProvisionDownloadSample' | translate }}
+        </div>
+        <mat-spinner *ngIf="provisionSampleLoader" [diameter]="20"></mat-spinner>
+      </div>
+
+      <app-alert *ngIf="provisionSampleDownloadError" [alertType]="'error'">
+        {{ 'batchProvisionUnableToDownload' | translate }}
+      </app-alert>
+
+      <app-alert
+        *ngIf="provisionUploadStatus"
+        [alertType]="provisionUploadStatus"
+        [alertActionText]="provisionUploadStatus === 'partialSuccess' ? 'DOWNLOAD' : ''"
+        (alertAction)="downloadFailedDeviceList()"
+      >
+        <ng-container [ngSwitch]="provisionUploadStatus">
+          <span *ngSwitchCase="'success'">{{ 'batchProvisionSuccessful' | translate }}</span>
+          <span *ngSwitchCase="'error'">{{ provisionUploadErrorMessage }}</span>
+          <div *ngSwitchCase="'partialSuccess'" fxLayout="column" fxLayoutGap="4px" fxLayoutAlign="start start">
+            <span>{{ 'batchProvisionFailed' | translate }}</span>
+            <span>{{ 'batchProvisionDownloadFailedDevices' | translate }}</span>
+          </div>
+        </ng-container>
+      </app-alert>
+
+      <app-alert *ngIf="provisionFileError" [alertType]="'error'">{{ 'batchProvisionUploadCsvFile' | translate }}</app-alert>
+    </div>
+
+    <div
+      fxLayout="row"
+      fxLayoutGap="16px"
+      fxLayout.xs="column"
+      fxLayoutAlign="space-between center"
+      fxLayoutAlign.xs="start start"
+      fxLayoutGap.xs="8px"
+    >
+      <button mat-stroked-button class="btn-action">
+        <input class="input-upload" id="input-file-id" type="file" accept=".csv" (change)="selectCsvFile($event)" #provisionInputRef />
+        <mat-icon *ngIf="!provisionFileSelected" class="file-attach">attach_file</mat-icon>
+        <mat-icon *ngIf="provisionFileSelected" class="file-attach">done</mat-icon>
+        <label for="input-file-id" class="input-upload-label">
+          <span *ngIf="provisionFileSelected">{{ provisionUploadedCsvFile?.name }}</span>
+          <span *ngIf="!provisionFileSelected">{{ 'batchProvisionSelectCsvFile' | translate }}</span>
+        </label>
+      </button>
+      <button mat-flat-button [disabled]="!provisionFileSelected" [loading]="loader" color="accent" (click)="batchProvisionDevice()">
+        {{ 'batchProvisionSubmit' | translate }}
+      </button>
+    </div>
+  </div>
+</div>

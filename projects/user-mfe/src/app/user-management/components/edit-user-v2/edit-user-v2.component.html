@@ -1,0 +1,97 @@
+<app-side-navigation>
+  <div class="page-subheader" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="16px">
+    <div fxLayout="row" fxLayoutGap="16px">
+      <button
+        style="color: #ffffff"
+        matTooltip="{{ 'EditUserComponentPreviouspageToolTip' | translate }}"
+        mat-icon-button
+        (click)="navigateBack()"
+      >
+        <mat-icon>keyboard_backspace</mat-icon>
+      </button>
+      <h3 class="card-title">{{ actionName | translate | titlecase }} {{ 'User' | translate }}</h3>
+    </div>
+  </div>
+  <form fxLayout="column" autocomplete="off" novalidate [formGroup]="form" *ngIf="form; else loadingUserDetails">
+    <section class="container" fxLayout="column" fxLayoutGap="24px">
+      <app-alert *ngIf="actionName === ManageUserAction.Edit" [alertType]="'info'" [removeMargin]="true" [requireBorder]="true">{{
+        'EditUserComponentEditDescription' | translate
+      }}</app-alert>
+
+      <mat-card fxLayout="row" fxLayout.sm="column" fxLayoutAlign="space-between start" fxLayoutGap="96px" fxLayoutGap.sm="24px">
+        <div fxLayout="column" fxLayoutGap="8px" fxFlex="35">
+          <h3>{{ 'EditUserComponentBasicInformation' | translate }}</h3>
+          <span class="sub-text">{{ 'EditUserComponentBasicInformationDescription' | translate }}</span>
+        </div>
+
+        <div fxFlex fxLayout="column" style="width: 100%" fxLayoutGap="20px">
+          <div fxLayout="row" fxLayoutGap="24px">
+            <mat-form-field appearance="outline" fxFlex>
+              <mat-label>{{ 'EditUserComponentEmailAddress' | translate }}</mat-label>
+              <input matInput type="email" formControlName="email" name="email" [errorStateMatcher]="matcher" />
+              <mat-error *ngIf="form.get('email').invalid || form.get('email').hasError('pattern')">
+                {{ 'EditUserComponentEmailAddressError1' | translate }}
+              </mat-error>
+              <mat-error *ngIf="form.get('email').hasError('required')">{{ 'EditUserComponentEmailAddressError2' | translate }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" fxFlex>
+              <mat-label>{{ 'EditUserComponentSelectRole' | translate }}</mat-label>
+              <mat-select formControlName="roleId" disableOptionCentering>
+                <mat-option *ngIf="getRolesListLoader">{{ 'EditUserComponentLoading' | translate }}</mat-option>
+                <mat-option *ngIf="!getRolesListLoader && !allowedRoles.length">No Roles Found</mat-option>
+                <mat-option *ngFor="let roles of allowedRoles" [value]="roles.roleId" [disabled]="roles.status === 'INACTIVE'">{{
+                  roles.roleName
+                }}</mat-option>
+              </mat-select>
+              <mat-error *ngIf="form.get('roleId').hasError('required')">{{ 'EditUserComponentSelectRoleError' | translate }}</mat-error>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" fxFlex>
+            <mat-label>{{ 'EditUserComponentName' | translate }}</mat-label>
+            <input matInput placeholder="Enter Name" formControlName="name" />
+            <mat-error *ngIf="form.get('name').hasError('required')">{{ 'EditUserComponentNameError1' | translate }}</mat-error>
+            <mat-error *ngIf="form.get('name').hasError('pattern')">{{ 'EditUserComponentNameError2' | translate }}</mat-error>
+          </mat-form-field>
+        </div>
+      </mat-card>
+
+      <mat-card
+        fxLayout="row"
+        fxLayout.sm="column"
+        fxLayoutAlign="space-between start"
+        fxLayoutGap="96px"
+        fxLayoutGap.sm="24px"
+        *ngIf="attributeIds?.length"
+      >
+        <div fxLayout="column" fxLayoutGap="8px" fxFlex="35">
+          <h3>{{ 'EditUserComponentTags' | translate }}</h3>
+          <span class="sub-text">{{ 'EditUserComponentTagsDescription' | translate }}</span>
+        </div>
+
+        <div fxFlex fxLayout="column" style="width: 100%">
+          <app-tagging-filter-v2
+            (selectedTags)="selectedTags($event)"
+            [assignedTagList]="userTags"
+            [dropDownType]="'assign'"
+            [numOfTagsToDisplay]="3"
+            [roleId]="form.get('roleId').value"
+            [isUserPage]="true"
+          ></app-tagging-filter-v2>
+        </div>
+      </mat-card>
+
+      <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="end center">
+        <button type="submit" mat-flat-button color="accent" [loading]="loader" [disabled]="form?.invalid" (click)="onSubmit()">
+          {{ 'EditUserComponentSAVEDETAILS' | translate }}
+        </button>
+      </div>
+    </section>
+  </form>
+
+  <ng-template #loadingUserDetails>
+    <section class="container" fxLayout="column" fxLayoutGap="24px">{{ 'EditUserComponentLodingUserDetails' | translate }}</section>
+  </ng-template>
+</app-side-navigation>
+

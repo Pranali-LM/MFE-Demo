@@ -1,0 +1,97 @@
+<div
+  fxLayout="column"
+  fxLayoutGap="24px"
+  [ngClass]="{
+    'dark-theme': (dataService._currentTheme | async) === 'dark'
+  }"
+>
+  <h3 class="title">{{ 'cookieConsentTitle' | translate }}</h3>
+
+  <div class="header-image" fxLayout="row" fxLayoutAlign="center center">
+    <img src="assets/common/privacy.svg" />
+  </div>
+
+  <section fxLayout="column" fxLayoutGap="24px" *ngIf="!preferCustomization">
+    <div fxLayout="column" fxLayoutGap="16px">
+      <span class="sub-text"
+        >{{ 'cookieConsentDescription1' | translate }} <strong>{{ 'cookieConsentDescription2' | translate }}</strong
+        ><mat-icon
+          class="icon-small"
+          matTooltip="{{ 'cookieConsentDescrption2Tooltip' | translate }}"
+          >info_outline</mat-icon
+        >{{ 'cookieConsentDescription3' | translate }}</span
+      >
+
+      <span class="sub-text"
+        >{{ 'cookieConsentChangeDescription1' | translate }} <strong>{{ 'cookieConsentChangeDescription2' | translate }}</strong>.</span
+      >
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="16px">
+      <button mat-button (click)="onSelect()">{{ 'CUSTOMIZE' | translate }}</button>
+      <button mat-stroked-button [loading]="loader" mat-dialog-close (click)="rejectCookies()">{{ 'REJECT' | translate }}</button>
+      <button mat-flat-button color="accent" [loading]="loader" mat-dialog-close (click)="acceptCookies()">{{ 'ACCEPT' | translate }}</button>
+    </div>
+  </section>
+
+  <section fxLayout="column" fxLayoutGap="24px" *ngIf="preferCustomization">
+    <div fxLayout="column" fxLayoutGap="16px">
+      <div fxLayout="column" fxLayoutGap="4px">
+        <span><strong>{{ 'customize' | translate }}</strong></span>
+        <span class="sub-text">{{ 'customizeDescription' | translate }}</span>
+      </div>
+
+      <div fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="space-between center" class="toggle-area">
+        <div fxLayout="column" fxLayoutGap="4px">
+          <span><strong>{{ 'necessary' | translate }}</strong> </span>
+          <span class="sub-text"
+            > {{ 'necessaryDescription' | translate }}
+          </span>
+        </div>
+
+        <mat-slide-toggle [checked]="true" disabled></mat-slide-toggle>
+      </div>
+
+      <div fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="space-between center" class="toggle-area">
+        <div fxLayout="column" fxLayoutGap="4px">
+          <span><strong>{{ 'functional' | translate }}</strong> </span>
+          <span class="sub-text"
+            >{{ 'functionalDescription' | translate }}
+          </span>
+        </div>
+
+        <mat-slide-toggle [(ngModel)]="functionalCookies"></mat-slide-toggle>
+      </div>
+
+      <div fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="space-between center" class="toggle-area">
+        <div fxLayout="column" fxLayoutGap="16px">
+          <div fxLayout="column" fxLayoutGap="4px">
+            <span><strong>{{ 'statistical' | translate }}</strong> </span>
+            <span class="sub-text"
+              >{{ 'statisticalDescription' | translate }}
+            </span>
+          </div>
+
+          <div fxLayout="row" fxLayoutGap="8px">
+            <span>
+              <a href="https://policies.google.com/privacy" class="text-link" target="_blank"><strong>Google</strong></a>
+            </span>
+            <span class="sub-text">|</span>
+            <span
+              ><a href="https://privacy.microsoft.com/en-ca/privacystatement" class="text-link" target="_blank"
+                ><strong>Microsoft</strong></a
+              ></span
+            >
+          </div>
+        </div>
+
+        <mat-slide-toggle [(ngModel)]="statisticalCookies"></mat-slide-toggle>
+      </div>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="16px">
+      <button mat-stroked-button (click)="onSelect()">{{ 'cancel' | translate }}</button>
+      <button mat-flat-button color="accent" [loading]="loader" mat-dialog-close (click)="saveCustomizedCookies()">{{ 'saveSettings' | translate }}</button>
+    </div>
+  </section>
+</div>

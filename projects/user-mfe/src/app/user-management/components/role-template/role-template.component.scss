@@ -1,0 +1,30 @@
+@import './variables';
+@import './colors';
+
+// .dialog-content {
+//   // height: 400px;
+// }
+
+.list-group {
+  ::ng-deep.mat-radio-label {
+    white-space: pre-line !important;
+    width: 100% !important;
+    padding: 16px;
+    border: 1px solid $light-border;
+    border-radius: 4px;
+    &:hover {
+      background-color: $light-background;
+    }
+  }
+
+  .radio-active {
+    ::ng-deep.mat-radio-label {
+      border: 1px solid $light-accent;
+    }
+  }
+
+  ::ng-deep.mat-radio-label-content {
+    padding-right: 24px !important;
+    flex-basis: 90%;
+  }
+}

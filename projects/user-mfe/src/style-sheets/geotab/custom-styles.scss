@@ -1,0 +1,89 @@
+@import './variables';
+
+app-header {
+  border-bottom: 1px solid #292929;
+}
+
+mat-sidenav {
+  background-color: $white-color !important;
+
+  .side-menu {
+    li {
+      a {
+        color: $black-color !important;
+        &:hover {
+          background-color: #d2322d !important;
+          color: $white-color !important;
+        }
+      }
+    }
+  }
+}
+
+.table-wrap {
+  overflow: auto;
+
+  table {
+    td {
+      border-left: none !important;
+      border-top: none !important;
+      border-bottom: none !important;
+      border-right: 1px solid #c0ccd8; // Add border style for both header and data cells
+      padding-left: 24px !important;
+    }
+    tr.mat-row {
+      &:last-child {
+        td {
+          border-bottom: 1px solid #c0ccd8 !important;
+        }
+      }
+    }
+
+    width: 100%;
+  }
+
+  th.mat-header-cell {
+    font-size: 14px;
+    background-color: #3c5063;
+    color: white;
+    padding-left: 24px !important;
+
+    .mat-sort-header-arrow {
+      color: white;
+    }
+  }
+
+  tr.mat-row:not(.trip-detail-row) {
+    &:hover {
+      background-color: #e4e4d1;
+    }
+    &.selected {
+      background-color: #fcf8b2 !important;
+    }
+  }
+
+  .trip-list-table {
+    tr.mat-row:not(.trip-detail-row) {
+      &:hover {
+        background-color: #e4e4d1;
+      }
+    }
+  }
+
+  th {
+    border-right: 1px solid #c0ccd8; // Add border style for both header and data cells
+  }
+}
+
+.mat-card {
+  box-shadow: none !important;
+  border: 1px solid #c0ccd8 !important;
+}
+
+.page-subheader {
+  background-color: #3c5063;
+}
+
+.announcement {
+  background-color: #eeeeee;
+}

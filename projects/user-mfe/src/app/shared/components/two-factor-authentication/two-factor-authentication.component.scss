@@ -1,0 +1,43 @@
+@import './variables';
+
+.qrcode-area {
+  height: 180px;
+  width: 100%;
+  border: 1px solid $light-border;
+  border-radius: 4px;
+}
+
+.content-area {
+  height: 120px;
+  width: 100%;
+  border: 1px solid $light-border;
+  border-radius: 4px;
+  padding: 16px;
+  padding-right: 0;
+  overflow: hidden;
+}
+
+.icon-area {
+  width: 196px;
+  height: 196px;
+  position: relative;
+  background-color: $light-background;
+}
+
+.content-icon {
+  font-size: 64px;
+  line-height: 64px;
+  width: 64px;
+  height: 64px;
+  color: #999999;
+}
+
+.dark-theme {
+  .content-area {
+    border: 1px solid $dark-border;
+  }
+
+  .icon-area {
+    background-color: $dark-background;
+  }
+}

@@ -1,0 +1,164 @@
+<app-side-navigation>
+  <div class="container" fxLayout="column" fxLayoutGap="24px">
+    <app-alert
+      *ngIf="clientConfig?.showFeatureAnnouncement && clientConfig?.showHomePageAnnouncement"
+      [removeMargin]="true"
+      [alertType]="'announcement'"
+      alertActionText="{{ 'homeAnnBannerImportantAction' | translate }}"
+      (alertAction)="viewAnnouncementDetails()"
+      class="announcement"
+    >
+      <div fxLayout="column" fxLayoutGap="4px">
+        <span
+          ><strong>{{ 'homeAnnBannerImportantAnn' | translate }}</strong></span
+        >
+        <span style="font-weight: 400">{{ 'homeAnnBannerImportantSubText1' | translate }}</span>
+        <span style="font-weight: 400">{{ 'homeAnnBannerImportantSubText2' | translate }}</span>
+      </div>
+    </app-alert>
+
+    <app-page-filter
+      [durationDays]="durationDays"
+      [durationList]="durationList"
+      (changeDuration)="changeDuration($event)"
+      (changeSearchByTags)="changeSearchByTags($event)"
+      [homeTags]="homeTags"
+    >
+    </app-page-filter>
+
+    <div fxLayout="column" fxLayoutGap="24px" fxLayoutGap.xs="16px" fxLayoutAlign="start stretch">
+      <app-fleet-stats [fleetStats]="fleetStats" [loader]="fleetStatsLoader"></app-fleet-stats>
+
+      <mat-card fxLayout="column" fxLayoutGap="24px">
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="24px" fxLayoutAlign="space-between center" fxLayoutAlign.xs="start start">
+          <h3 class="title card-title">
+            {{ 'recommendedincidentsHeader' | translate }}
+            <button
+              mat-icon-button
+              class="btn-faq"
+              (click)="dataService?.openFaq('recommendedIncidents')"
+              matTooltip="{{ 'viewInformation' | translate }}"
+              matTooltipPosition="right"
+            >
+              <mat-icon>info_outline</mat-icon>
+            </button>
+          </h3>
+          <div class="event-selector" fxLayout="row" fxLayoutGap="18px">
+            <mat-form-field class="select-box">
+              <mat-label>{{ 'fleetHighlightsSelectIncident' | translate }}</mat-label>
+              <mat-select disableOptionCentering [formControl]="highlightsEventType">
+                <ng-container *ngFor="let event of eventList">
+                  <mat-option [value]="event?.key">{{ event?.label | translate }}</mat-option>
+                </ng-container>
+              </mat-select>
+            </mat-form-field>
+            <!-- Display child configs based on the selected event using mat-select -->
+            <div *ngIf="displaySubEventSelection">
+              <mat-form-field>
+                <mat-label>{{ "selectSubEventFilter" | translate}}</mat-label>
+                <mat-select [formControl]="highlightsSubEventType">
+                  <ng-container *ngFor="let childConfig of subEventList">
+                    <mat-option  [value]="childConfig?.key">
+                      {{ childConfig?.label | translate }}
+                    </mat-option>
+                  </ng-container>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        <div fxLayout="row">
+          <app-fleet-highlights
+            [violations]="severeFleetViolations"
+            [loader]="fleetEventLoader"
+            [timezone]="currentTimeZone"
+            [dateFormat]="currentDateFormat"
+            class="width-100"
+          >
+          </app-fleet-highlights>
+        </div>
+      </mat-card>
+
+      <div
+        *ngIf="!clientConfig?.isAssetCentric"
+        fxLayout="row"
+        fxLayout.md="column"
+        fxLayout.sm="column"
+        fxLayout.xs="column"
+        fxLayoutGap="24px"
+        fxLayoutAlign="space-between stretch"
+      >
+        <mat-card fxFlex="50">
+          <app-driver-list
+            [driverList]="safeDriverList"
+            [totalCount]="topDriversTotalCount"
+            [title]="safeDriversTitle"
+            [loader]="driverListLoader"
+            (pageChange)="onDriversTablePageChange($event, true)"
+            (sortChange)="onDriversTableSortChange($event, true)"
+            [listType]="'topDrivers'"
+          >
+          </app-driver-list>
+        </mat-card>
+
+        <mat-card fxFlex="50">
+          <app-driver-list
+            [driverList]="coachableDriverList"
+            [totalCount]="coachableDriversTotalCount"
+            [title]="unSafeDriversTitle"
+            [loader]="coachingRecommendLoader"
+            [showTopIncident]="showTopIncident"
+            (pageChange)="onDriversTablePageChange($event, false)"
+            (sortChange)="onDriversTableSortChange($event, false)"
+            [listType]="'requireCoaching'"
+          >
+          </app-driver-list>
+        </mat-card>
+      </div>
+
+      <div
+        fxLayout="row"
+        fxLayout.sm="column"
+        fxLayout.xs="column"
+        fxLayout.md="column"
+        fxLayoutAlign="space-between stretch"
+        fxLayoutGap="24px"
+      >
+        <mat-card fxFlex="49.3" class="overflow-hidden">
+          <app-incident-summary [eventDiff]="eventDiff" [loader]="fleetStatsLoader" [currentTheme]="currentTheme" [type]="'fleet'">
+          </app-incident-summary>
+        </mat-card>
+
+        <mat-card fxFlex="49.3" class="overflow-hidden">
+          <app-incident-trend
+            [startDate]="startDate"
+            [endDate]="endDate"
+            [fleetId]="fleetId"
+            [currentTheme]="currentTheme"
+            [selectedTags]="selectedTags"
+          >
+          </app-incident-trend>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+
+  <button
+    *ngIf="clientConfig.showFeedbackButton"
+    mat-fab
+    color="primary"
+    class="btn-feedback"
+    (click)="isFeedbackWidgetOpen ? closeFeedbackWidget() : openFeedbackWidget()"
+    [matTooltip]="isFeedbackWidgetOpen ? ('feedbackWidgetClose' | translate) : ('feedbackWidgetProvideFeedback' | translate)"
+    matTooltipPosition="left"
+    [loading]="feedbackButtonLoader"
+  >
+    <div fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center">
+      <mat-icon *ngIf="!isFeedbackWidgetOpen">rate_review</mat-icon>
+      <mat-icon *ngIf="isFeedbackWidgetOpen">close</mat-icon>
+      <span *ngIf="!isFeedbackWidgetOpen">{{ 'feedbackWidgetFeedbck' | translate }}</span>
+      <span *ngIf="isFeedbackWidgetOpen">{{ 'feedbackWidgetCLOSE' | translate }}</span>
+    </div>
+  </button>
+</app-side-navigation>

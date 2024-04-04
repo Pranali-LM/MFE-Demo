@@ -1,0 +1,12 @@
+<div class="search-box">
+  <input
+    #tripSearch
+    class="search-input"
+    placeholder="{{ 'searchTripEnterTrip' | translate }}"
+    [formControl]="tripId"
+    (keyup.enter)="onTripSearch()"
+  />
+  <button mat-mini-fab aria-label="search" class="btn-search" (click)="onTripSearch()">
+    <mat-icon>search</mat-icon>
+  </button>
+</div>

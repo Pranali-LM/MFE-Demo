@@ -1,0 +1,36 @@
+<div fxLayout="column" fxLayoutGap="24px">
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <h3 class="title">{{ 'userSecurityHeader' | translate }}</h3>
+    <button mat-icon-button mat-dialog-close matTooltip="{{ 'userSecurityComponentClose' | translate }}" matTooltipPosition="left">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div fxLayout="column" fxLayoutGap="8px">
+    <h4>{{ 'userSecuritySubHeader' | translate }}</h4>
+    <span>
+      {{ 'userSecurityDescription' | translate }}
+    </span>
+  </div>
+
+  <span *ngIf="data?.name">
+    <strong>{{ 'userSecurityName' | translate }} </strong>{{ data?.name }}
+  </span>
+  <span *ngIf="data?.email">
+    <strong>{{ 'userSecurityEmail' | translate }} </strong>{{ data?.email }}
+  </span>
+
+  <div fxFlexAlign="end">
+    <button mat-flat-button color="accent" (click)="adminDisableMFA()" [loading]="loader" [disabled]="showSuccess">
+      {{ 'userSecurityDisableButton' | translate }}
+    </button>
+  </div>
+
+  <app-alert *ngIf="!loader && showError" [alertType]="'error'" [removeMargin]="true">
+    {{ 'userSecurityError' | translate }}
+  </app-alert>
+
+  <app-alert *ngIf="!loader && showSuccess" [alertType]="'success'" [removeMargin]="true">
+    {{ 'userSecuritySuccess' | translate }}
+  </app-alert>
+</div>

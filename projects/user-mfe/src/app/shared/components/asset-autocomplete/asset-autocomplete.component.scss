@@ -1,0 +1,14 @@
+@import './fonts';
+
+mat-form-field {
+  width: 100%;
+  min-width: 220px;
+}
+
+.no-events {
+  pointer-events: none;
+}
+
+::ng-deep .mat-option {
+  font-size: $body-font-size !important;
+}
